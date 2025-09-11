@@ -109,11 +109,6 @@ nvm use default
 - The app will automatically try port 3001 if 3000 is busy
 - Or manually specify a port: `PORT=3002 npm run dev`
 
-#### White/Blank Page
-- Make sure you're on the correct URL (check terminal output)
-- Hard refresh: `Cmd+Shift+R` (Mac) or `Ctrl+Shift+R` (Windows)
-- Check browser console for errors (F12 → Console)
-
 #### Permission Errors (macOS/Linux)
 ```bash
 # If you get permission errors, fix npm permissions:
