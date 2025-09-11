@@ -23,12 +23,7 @@ A full-stack web application that uses AI to match users with their perfect job 
 
 #### 1. **Code Editor**
 - **VS Code** (Recommended): [Download here](https://code.visualstudio.com/)
-- **VS Code Extensions** (Install these for better development experience):
-  - ES7+ React/Redux/React-Native snippets
-  - Prettier - Code formatter
-  - Auto Rename Tag
-  - Bracket Pair Colorizer
-  - GitLens
+
 
 #### 2. **Version Control**
 - **Git**: [Download here](https://git-scm.com/downloads)
