@@ -215,32 +215,9 @@ pathfinder/
 4. **ML Matching**: Implement job recommendation algorithm
 5. **Auto-Apply**: Add one-click job application feature
 
-## Development Tips
 
-### **VS Code Setup**
-1. Install recommended extensions
-2. Use `Cmd+Shift+P` → "Format Document" to auto-format code
-3. Use integrated terminal: `View` → `Terminal`
 
-### **Git Best Practices**
-- Use descriptive commit messages
-- Keep commits small and focused
-- Always test before pushing
-- Use feature branches for new features
 
-### **Debugging**
-- Check browser console (F12) for JavaScript errors
-- Use `console.log()` for debugging
-- Check terminal for server errors
-- Use React Developer Tools browser extension
-
-## Support
-
-If you run into issues:
-1. Check the **Troubleshooting** section above
-2. Search existing GitHub issues
-3. Ask team members in your group chat
-4. Create a new GitHub issue if needed
 
 ## License
 
