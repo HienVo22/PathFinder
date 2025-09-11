@@ -48,9 +48,6 @@ A full-stack web application that uses AI to match users with their perfect job 
   - Download Node.js (v18+): [https://nodejs.org/](https://nodejs.org/)
   - This includes npm automatically
 
-#### 4. **Browser**
-- **Chrome** or **Firefox** with Developer Tools
-
 ### Getting Started
 
 #### Step 1: Clone the Repository
