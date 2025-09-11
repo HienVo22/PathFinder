@@ -210,14 +210,6 @@ pathfinder/
 4. **ML Matching**: Implement job recommendation algorithm
 5. **Auto-Apply**: Add one-click job application feature
 
-
-
-
-
-## License
-
-This project is licensed under the MIT License.
-
 ### Feature Branch Commands (copy/paste)
 
 Create a new feature branch, work, push, open PR, and clean up.
@@ -254,3 +246,7 @@ git rebase origin/main
 # resolve any conflicts, then
 git push --force-with-lease
 ```
+
+## License
+
+This project is licensed under the MIT License.
