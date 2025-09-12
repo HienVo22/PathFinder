@@ -117,7 +117,7 @@ source ~/.bashrc  # or ~/.zshrc
 
 ### Quick Setup Commands (Copy & Paste)
 
-For team members who want to get started quickly:
+
 
 ```bash
 # 1. Clone and navigate
