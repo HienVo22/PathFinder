@@ -11,6 +11,6 @@ This is a simple but interactive web application that demonstrates file upload f
 3. Try uploading a resume file by either:
    - Dragging and dropping a file onto the upload area
    - Clicking "Choose File" to browse for files
-4. Watch the upload progress and see the simulated AI analysis results
+4. Watch the upload progress and see the results
 
 
