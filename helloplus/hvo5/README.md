@@ -1,6 +1,6 @@
 # Assignment 7: Hello World PLus
 
-## What This Program Does
+## Resume Upload - What This Program Does
 
 This is a simple but interactive web application that demonstrates file upload functionality with drag-and-drop support, progress tracking, and simulated AI processing. The program allows users to upload resume files (.pdf, .doc, .docx) through either drag and drop or traditional file selection, then simulates an AI powered analysis that extracts skills and generates job matches.
 
