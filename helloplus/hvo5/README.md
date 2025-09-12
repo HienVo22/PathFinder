@@ -1,4 +1,4 @@
-# Resume Upload Demo - Pathfinder
+# Assignment 7: Hello World PLus
 
 ## What This Program Does
 
