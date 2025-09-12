@@ -7,10 +7,11 @@ This is a simple but interactive web application that demonstrates file upload f
 ## How to Run
 
 1. Open the `index.html` file in an web browser
-2. The application will load automatically with no additional setup required
-3. Try uploading a resume file by either:
+  open helloplus/hvo5/index.html
+3. The application will load automatically with no additional setup required
+4. Try uploading a resume file by either:
    - Dragging and dropping a file onto the upload area
    - Clicking "Choose File" to browse for files
-4. Watch the upload progress and see the results
+5. Watch the upload progress and see the results
 
 
