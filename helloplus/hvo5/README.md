@@ -8,7 +8,7 @@ This is a simple but interactive web application that demonstrates file upload f
 
 1. Open the `index.html` file in an web browser
   ```bash
-    open helloplus/hvo5/index.html
+open helloplus/hvo5/index.html
   ```
 3. The application will load automatically with no additional setup required
 4. Try uploading a resume file by either:
