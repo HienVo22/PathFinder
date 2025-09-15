@@ -191,7 +191,7 @@ pathfinder/
 
 ## Features Implemented
 
-### ✅ **Current Features**
+### **Current Features**
 - User registration and login
 - JWT token-based authentication
 - Protected routes and form validation
@@ -200,7 +200,7 @@ pathfinder/
 - Clean, centered landing page
 - User dashboard with profile display
 
-### 🚧 **Next Sprint Features**
+### **Next Sprint Features**
 1. **Database Integration**: Replace in-memory storage with MongoDB
 2. **Resume Upload**: Add file upload functionality
 3. **Job Listings**: Integrate with job APIs (Indeed, LinkedIn)
