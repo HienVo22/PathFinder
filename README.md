@@ -4,17 +4,19 @@ A full-stack web application that uses AI to match users with their perfect job 
 
 ## Features
 
-- User authentication (login/register)
-- Clean, modern UI with Pathfinder branding
-- Dashboard for job management
-- AI-powered job matching (coming soon)
-- One-click job applications (coming soon)
+- 🔐 User authentication (login/register)
+- 📄 Resume upload with drag-and-drop support
+- 🧭 Clean, modern UI with Pathfinder branding
+- 📊 Dashboard for job management
+- 🤖 AI-powered job matching (coming soon)
+- ⚡ One-click job applications (coming soon)
 
 ## Tech Stack
 
 - **Frontend**: Next.js 14, React, JavaScript, Tailwind CSS
-- **Backend**: Next.js API Routes, JWT Authentication
-- **Database**: In-memory (will be replaced with MongoDB)
+- **Backend**: Next.js API Routes, JWT Authentication, Multer (file uploads)
+- **Database**: MongoDB with Mongoose ODM
+- **Storage**: Local file system (with AWS S3 planned)
 - **Styling**: Tailwind CSS with custom components
 
 ## Team Setup Guide
@@ -23,7 +25,6 @@ A full-stack web application that uses AI to match users with their perfect job 
 
 #### 1. **Code Editor**
 - **VS Code** (Recommended): [Download here](https://code.visualstudio.com/)
-
 
 #### 2. **Version Control**
 - **Git**: [Download here](https://git-scm.com/downloads)
@@ -71,26 +72,75 @@ node -v  # Should show v22.x.x or similar
 npm -v   # Should show v10.x.x or similar
 ```
 
-#### Step 3: Install Dependencies
+#### Step 3: Set Up MongoDB
+```bash
+# Option A: Install MongoDB locally via Homebrew (macOS)
+brew tap mongodb/brew
+brew install mongodb-community
+brew services start mongodb/brew/mongodb-community
+
+# Option B: Use MongoDB Atlas (Cloud - Recommended)
+# 1. Sign up at https://www.mongodb.com/atlas
+# 2. Create a free cluster
+# 3. Get your connection string
+```
+
+#### Step 3.1: Install MongoDB Compass (Optional but Recommended)
+```bash
+# Install MongoDB Compass for database management
+brew install --cask mongodb-compass
+
+# Launch MongoDB Compass
+open -a "MongoDB Compass"
+```
+**Note**: Connect to `mongodb://localhost:27017` in Compass to view your local database.
+
+#### Step 4: Environment Configuration
+```bash
+# Copy the example environment file
+cp .env.example .env.local
+
+# Edit .env.local with your settings:
+# - MONGODB_URI: Your MongoDB connection string
+# - JWT_SECRET: A secure random string
+```
+
+#### Step 5: Install Dependencies
 ```bash
 npm install
 ```
 
-#### Step 4: Start Development Server
+#### Step 6: Start Development Server
 ```bash
 npm run dev
 ```
 
-#### Step 5: View the Application
+#### Step 7: View the Application
 - Open your browser
 - Go to: **http://localhost:3000** (or http://localhost:3001 if 3000 is busy)
 - You should see the Pathfinder login page!
 
-### Demo Account
+### Testing the Application
 
-You can test the application with these credentials:
-- **Email**: demo@pathfinder.com
-- **Password**: password
+#### Create a New Account
+1. Go to the homepage
+2. Click "Create Account" 
+3. Fill in your details and register
+4. You'll be redirected to the dashboard
+
+#### Resume Upload Feature
+1. Once logged in, you'll see a resume upload area on the dashboard
+2. **Drag and drop** a PDF, DOC, or DOCX file onto the upload area
+3. **Or click "Choose File"** to browse and select your resume
+4. Watch the progress bar as your file uploads
+5. Your resume will be stored and associated with your account
+
+#### Testing with MongoDB Compass
+1. Open MongoDB Compass and connect to `mongodb://localhost:27017`
+2. Navigate to the `pathfinder` database
+3. View the `users` collection to see registered accounts
+4. Check the `uploads/resumes/` folder in your project directory for uploaded files
+5. Verify that user documents contain resume file references
 
 ### Troubleshooting
 
@@ -142,13 +192,22 @@ npm run dev
 pathfinder/
 ├── app/                    # Next.js app directory
 │   ├── api/               # API routes
-│   │   └── auth/          # Authentication endpoints
+│   │   ├── auth/          # Authentication endpoints
+│   │   └── upload/        # File upload endpoints
 │   ├── dashboard/         # Dashboard page
 │   ├── globals.css        # Global styles
 │   ├── layout.js          # Root layout
 │   └── page.js            # Home page
+├── components/            # React components
+│   └── ResumeUpload.js    # Resume upload component
 ├── contexts/              # React contexts
 │   └── AuthContext.js     # Authentication context
+├── lib/                   # Utility libraries
+│   └── mongodb.js         # MongoDB connection
+├── models/                # Database models
+│   └── User.js            # User schema
+├── uploads/               # File storage
+│   └── resumes/           # Resume files
 ├── package.json           # Dependencies
 ├── tailwind.config.js     # Tailwind configuration
 └── jsconfig.json          # JavaScript configuration
@@ -195,6 +254,9 @@ pathfinder/
 - User registration and login
 - JWT token-based authentication
 - Protected routes and form validation
+- **Resume upload with drag-and-drop support**
+- **MongoDB database integration for user storage**
+- **File upload handling with Multer**
 - Responsive, modern UI design
 - Pathfinder branding with compass logo
 - Clean, centered landing page
@@ -247,3 +309,28 @@ git push --force-with-lease
 ## License
 
 This project is licensed under the MIT License.
+
+### MongoDB Setup and Resume Upload
+
+#### Starting MongoDB
+
+To start MongoDB, you can use one of the following methods:
+
+- **Local Installation (macOS)**:
+  ```bash
+  brew services start mongodb/brew/mongodb-community
+  ```
+
+- **MongoDB Atlas (Cloud)**:
+  1. Sign up at [MongoDB Atlas](https://www.mongodb.com/atlas)
+  2. Create a free cluster
+  3. Get your connection string and update the `.env.local` file
+
+#### Resume File Upload
+
+To upload a resume:
+
+1. Navigate to the dashboard after logging in.
+2. Use the drag-and-drop feature or click "Choose File" to select your resume.
+3. Supported formats: PDF, DOC, DOCX.
+4. The resume will be uploaded and associated with your account.

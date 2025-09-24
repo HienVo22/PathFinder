@@ -3,6 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import ResumeUpload from '@/components/ResumeUpload'
 
 export default function Dashboard() {
   const { user, logout, loading } = useAuth()
@@ -55,6 +56,11 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Resume Upload Section */}
+        <div className="mb-8">
+          <ResumeUpload />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Profile Card */}
           <div className="bg-white rounded-lg shadow p-6">
@@ -62,6 +68,9 @@ export default function Dashboard() {
             <div className="space-y-2">
               <p><span className="font-medium">Name:</span> {user.name}</p>
               <p><span className="font-medium">Email:</span> {user.email}</p>
+              {user.resumeOriginalName && (
+                <p><span className="font-medium">Resume:</span> {user.resumeOriginalName}</p>
+              )}
             </div>
             <button className="btn-primary mt-4 w-full">
               Edit Profile
@@ -72,10 +81,13 @@ export default function Dashboard() {
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Job Recommendations</h2>
             <p className="text-secondary-600 mb-4">
-              Upload your resume to get personalized job recommendations.
+              {user.resumeUrl 
+                ? "Your resume has been uploaded! Job recommendations will appear here."
+                : "Upload your resume to get personalized job recommendations."
+              }
             </p>
-            <button className="btn-primary w-full">
-              Upload Resume
+            <button className="btn-primary w-full" disabled={!user.resumeUrl}>
+              {user.resumeUrl ? "View Recommendations" : "Upload Resume First"}
             </button>
           </div>
 

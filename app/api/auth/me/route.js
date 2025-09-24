@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
+import User from '../../../../models/User'
+import connectDB from '../../../../lib/mongodb'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
 export async function GET(request) {
   try {
+    await connectDB()
+    
     const token = request.headers.get('authorization')?.replace('Bearer ', '')
     
     if (!token) {
@@ -16,15 +20,27 @@ export async function GET(request) {
 
     const decoded = jwt.verify(token, JWT_SECRET)
     
-    // In a real app, you'd fetch user from database
+    // Fetch user from database
+    const user = await User.findById(decoded.userId)
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
     return NextResponse.json({
       user: {
-        id: decoded.userId,
-        email: decoded.email,
-        name: 'Demo User' // This would come from database
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        resumeUrl: user.resumeUrl,
+        resumeOriginalName: user.resumeOriginalName,
+        resumeUploadedAt: user.resumeUploadedAt
       }
     })
   } catch (error) {
+    console.error('Get user error:', error)
     return NextResponse.json(
       { error: 'Invalid token' },
       { status: 401 }

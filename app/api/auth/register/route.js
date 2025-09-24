@@ -1,25 +1,19 @@
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-
-// Mock user database (replace with real database later)
-let users = [
-  {
-    id: 1,
-    email: 'demo@pathfinder.com',
-    password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-    name: 'Demo User'
-  }
-]
+import User from '../../../../models/User'
+import connectDB from '../../../../lib/mongodb'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
 export async function POST(request) {
   try {
+    await connectDB()
+    
     const { name, email, password } = await request.json()
 
     // Check if user already exists
-    const existingUser = users.find(u => u.email === email)
+    const existingUser = await User.findOne({ email })
     if (existingUser) {
       return NextResponse.json(
         { error: 'User already exists' },
@@ -31,18 +25,17 @@ export async function POST(request) {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // Create new user
-    const newUser = {
-      id: users.length + 1,
+    const newUser = new User({
       email,
       password: hashedPassword,
       name
-    }
+    })
 
-    users.push(newUser)
+    await newUser.save()
 
     // Create JWT token
     const token = jwt.sign(
-      { userId: newUser.id, email: newUser.email },
+      { userId: newUser._id, email: newUser.email },
       JWT_SECRET,
       { expiresIn: '7d' }
     )
@@ -51,12 +44,13 @@ export async function POST(request) {
       message: 'Registration successful',
       token,
       user: {
-        id: newUser.id,
+        id: newUser._id,
         email: newUser.email,
         name: newUser.name
       }
     })
   } catch (error) {
+    console.error('Registration error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
