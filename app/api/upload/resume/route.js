@@ -146,14 +146,33 @@ export async function POST(request) {
     user.resumePath = filePath;
     user.resumeOriginalName = file.name;
     user.resumeUploadedAt = new Date();
-    await user.save();
+    
+    console.log('Updating user with resume info:', {
+      userId: decoded.userId,
+      resumePath: filePath,
+      resumeOriginalName: file.name,
+      resumeUploadedAt: new Date()
+    });
+    
+    const savedUser = await user.save();
+    console.log('User saved successfully:', {
+      id: savedUser._id,
+      resumePath: savedUser.resumePath,
+      resumeOriginalName: savedUser.resumeOriginalName,
+      resumeUploadedAt: savedUser.resumeUploadedAt
+    });
 
     return NextResponse.json({
       message: 'Resume uploaded successfully',
       filePath: `/uploads/resumes/${filename}`,
       originalName: file.name,
       size: file.size,
-      uploadedAt: new Date().toISOString()
+      uploadedAt: new Date().toISOString(),
+      debug: {
+        userId: decoded.userId,
+        savedToMongoDB: true,
+        resumePath: savedUser.resumePath
+      }
     });
 
   } catch (error) {

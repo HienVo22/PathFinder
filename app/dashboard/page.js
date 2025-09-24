@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import ResumeUpload from '@/components/ResumeUpload'
+import ResumeStatus from '@/components/ResumeStatus'
 
 export default function Dashboard() {
   const { user, logout, loading } = useAuth()
@@ -59,6 +60,11 @@ export default function Dashboard() {
         {/* Resume Upload Section */}
         <div className="mb-8">
           <ResumeUpload />
+        </div>
+
+        {/* Resume Status Section */}
+        <div className="mb-8">
+          <ResumeStatus />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
