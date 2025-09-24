@@ -85,6 +85,16 @@ brew services start mongodb/brew/mongodb-community
 # 3. Get your connection string
 ```
 
+#### Step 3.1: Install MongoDB Compass (Optional but Recommended)
+```bash
+# Install MongoDB Compass for database management
+brew install --cask mongodb-compass
+
+# Launch MongoDB Compass
+open -a "MongoDB Compass"
+```
+**Note**: Connect to `mongodb://localhost:27017` in Compass to view your local database.
+
 #### Step 4: Environment Configuration
 ```bash
 # Copy the example environment file
@@ -124,6 +134,13 @@ npm run dev
 3. **Or click "Choose File"** to browse and select your resume
 4. Watch the progress bar as your file uploads
 5. Your resume will be stored and associated with your account
+
+#### Testing with MongoDB Compass
+1. Open MongoDB Compass and connect to `mongodb://localhost:27017`
+2. Navigate to the `pathfinder` database
+3. View the `users` collection to see registered accounts
+4. Check the `uploads/resumes/` folder in your project directory for uploaded files
+5. Verify that user documents contain resume file references
 
 ### Troubleshooting
 
@@ -175,13 +192,22 @@ npm run dev
 pathfinder/
 ├── app/                    # Next.js app directory
 │   ├── api/               # API routes
-│   │   └── auth/          # Authentication endpoints
+│   │   ├── auth/          # Authentication endpoints
+│   │   └── upload/        # File upload endpoints
 │   ├── dashboard/         # Dashboard page
 │   ├── globals.css        # Global styles
 │   ├── layout.js          # Root layout
 │   └── page.js            # Home page
+├── components/            # React components
+│   └── ResumeUpload.js    # Resume upload component
 ├── contexts/              # React contexts
 │   └── AuthContext.js     # Authentication context
+├── lib/                   # Utility libraries
+│   └── mongodb.js         # MongoDB connection
+├── models/                # Database models
+│   └── User.js            # User schema
+├── uploads/               # File storage
+│   └── resumes/           # Resume files
 ├── package.json           # Dependencies
 ├── tailwind.config.js     # Tailwind configuration
 └── jsconfig.json          # JavaScript configuration
@@ -228,6 +254,9 @@ pathfinder/
 - User registration and login
 - JWT token-based authentication
 - Protected routes and form validation
+- **Resume upload with drag-and-drop support**
+- **MongoDB database integration for user storage**
+- **File upload handling with Multer**
 - Responsive, modern UI design
 - Pathfinder branding with compass logo
 - Clean, centered landing page
