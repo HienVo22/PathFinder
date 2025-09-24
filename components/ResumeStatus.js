@@ -1,39 +1,47 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
-const ResumeStatus = () => {
+const ResumeStatus = forwardRef((props, ref) => {
   const [resumeStatus, setResumeStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchResumeStatus = async () => {
-      if (!user) return;
+  const fetchResumeStatus = async () => {
+    if (!user) return;
 
-      try {
-        const response = await fetch('/api/user/resume-status', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
+    setLoading(true);
+    setError('');
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch resume status');
+    try {
+      const response = await fetch('/api/user/resume-status', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
+      });
 
-        const data = await response.json();
-        setResumeStatus(data);
-      } catch (err) {
-        setError('Could not fetch resume status');
-        console.error('Resume status error:', err);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error('Failed to fetch resume status');
       }
-    };
 
+      const data = await response.json();
+      setResumeStatus(data);
+    } catch (err) {
+      setError('Could not fetch resume status');
+      console.error('Resume status error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Expose refresh function to parent component
+  useImperativeHandle(ref, () => ({
+    refreshStatus: fetchResumeStatus
+  }));
+
+  useEffect(() => {
     fetchResumeStatus();
   }, [user]);
 
@@ -52,7 +60,8 @@ const ResumeStatus = () => {
         throw new Error('Failed to delete resume');
       }
 
-      setResumeStatus(null);
+      // Refresh the status after deletion
+      await fetchResumeStatus();
       alert('Resume deleted successfully');
     } catch (err) {
       setError('Could not delete resume');
@@ -140,6 +149,8 @@ const ResumeStatus = () => {
 
     </div>
   );
-};
+});
+
+ResumeStatus.displayName = 'ResumeStatus';
 
 export default ResumeStatus;
