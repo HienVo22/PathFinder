@@ -36,6 +36,20 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
+  // DB-stored copy of the resume (keeps a copy in MongoDB in addition to disk)
+  resumeFilename: {
+    type: String,
+    default: null
+  },
+  resumeContentType: {
+    type: String,
+    default: null
+  },
+  resumeData: {
+    type: Buffer,
+    default: null
+  },
+  
   // Profile fields for future ML features
   skills: [{
     type: String,

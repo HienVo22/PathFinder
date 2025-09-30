@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import ResumeViewer from './ResumeViewer';
 
 const ResumeStatus = () => {
   const [resumeStatus, setResumeStatus] = useState(null);
@@ -60,6 +61,8 @@ const ResumeStatus = () => {
     }
   };
 
+  const [viewerOpen, setViewerOpen] = useState(false);
+
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow p-6">
@@ -107,18 +110,26 @@ const ResumeStatus = () => {
                   : 'Unknown'
               }
             </div>
-            {resumeStatus.resumeInfo.resumeUrl && (
-              <div>
-                <a 
-                  href={resumeStatus.resumeInfo.resumeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 underline"
-                >
-                  Download Resume
-                </a>
-              </div>
-            )}
+            <div className="flex gap-3 mt-2">
+              {resumeStatus.resumeInfo.resumeFilename && (
+                <>
+                  <button
+                    onClick={() => setViewerOpen(true)}
+                    className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700"
+                  >
+                    View Resume
+                  </button>
+                  <a
+                    href={resumeStatus.resumeInfo.resumeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1 border rounded text-primary-600 hover:bg-gray-50"
+                  >
+                    Download
+                  </a>
+                </>
+              )}
+            </div>
           </div>
 
           <button 
@@ -136,6 +147,13 @@ const ResumeStatus = () => {
           </div>
           <p className="text-gray-600">Upload your resume to get started with job matching!</p>
         </div>
+      )}
+
+      {viewerOpen && (
+        <ResumeViewer
+          resumeFilename={resumeStatus?.resumeInfo?.resumeFilename}
+          onClose={() => setViewerOpen(false)}
+        />
       )}
 
     </div>

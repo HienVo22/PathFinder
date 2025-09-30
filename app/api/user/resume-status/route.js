@@ -37,12 +37,14 @@ export async function GET(request) {
     }
 
     return NextResponse.json({
-      hasResume: !!user.resumePath,
+      hasResume: !!(user.resumePath || user.resumeData),
       resumeInfo: {
         resumePath: user.resumePath,
+        resumeFilename: user.resumeFilename || null,
         resumeOriginalName: user.resumeOriginalName,
         resumeUploadedAt: user.resumeUploadedAt,
-        resumeUrl: user.resumeUrl
+        // Prefer building URL from resumeFilename if present (served by /api/upload/resume)
+        resumeUrl: user.resumeFilename ? `/api/upload/resume?file=${user.resumeFilename}` : user.resumeUrl || null
       },
       userInfo: {
         id: user._id,
@@ -97,11 +99,14 @@ export async function DELETE(request) {
       }
     }
 
-    // Update user record
-    user.resumePath = null;
-    user.resumeOriginalName = null;
-    user.resumeUploadedAt = null;
-    await user.save();
+  // Update user record (clear disk and DB-stored fields)
+  user.resumePath = null;
+  user.resumeOriginalName = null;
+  user.resumeUploadedAt = null;
+  user.resumeFilename = null;
+  user.resumeContentType = null;
+  user.resumeData = null;
+  await user.save();
 
     return NextResponse.json({ message: 'Resume deleted successfully' });
 
