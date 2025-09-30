@@ -40,6 +40,14 @@ export function AuthProvider({ children }) {
     }
   }
 
+  // Allow manual refresh of user data (e.g., after upload)
+  const refreshUser = async () => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      await fetchUser(token)
+    }
+  }
+
   const login = async (email, password) => {
     try {
       const response = await fetch('/api/auth/login', {
@@ -100,7 +108,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, refreshUser }}>
       {children}
     </AuthContext.Provider>
   )

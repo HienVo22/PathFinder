@@ -10,7 +10,7 @@ const ResumeUpload = () => {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [error, setError] = useState('');
   const inputRef = useRef(null);
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -82,8 +82,8 @@ const ResumeUpload = () => {
         });
       }, 100);
 
-      // Complete the upload
-      setTimeout(() => {
+      // Complete the upload and refresh user data
+      setTimeout(async() => {
         setUploadProgress(100);
         setUploadedFile({
           name: file.name,
@@ -91,6 +91,11 @@ const ResumeUpload = () => {
           uploadedAt: new Date().toISOString()
         });
         setUploading(false);
+        try {
+          if (typeof refreshUser === 'function') await refreshUser();
+        } catch(err) {
+          console.error('Failed to refresh user after upload:', err);
+        }
       }, 1500);
 
     } catch (err) {
