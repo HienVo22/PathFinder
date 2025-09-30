@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import path from 'path';
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -71,7 +72,7 @@ userSchema.index({ email: 1 });
 // Virtual for resume URL
 userSchema.virtual('resumeUrl').get(function() {
   if (this.resumePath) {
-    const filename = this.resumePath.split('/').pop();
+    const filename = path.basename(this.resumePath);
     return `/api/upload/resume?file=${filename}`;
   }
   return null;
