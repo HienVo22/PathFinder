@@ -120,12 +120,12 @@ export async function POST(request) {
     const filename = `${uniqueId}${extension}`;
     const filePath = path.join(uploadDir, filename);
 
-    // Save file to disk
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    fs.writeFileSync(filePath, buffer);
+  // Save file to disk
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+  fs.writeFileSync(filePath, buffer);
 
-    // Update user record with resume path
+    // Update user record with resume path and DB-stored copy
     const user = await User.findById(decoded.userId);
     if (!user) {
       // Clean up uploaded file if user not found
@@ -142,10 +142,15 @@ export async function POST(request) {
       }
     }
 
-    // Update user with new resume path
-    user.resumePath = filePath;
-    user.resumeOriginalName = file.name;
-    user.resumeUploadedAt = new Date();
+  // Update user with new resume path (disk)
+  user.resumePath = filePath;
+  user.resumeOriginalName = file.name;
+  user.resumeUploadedAt = new Date();
+
+  // Also save a DB-stored copy (filename, content-type, binary data)
+  user.resumeFilename = filename;
+  user.resumeContentType = file.type;
+  user.resumeData = buffer;
     
     console.log('Updating user with resume info:', {
       userId: decoded.userId,
@@ -171,7 +176,8 @@ export async function POST(request) {
       debug: {
         userId: decoded.userId,
         savedToMongoDB: true,
-        resumePath: savedUser.resumePath
+        resumePath: savedUser.resumePath,
+        resumeFilename: savedUser.resumeFilename
       }
     });
 
@@ -193,6 +199,21 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Filename required' }, { status: 400 });
     }
 
+    // Prefer serving from DB if available
+    await connectDB();
+    const userWithFile = await User.findOne({ resumeFilename: filename, resumeData: { $ne: null } });
+    if (userWithFile && userWithFile.resumeData) {
+      const fileBuffer = Buffer.from(userWithFile.resumeData);
+      const contentType = userWithFile.resumeContentType || 'application/octet-stream';
+      return new Response(fileBuffer, {
+        headers: {
+          'Content-Type': contentType,
+          'Content-Disposition': `attachment; filename="${userWithFile.resumeOriginalName || filename}"`,
+        },
+      });
+    }
+
+    // Fallback to disk
     const filePath = path.join(uploadDir, filename);
     
     if (!fs.existsSync(filePath)) {
