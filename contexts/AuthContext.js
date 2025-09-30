@@ -107,8 +107,34 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
+    // Google login method
+    const googleLogin = async (credential) => {
+      try {
+        const response = await fetch('/api/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credential })
+        })
+        if (response.ok) {
+          const data = await response.json()
+          localStorage.setItem('token', data.token)
+          setUser(data.user)
+          return true
+        } else {
+          const error = await response.json()
+          alert(error.error || 'Google login failed')
+          return false
+        }
+      } catch (error) {
+        console.error('Google login error:', error)
+        alert('Google login failed. Please try again.')
+        return false
+      }
+    }
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, refreshUser }}>
+
+    <AuthContext.Provider value={{ user, login, register, logout, loading, googleLogin }}>
       {children}
     </AuthContext.Provider>
   )
