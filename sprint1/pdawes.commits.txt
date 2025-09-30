@@ -1,0 +1,22 @@
+const refreshUser = async () => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      await fetchUser(token)
+    }
+  }
+
+<AuthContext.Provider value={{ user, login, register, logout, loading, refreshUser }}>
+
+  const { user, refreshUser } = useAuth();
+
+setTimeout(async() => {
+  
+   try {
+          if (typeof refreshUser === 'function') await refreshUser();
+        } catch(err) {
+          console.error('Failed to refresh user after upload:', err);
+        }
+
+import path from 'path';
+
+const filename = path.basename(this.resumePath);
