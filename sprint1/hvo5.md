@@ -2,7 +2,7 @@
 
 
 ## Sprint Goal
-Implement a comprehensive job matching system that matches users with job opportunities based on their skills and preferences. This MVP focuses on creating the core matching algorithm, skills database, and user interface components for job discovery.
+Implement a comprehensive job matching system that matches users with job opportunities based on their skills and preferences. 
 
 ## Features Implemented
 
