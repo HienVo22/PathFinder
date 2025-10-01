@@ -1,8 +1,5 @@
 # Sprint 1 Reflection - Job Matching System MVP
 
-**Developer:** Hien Vo (hvo5)  
-**Sprint Duration:** Sprint 1 (First Sprint)  
-**Date:** October 1, 2025
 
 ## Sprint Goal
 Implement a comprehensive job matching system that matches users with job opportunities based on their skills and preferences. This MVP focuses on creating the core matching algorithm, skills database, and user interface components for job discovery.
