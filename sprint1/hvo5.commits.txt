@@ -1,0 +1,282 @@
+Source code lines committed by Hien Vo for Sprint 1:
+
+================== data/skills.js ==================
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  1) // Comprehensive skills database for job matching
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  2) export const SKILLS_DATABASE = [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  3)   // Frontend Technologies
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  4)   'JavaScript', 'TypeScript', 'React', 'Vue.js', 'Angular', 'Svelte',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  5)   'HTML', 'CSS', 'Sass', 'SCSS', 'Less', 'Bootstrap', 'Tailwind CSS',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  6)   'Material-UI', 'Styled Components', 'jQuery', 'Redux', 'MobX', 'Vuex',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  7)   'Next.js', 'Nuxt.js', 'Gatsby', 'Webpack', 'Vite', 'Parcel',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  8)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  9)   // Backend Technologies
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 10)   'Node.js', 'Express', 'Koa', 'Fastify', 'Python', 'Django', 'Flask',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 11)   'FastAPI', 'Java', 'Spring', 'Spring Boot', 'PHP', 'Laravel', 'Symfony',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 12)   'Ruby', 'Ruby on Rails', 'C#', '.NET', 'ASP.NET', 'Go', 'Gin', 'Rust',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 13)   'Actix', 'Scala', 'Play Framework',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 14)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 15)   // Databases
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 16)   'MySQL', 'PostgreSQL', 'SQLite', 'Oracle', 'SQL Server', 'MongoDB',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 17)   'Redis', 'Elasticsearch', 'Cassandra', 'DynamoDB', 'Firebase',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 18)   'Supabase', 'PlanetScale', 'Prisma', 'Sequelize', 'TypeORM',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 19)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 20)   // Cloud & DevOps
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 21)   'AWS', 'Azure', 'Google Cloud Platform', 'GCP', 'Heroku', 'Vercel',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 22)   'Netlify', 'DigitalOcean', 'Docker', 'Kubernetes', 'Jenkins', 'GitLab CI',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 23)   'GitHub Actions', 'CircleCI', 'Travis CI', 'Terraform', 'Ansible',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 24)   'Chef', 'Puppet', 'Vagrant',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 25)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 26)   // Mobile Development
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 27)   'React Native', 'Flutter', 'Swift', 'Kotlin', 'Java', 'Objective-C',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 28)   'Xamarin', 'Ionic', 'Cordova', 'PhoneGap',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 29)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 30)   // Data Science & AI
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 31)   'Python', 'R', 'Pandas', 'NumPy', 'Matplotlib', 'Seaborn', 'Scikit-learn',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 32)   'TensorFlow', 'PyTorch', 'Keras', 'OpenCV', 'NLTK', 'spaCy', 'Jupyter',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 33)   'Apache Spark', 'Hadoop', 'Kafka', 'Airflow',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 34)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 35)   // Version Control & Tools
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 36)   'Git', 'GitHub', 'GitLab', 'Bitbucket', 'SVN', 'Mercurial',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 37)   'Jira', 'Confluence', 'Slack', 'Discord', 'Figma', 'Adobe XD',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 38)   'Sketch', 'InVision', 'Postman', 'Insomnia',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 39)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 40)   // Testing
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 41)   'Jest', 'Mocha', 'Chai', 'Cypress', 'Selenium', 'Playwright', 'Puppeteer',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 42)   'JUnit', 'TestNG', 'PyTest', 'RSpec', 'PHPUnit',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 43)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 44)   // Other Technologies
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 45)   'GraphQL', 'REST API', 'SOAP', 'WebSocket', 'Socket.io', 'RabbitMQ',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 46)   'Apache', 'Nginx', 'Linux', 'Ubuntu', 'CentOS', 'Windows Server',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 47)   'Microservices', 'Serverless', 'Lambda', 'API Gateway',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 48)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 49)   // Soft Skills
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 50)   'Team Leadership', 'Project Management', 'Agile', 'Scrum', 'Kanban',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 51)   'Problem Solving', 'Communication', 'Mentoring', 'Code Review',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 52)   'Technical Writing', 'Public Speaking'
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 53) ];
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 54) 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 55) // Skills categorized for better organization
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 56) export const SKILLS_CATEGORIES = {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 57)   frontend: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 58)     'JavaScript', 'TypeScript', 'React', 'Vue.js', 'Angular', 'HTML', 'CSS',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 59)     'Sass', 'Bootstrap', 'Tailwind CSS', 'Redux', 'Next.js', 'Webpack'
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 60)   ],
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 61)   backend: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 62)     'Node.js', 'Express', 'Python', 'Django', 'Flask', 'Java', 'Spring',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 63)     'PHP', 'Laravel', 'Ruby', 'Rails', 'C#', '.NET', 'Go'
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 64)   ],
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 65)   database: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 66)     'MySQL', 'PostgreSQL', 'MongoDB', 'Redis', 'Elasticsearch', 'DynamoDB',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 67)     'Firebase', 'Prisma', 'Sequelize'
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 68)   ],
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 69)   cloud: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 70)     'AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'Jenkins', 'GitHub Actions',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 71)     'Terraform', 'Heroku', 'Vercel'
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 72)   ],
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 73)   mobile: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 74)     'React Native', 'Flutter', 'Swift', 'Kotlin', 'iOS', 'Android', 'Xamarin'
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 75)   ],
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 76)   dataScience: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 77)     'Python', 'R', 'Pandas', 'NumPy', 'TensorFlow', 'PyTorch', 'Scikit-learn',
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 78)     'Jupyter', 'Apache Spark'
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 79)   ]
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 80) };
+
+================== utils/skillsExtractor.js ==================
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400   1) import { SKILLS_DATABASE } from '../data/skills';
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400   2) 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400   3) /**
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400   4)  * Extract skills from resume text using simple keyword matching
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400   5)  * @param {string} resumeText - The resume text content
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400   6)  * @returns {string[]} Array of found skills
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400   7)  */
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400   8) export const extractSkillsFromResume = (resumeText) => {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400   9)   if (!resumeText || typeof resumeText !== 'string') {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  10)     return [];
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  11)   }
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  12)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  13)   const foundSkills = new Set();
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  14)   const resumeTextLower = resumeText.toLowerCase();
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  15)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  16)   // Simple keyword matching
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  17)   SKILLS_DATABASE.forEach(skill => {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  18)     const skillLower = skill.toLowerCase();
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  19)     
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  20)     // Check for exact matches and common variations
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  21)     if (resumeTextLower.includes(skillLower) ||
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  22)         resumeTextLower.includes(skillLower.replace('.', '')) ||
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  23)         resumeTextLower.includes(skillLower.replace(' ', '')) ||
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  24)         resumeTextLower.includes(skillLower.replace('-', ''))) {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  25)       foundSkills.add(skill);
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  26)     }
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  27)   });
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  28)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  29)   return Array.from(foundSkills).sort();
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  30) };
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  31) 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  32) /**
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  33)  * Extract skills from resume text with better pattern matching
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  34)  * @param {string} resumeText - The resume text content
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  35)  * @returns {Object} Object with skills and confidence scores
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  36)  */
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  37) export const extractSkillsAdvanced = (resumeText) => {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  38)   if (!resumeText || typeof resumeText !== 'string') {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  39)     return { skills: [], confidence: 'low' };
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  40)   }
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  41)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  42)   const foundSkills = new Map(); // skill -> confidence score
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  43)   const resumeTextLower = resumeText.toLowerCase();
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  44)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  45)   SKILLS_DATABASE.forEach(skill => {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  46)     const skillLower = skill.toLowerCase();
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  47)     let confidence = 0;
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  48)     
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  49)     // Exact match (highest confidence)
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  50)     if (resumeTextLower.includes(` ${skillLower} `) || 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  51)         resumeTextLower.includes(`\n${skillLower}\n`) ||
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  52)         resumeTextLower.includes(`\t${skillLower}\t`)) {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  53)       confidence = 3;
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  54)     }
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  55)     // Partial match
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  56)     else if (resumeTextLower.includes(skillLower)) {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  57)       confidence = 2;
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  58)     }
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  59)     // Variation match
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  60)     else if (resumeTextLower.includes(skillLower.replace('.', '')) ||
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  61)              resumeTextLower.includes(skillLower.replace(' ', '')) ||
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  62)              resumeTextLower.includes(skillLower.replace('-', ''))) {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  63)       confidence = 1;
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  64)     }
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  65)     
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  66)     if (confidence > 0) {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  67)       foundSkills.set(skill, confidence);
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  68)     }
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  69)   });
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  70)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  71)   // Sort by confidence and then alphabetically
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  72)   const sortedSkills = Array.from(foundSkills.entries())
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  73)     .sort((a, b) => {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  74)       if (b[1] !== a[1]) return b[1] - a[1]; // Sort by confidence desc
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  75)       return a[0].localeCompare(b[0]); // Then alphabetically
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  76)     })
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  77)     .map(([skill]) => skill);
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  78)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  79)   const overallConfidence = sortedSkills.length > 10 ? 'high' : 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  80)                            sortedSkills.length > 5 ? 'medium' : 'low';
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  81)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  82)   return {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  83)     skills: sortedSkills,
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  84)     confidence: overallConfidence,
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  85)     totalFound: sortedSkills.length
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  86)   };
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  87) };
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  88) 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  89) /**
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  90)  * Mock user skills for testing without resume upload
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  91)  * Different skill sets for different developer types
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  92)  */
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  93) export const MOCK_USER_PROFILES = {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  94)   frontendDeveloper: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  95)     "JavaScript", "React", "HTML", "CSS", "Git", "TypeScript", 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  96)     "Redux", "Tailwind CSS", "Webpack", "Jest"
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  97)   ],
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  98)   backendDeveloper: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400  99)     "Node.js", "Express", "MongoDB", "PostgreSQL", "Docker", 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 100)     "AWS", "Git", "JavaScript", "REST API", "Linux"
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 101)   ],
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 102)   fullStackDeveloper: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 103)     "JavaScript", "React", "Node.js", "Express", "MongoDB", 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 104)     "HTML", "CSS", "Git", "AWS", "Docker", "TypeScript"
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 105)   ],
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 106)   pythonDeveloper: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 107)     "Python", "Django", "PostgreSQL", "Git", "Linux", "Docker", 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 108)     "Flask", "Redis", "Celery", "AWS"
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 109)   ],
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 110)   mobileDeveloper: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 111)     "React Native", "JavaScript", "iOS", "Android", "Git", 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 112)     "TypeScript", "Redux", "Firebase", "REST API"
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 113)   ],
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 114)   dataScientist: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 115)     "Python", "Pandas", "NumPy", "Scikit-learn", "TensorFlow", 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 116)     "Jupyter", "SQL", "R", "Git", "Apache Spark"
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 117)   ],
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 118)   devopsEngineer: [
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 119)     "AWS", "Docker", "Kubernetes", "Jenkins", "Linux", "Python", 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 120)     "Terraform", "Ansible", "Git", "Monitoring"
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 121)   ]
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 122) };
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 123) 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 124) /**
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 125)  * Get a mock user profile for testing
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 126)  * @param {string} profileType - Type of developer profile
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 127)  * @returns {string[]} Array of skills for that profile
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 128)  */
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 129) export const getMockUserSkills = (profileType = 'fullStackDeveloper') => {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 130)   return MOCK_USER_PROFILES[profileType] || MOCK_USER_PROFILES.fullStackDeveloper;
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 131) };
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 132) 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 133) /**
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 134)  * Validate and clean user-entered skills
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 135)  * @param {string} userSkills - Array of user-entered skills
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 136)  * @returns {string[]} Cleaned and validated skills array
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 137)  */
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 138) export const validateUserSkills = (userSkills) => {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 139)   if (!Array.isArray(userSkills)) {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 140)     return [];
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 141)   }
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 142)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 143)   const validSkills = [];
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 144)   const skillsLower = SKILLS_DATABASE.map(s => s.toLowerCase());
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 145)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 146)   userSkills.forEach(skill => {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 147)     if (typeof skill === 'string' && skill.trim()) {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 148)       const cleanSkill = skill.trim();
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 149)       const skillLower = cleanSkill.toLowerCase();
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 150)       
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 151)       // Check if skill exists in database (case insensitive)
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 152)       const matchIndex = skillsLower.indexOf(skillLower);
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 153)       if (matchIndex !== -1) {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 154)         // Use the canonical form from database
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 155)         validSkills.push(SKILLS_DATABASE[matchIndex]);
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 156)       } else {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 157)         // Allow custom skills but clean them up
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 158)         validSkills.push(cleanSkill);
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 159)       }
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 160)     }
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 161)   });
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 162)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 163)   // Remove duplicates and sort
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 164)   return [...new Set(validSkills)].sort();
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 165) };
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 166) 
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 167) /**
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 168)  * Suggest skills based on partial input (for autocomplete)
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 169)  * @param {string} input - Partial skill input
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 170)  * @param {number} limit - Maximum number of suggestions
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 171)  * @returns {string[]} Array of suggested skills
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 172)  */
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 173) export const suggestSkills = (input, limit = 10) => {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 174)   if (!input || typeof input !== 'string' || input.length < 2) {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 175)     return [];
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 176)   }
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 177)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 178)   const inputLower = input.toLowerCase();
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 179)   const suggestions = [];
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 180)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 181)   SKILLS_DATABASE.forEach(skill => {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 182)     const skillLower = skill.toLowerCase();
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 183)     if (skillLower.startsWith(inputLower)) {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 184)       suggestions.push({ skill, priority: 2 }); // Starts with - high priority
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 185)     } else if (skillLower.includes(inputLower)) {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 186)       suggestions.push({ skill, priority: 1 }); // Contains - lower priority
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 187)     }
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 188)   });
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 189)   
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 190)   return suggestions
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 191)     .sort((a, b) => {
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 192)       if (b.priority !== a.priority) return b.priority - a.priority;
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 193)       return a.skill.localeCompare(b.skill);
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 194)     })
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 195)     .slice(0, limit)
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 196)     .map(item => item.skill);
+e7583535 (Hien Vo           2025-09-24 16:18:43 -0400 197) };

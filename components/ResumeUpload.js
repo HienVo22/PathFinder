@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
-const ResumeUpload = () => {
+const ResumeUpload = ({ onUploadSuccess }) => {
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -91,10 +91,16 @@ const ResumeUpload = () => {
           uploadedAt: new Date().toISOString()
         });
         setUploading(false);
+        
         try {
           if (typeof refreshUser === 'function') await refreshUser();
         } catch(err) {
           console.error('Failed to refresh user after upload:', err);
+        }
+        
+        // Notify parent component about successful upload
+        if (onUploadSuccess) {
+          onUploadSuccess(result);
         }
       }, 1500);
 
