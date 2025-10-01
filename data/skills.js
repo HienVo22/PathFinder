@@ -78,3 +78,4 @@ export const SKILLS_CATEGORIES = {
     'Jupyter', 'Apache Spark'
   ]
 };
+

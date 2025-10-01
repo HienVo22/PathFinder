@@ -195,3 +195,4 @@ export const suggestSkills = (input, limit = 10) => {
     .slice(0, limit)
     .map(item => item.skill);
 };
+
