@@ -4,12 +4,12 @@ A full-stack web application that uses AI to match users with their perfect job 
 
 ## Features
 
-- 🔐 User authentication (login/register)
-- 📄 Resume upload with drag-and-drop support
-- 🧭 Clean, modern UI with Pathfinder branding
-- 📊 Dashboard for job management
-- 🤖 AI-powered job matching (coming soon)
-- ⚡ One-click job applications (coming soon)
+- User authentication (login/register)
+- Resume upload with drag-and-drop support
+- Clean, modern UI with Pathfinder branding
+- Dashboard for job management
+- AI-powered job matching (coming soon)
+- One-click job applications (coming soon)
 
 ## Tech Stack
 
