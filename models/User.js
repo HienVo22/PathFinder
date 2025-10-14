@@ -80,6 +80,14 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// LinkedIn OAuth fields
+userSchema.add({
+  linkedinId: { type: String, index: true, unique: false, sparse: true },
+  linkedinAccessToken: { type: String, default: null },
+  linkedinProfileUrl: { type: String, default: null },
+  linkedinProfilePicture: { type: String, default: null }
+});
+
 // Index for email lookups
 userSchema.index({ email: 1 });
 
