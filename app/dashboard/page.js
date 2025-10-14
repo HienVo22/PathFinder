@@ -190,7 +190,10 @@ export default function Dashboard() {
                 <button className="btn-secondary">
                   View Analytics
                 </button>
-                <button className="btn-secondary">
+                <button 
+                  onClick={() => router.push('/dashboard/settings')}
+                  className="btn-secondary"
+                >
                   Settings
                 </button>
               </div>
