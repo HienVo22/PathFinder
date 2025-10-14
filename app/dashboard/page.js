@@ -7,6 +7,8 @@ import ResumeUpload from '@/components/ResumeUpload'
 import ResumeStatus from '@/components/ResumeStatus'
 import JobMatching from '@/components/JobMatching'
 import JobPreferences from '@/components/JobPreferences'
+import LinkedInLinkPopup from '@/components/LinkedInLinkPopup'
+import LinkedInMockLink from '@/components/LinkedInMockLink'
 
 export default function Dashboard() {
   const { user, logout, loading } = useAuth()
@@ -132,9 +134,15 @@ export default function Dashboard() {
                 <p><span className="font-medium">Resume:</span> {user.resumeOriginalName}</p>
               )}
             </div>
-            <button className="btn-primary mt-4 w-full">
-              Edit Profile
-            </button>
+            <div className="mt-4 space-y-3">
+              <button className="btn-primary w-full">
+                Edit Profile
+              </button>
+              <div className="flex items-center justify-center gap-3">
+                <LinkedInLinkPopup />
+                <LinkedInMockLink />
+              </div>
+            </div>
           </div>
 
           {/* Job Recommendations */}
