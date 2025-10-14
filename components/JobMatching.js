@@ -2,41 +2,31 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { findJobMatches, getMatchStatistics } from '../utils/jobMatcher';
-import { getMockUserSkills, extractSkillsFromResume } from '../utils/skillsExtractor';
+import { JobMatcher } from '../utils/jobMatcher';
+import JobPreferencesModal from './JobPreferencesModal';
 
 const JobMatching = () => {
   const [userSkills, setUserSkills] = useState([]);
   const [jobMatches, setJobMatches] = useState([]);
-  const [statistics, setStatistics] = useState(null);
+  const [skillGapAnalysis, setSkillGapAnalysis] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [selectedProfile, setSelectedProfile] = useState('fullStackDeveloper');
+  const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    remote: null,
-    minScore: 20,
-    maxResults: 20,
-    jobType: null,
-    datePosted: null,
-    salaryMin: null,
-    salaryMax: null,
-    searchQuery: ''
+    // New LinkedIn-style preferences (also used for filtering)
+    jobTitles: [],
+    locationTypes: [], // ['On-site','Hybrid','Remote']
+    locations: [],
+    employmentTypes: [],
+    desiredPay: '',
+    minSalary: null
   });
+  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const { user } = useAuth();
-
-  // Mock profiles for testing
-  const profiles = {
-    fullStackDeveloper: 'Full Stack Developer',
-    frontendDeveloper: 'Frontend Developer', 
-    backendDeveloper: 'Backend Developer',
-    pythonDeveloper: 'Python Developer',
-    mobileDeveloper: 'Mobile Developer',
-    dataScientist: 'Data Scientist',
-    devopsEngineer: 'DevOps Engineer'
-  };
 
   useEffect(() => {
     loadUserSkills();
-  }, [user, selectedProfile]);
+    loadSavedPreferences();
+  }, [user]);
 
   useEffect(() => {
     if (userSkills.length > 0) {
@@ -46,50 +36,82 @@ const JobMatching = () => {
 
   const loadUserSkills = async () => {
     setLoading(true);
+    setError(null);
     
     try {
-      // For MVP, use mock skills based on selected profile
-      const skills = getMockUserSkills(selectedProfile);
-      setUserSkills(skills);
+      // Get extracted skills from uploaded resume via API
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Please log in to see job matches.');
+        setUserSkills([]);
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch('/api/user/resume-parsing-status', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch resume data');
+      }
+
+      const parsingStatus = await response.json();
       
-      // TODO: Later, extract from uploaded resume
-      // if (user?.resumePath) {
-      //   const extractedSkills = await extractSkillsFromResume(resumeText);
-      //   setUserSkills(extractedSkills);
-      // }
+      if (parsingStatus.hasResume && parsingStatus.extractedData?.skills) {
+        setUserSkills(parsingStatus.extractedData.skills);
+      } else {
+        // No resume uploaded yet
+        setUserSkills([]);
+        setError('No resume uploaded. Upload a resume to see personalized job matches.');
+      }
     } catch (error) {
       console.error('Error loading user skills:', error);
-      setUserSkills(getMockUserSkills('fullStackDeveloper'));
+      setError('Failed to load your skills. Please try refreshing the page.');
+      setUserSkills([]);
     }
     
     setLoading(false);
   };
 
   const findMatches = () => {
-    // Load user preferences from localStorage
-    const savedPreferences = localStorage.getItem('jobPreferences');
-    const preferences = savedPreferences ? JSON.parse(savedPreferences) : {};
-    
-    // Combine filters with user preferences
-    const combinedFilters = {
-      ...filters,
-      locationTypes: preferences.locationTypes?.length > 0 ? preferences.locationTypes : null,
-      locations: preferences.locations?.length > 0 ? preferences.locations : null,
-      employmentTypes: preferences.employmentTypes?.length > 0 ? preferences.employmentTypes : null,
-      // Apply salary preferences if not overridden by filters
-      salaryMin: filters.salaryMin || preferences.salaryMin,
-      salaryMax: filters.salaryMax || preferences.salaryMax
-    };
-    
-    const matches = findJobMatches(userSkills, combinedFilters);
-    const stats = getMatchStatistics(userSkills);
-    
-    setJobMatches(matches);
-    setStatistics(stats);
+    try {
+      // Get job matches using the new JobMatcher
+      const matches = JobMatcher.getJobMatches(userSkills, filters);
+      
+      // Get skill gap analysis
+      const gapAnalysis = JobMatcher.getSkillGapAnalysis(userSkills, 10);
+      
+      setJobMatches(matches);
+      setSkillGapAnalysis(gapAnalysis);
+    } catch (error) {
+      console.error('Error finding job matches:', error);
+      setError('Failed to find job matches. Please try again.');
+    }
   };
 
-  const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+  const loadSavedPreferences = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const res = await fetch('/api/user/preferences', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.preferences) {
+          setFilters(prev => ({ ...prev, ...data.preferences }));
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load saved preferences', err);
+    }
+  };
+
+  const handlePreferencesSaved = (prefs) => {
+    setFilters(prev => ({ ...prev, ...prefs }));
   };
 
   if (loading) {
@@ -97,7 +119,27 @@ const JobMatching = () => {
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-          <span className="ml-3 text-lg">Finding your perfect job matches...</span>
+          <span className="ml-3 text-lg">Analyzing your skills and finding job matches...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="text-center py-12">
+          <div className="text-red-600 mb-4">
+            <svg className="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.936 5.036a9 9 0 1112.1 0" />
+            </svg>
+            {error}
+          </div>
+          {error.includes('No resume uploaded') && (
+            <div className="text-gray-600">
+              <p>Go to the Overview tab to upload your resume and get personalized job matches!</p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -107,398 +149,278 @@ const JobMatching = () => {
     <div className="max-w-6xl mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Top Job Picks for You</h1>
-        <p className="text-gray-600 text-lg">
-          Personalized recommendations based on your profile, skills, and preferences
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Job Matches</h1>
+        <p className="text-gray-600">
+          Based on your extracted skills: <span className="font-medium">{userSkills.length} skills found</span>
         </p>
-        <div className="mt-2 flex items-center text-sm text-gray-500">
-          <span className="flex items-center">
-            <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-            Skills-based matching
-          </span>
-          <span className="mx-3">•</span>
-          <span className="flex items-center">
-            <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-            Real-time filtering
-          </span>
-          <span className="mx-3">•</span>
-          <span className="flex items-center">
-            <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-            {jobMatches.length} opportunities found
-          </span>
-        </div>
-      </div>
-
-      {/* Profile Selector (MVP Testing) */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-        <h3 className="font-semibold text-yellow-800 mb-2">MVP Testing Mode</h3>
-        <p className="text-yellow-700 text-sm mb-3">
-          Select a developer profile to see job matches (resume parsing coming soon):
-        </p>
-        <select
-          value={selectedProfile}
-          onChange={(e) => setSelectedProfile(e.target.value)}
-          className="border border-yellow-300 rounded px-3 py-2 bg-white"
-        >
-          {Object.entries(profiles).map(([key, label]) => (
-            <option key={key} value={key}>{label}</option>
-          ))}
-        </select>
       </div>
 
       {/* User Skills Display */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Your Skills ({userSkills.length})</h2>
+      <div className="mb-8 bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Your Skills</h2>
         <div className="flex flex-wrap gap-2">
-          {userSkills.map(skill => (
-            <span 
-              key={skill} 
-              className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium"
+          {userSkills.map((skill, index) => (
+            <span
+              key={index}
+              className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm"
             >
               {skill}
             </span>
           ))}
         </div>
+        <button 
+          onClick={loadUserSkills}
+          className="mt-4 text-sm text-primary-600 hover:text-primary-700 underline"
+        >
+          Refresh Skills
+        </button>
       </div>
 
-      {/* Statistics */}
-      {statistics && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">{statistics.matchingJobs}</div>
-            <div className="text-sm text-gray-600">Matching Jobs</div>
-          </div>
-          <div className="bg-white rounded-lg shadow p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">{statistics.goodMatches}</div>
-            <div className="text-sm text-gray-600">Good Matches (60%+)</div>
-          </div>
-          <div className="bg-white rounded-lg shadow p-4 text-center">
-            <div className="text-2xl font-bold text-purple-600">{statistics.excellentMatches}</div>
-            <div className="text-sm text-gray-600">Excellent Matches (80%+)</div>
-          </div>
-          <div className="bg-white rounded-lg shadow p-4 text-center">
-            <div className="text-2xl font-bold text-orange-600">{statistics.averageScore}%</div>
-            <div className="text-sm text-gray-600">Average Match</div>
+      {/* Skill Gap Analysis */}
+      {skillGapAnalysis && (
+        <div className="mb-8 bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Skill Development Recommendations</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Most In-Demand Missing Skills */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-3">Top Skills to Learn</h3>
+              <div className="space-y-3">
+                {skillGapAnalysis.topMissingSkills.slice(0, 5).map((skillGap, index) => (
+                  <div key={index} className="border rounded-lg p-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="font-medium text-gray-800">{skillGap.skill}</span>
+                        <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
+                          skillGap.importance === 'required' 
+                            ? 'bg-red-100 text-red-800' 
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {skillGap.importance}
+                        </span>
+                      </div>
+                      <span className="text-sm text-gray-500">{skillGap.opportunityCount} jobs</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Statistics */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-3">Match Statistics</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Average Match</span>
+                  <span className="font-medium">{Math.round(skillGapAnalysis.averageMatchPercentage)}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Jobs Analyzed</span>
+                  <span className="font-medium">{skillGapAnalysis.totalJobsAnalyzed}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Your Skills</span>
+                  <span className="font-medium">{userSkills.length}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <h3 className="font-semibold mb-3">Search & Filters</h3>
-        
-        {/* Search Bar */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Search Jobs
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search by company name, job title, or type..."
-              value={filters.searchQuery}
-              onChange={(e) => handleFilterChange('searchQuery', e.target.value)}
-              className="w-full border border-gray-300 rounded px-4 py-2 pl-10 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            />
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-          </div>
+      {/* Preferences (replaces Filters) */}
+      <div className="mb-8 bg-white rounded-lg shadow-md p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-800">Job Preferences</h2>
+          <button
+            onClick={() => setIsPreferencesOpen(true)}
+            className="px-4 py-2 rounded-md bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium"
+          >
+            Edit Preferences
+          </button>
         </div>
 
-        {/* Filter Options */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Job Type
-            </label>
-            <select
-              value={filters.jobType || 'all'}
-              onChange={(e) => handleFilterChange('jobType', 
-                e.target.value === 'all' ? null : e.target.value
-              )}
-              className="border border-gray-300 rounded px-3 py-2 w-full"
-            >
-              <option value="all">All Types</option>
-              <option value="Full-time">Full-time</option>
-              <option value="Part-time">Part-time</option>
-              <option value="Internship">Internships</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Remote Work
-            </label>
-            <select
-              value={filters.remote === null ? 'all' : filters.remote.toString()}
-              onChange={(e) => handleFilterChange('remote', 
-                e.target.value === 'all' ? null : e.target.value === 'true'
-              )}
-              className="border border-gray-300 rounded px-3 py-2 w-full"
-            >
-              <option value="all">All Jobs</option>
-              <option value="true">Remote Only</option>
-              <option value="false">On-site Only</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date Posted
-            </label>
-            <select
-              value={filters.datePosted || 'all'}
-              onChange={(e) => handleFilterChange('datePosted', 
-                e.target.value === 'all' ? null : e.target.value
-              )}
-              className="border border-gray-300 rounded px-3 py-2 w-full"
-            >
-              <option value="all">All Time</option>
-              <option value="last-24-hours">Past 24 Hours</option>
-              <option value="last-week">Past Week</option>
-              <option value="last-month">Past Month</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Min Salary (Annual)
-            </label>
-            <select
-              value={filters.salaryMin || 'all'}
-              onChange={(e) => handleFilterChange('salaryMin', 
-                e.target.value === 'all' ? null : parseInt(e.target.value)
-              )}
-              className="border border-gray-300 rounded px-3 py-2 w-full"
-            >
-              <option value="all">Any Salary</option>
-              <option value="40000">$40k+</option>
-              <option value="60000">$60k+</option>
-              <option value="80000">$80k+</option>
-              <option value="100000">$100k+</option>
-              <option value="120000">$120k+</option>
-            </select>
-          </div>
+        {/* Summary pills */}
+        <div className="flex flex-wrap gap-2">
+          {(filters.locationTypes && filters.locationTypes.length > 0) && (
+            filters.locationTypes.map((t, i) => (
+              <span key={`lt-${i}`} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">{t}</span>
+            ))
+          )}
+          {(filters.locations && filters.locations.length > 0) && (
+            filters.locations.slice(0, 3).map((loc, i) => (
+              <span key={`loc-${i}`} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">{loc}</span>
+            ))
+          )}
+          {(filters.employmentTypes && filters.employmentTypes.length > 0) && (
+            filters.employmentTypes.map((t, i) => (
+              <span key={`et-${i}`} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">{t}</span>
+            ))
+          )}
+          {filters.desiredPay && (
+            <span className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm">Pay: {filters.desiredPay}</span>
+          )}
+          {(!filters.locationTypes?.length && !filters.locations?.length && !filters.employmentTypes?.length && !filters.desiredPay) && (
+            <span className="text-sm text-gray-500">No preferences set. Click Edit Preferences to personalize matches.</span>
+          )}
         </div>
-        
-        {/* Clear Filters Button */}
-        {(filters.searchQuery || filters.jobType || filters.remote !== null || filters.datePosted || filters.salaryMin) && (
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <button
-              onClick={() => setFilters({
-                remote: null,
-                minScore: 20,
-                maxResults: 20,
-                jobType: null,
-                datePosted: null,
-                salaryMin: null,
-                salaryMax: null,
-                searchQuery: ''
-              })}
-              className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-            >
-              Clear all filters
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* Modal */}
+      <JobPreferencesModal
+        isOpen={isPreferencesOpen}
+        onClose={() => setIsPreferencesOpen(false)}
+        onSave={handlePreferencesSaved}
+      />
 
       {/* Job Matches */}
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">
-          {jobMatches.length} Job{jobMatches.length !== 1 ? 's' : ''} Found
-          {filters.searchQuery && (
-            <span className="text-gray-500 font-normal text-lg ml-2">
-              for "{filters.searchQuery}"
-            </span>
-          )}
-        </h2>
-      </div>
-      
       <div className="space-y-6">
-        {jobMatches.length > 0 ? (
-          jobMatches.map(job => (
-            <JobCard key={job.id} job={job} />
-          ))
+        <h2 className="text-2xl font-semibold text-gray-800">
+          Job Matches ({jobMatches.length} found)
+        </h2>
+
+        {jobMatches.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-gray-500 mb-4">
+              <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <p className="text-lg text-gray-600">No job matches found with current filters.</p>
+            <p className="text-gray-500 mt-2">Try adjusting your filters or develop more skills!</p>
+          </div>
         ) : (
-          <div className="bg-white rounded-lg shadow p-8 text-center">
-            <div className="text-gray-400 text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">No Jobs Found</h3>
-            <p className="text-gray-600">
-              {filters.searchQuery ? (
-                <>No jobs match your search "{filters.searchQuery}". Try different keywords or clear your filters.</>
-              ) : (
-                <>Try adjusting your filters or add more skills to your profile.</>
-              )}
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+          <div className="grid grid-cols-1 gap-6">
+            {jobMatches.map((job) => (
+              <div key={job.id} className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                {/* Job Header */}
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900">{job.title}</h3>
+                    <p className="text-lg text-gray-600">{job.company}</p>
+                    <p className="text-sm text-gray-500">{job.location} • {job.type}</p>
+                  </div>
+                  <div className="text-right">
+                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                      job.matchAnalysis.matchPercentage >= 80 
+                        ? 'bg-green-100 text-green-800'
+                        : job.matchAnalysis.matchPercentage >= 60
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {job.matchAnalysis.matchPercentage}% Match
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">{job.salary}</p>
+                  </div>
+                </div>
 
-const JobCard = ({ job }) => {
-  const { match } = job;
-  
-  const getMatchColor = (score) => {
-    if (score >= 80) return 'text-green-600 bg-green-100 border-green-200';
-    if (score >= 60) return 'text-yellow-600 bg-yellow-100 border-yellow-200';
-    if (score >= 40) return 'text-orange-600 bg-orange-100 border-orange-200';
-    return 'text-red-600 bg-red-100 border-red-200';
-  };
+                {/* Skills Match Breakdown */}
+                <div className="mb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Required Skills */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">
+                        Required Skills ({job.matchAnalysis.matchedRequiredSkills.length}/{job.matchAnalysis.totalRequiredSkills})
+                      </h4>
+                      <div className="flex flex-wrap gap-1">
+                        {job.requiredSkills.map((skill, index) => (
+                          <span
+                            key={index}
+                            className={`px-2 py-1 rounded text-xs ${
+                              job.matchAnalysis.matchedRequiredSkills.includes(skill)
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
 
-  const getMatchLabel = (score) => {
-    if (score >= 80) return 'Excellent Match';
-    if (score >= 60) return 'Good Match';
-    if (score >= 40) return 'Fair Match';
-    return 'Partial Match';
-  };
+                    {/* Preferred Skills */}
+                    {job.preferredSkills && job.preferredSkills.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">
+                          Preferred Skills ({job.matchAnalysis.matchedPreferredSkills.length}/{job.matchAnalysis.totalPreferredSkills})
+                        </h4>
+                        <div className="flex flex-wrap gap-1">
+                          {job.preferredSkills.map((skill, index) => (
+                            <span
+                              key={index}
+                              className={`px-2 py-1 rounded text-xs ${
+                                job.matchAnalysis.matchedPreferredSkills.includes(skill)
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-gray-100 text-gray-600'
+                              }`}
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-  return (
-    <div className="bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow">
-      <div className="p-6">
-        {/* Header */}
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex-1">
-            <h2 className="text-xl font-bold text-gray-900 mb-1">{job.title}</h2>
-            <div className="flex items-center text-gray-600 text-sm mb-2">
-              <span className="font-medium">{job.company}</span>
-              <span className="mx-2">•</span>
-              <span>{job.location}</span>
-              <span className="mx-2">•</span>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                job.locationType === 'Remote' ? 'bg-green-100 text-green-800' :
-                job.locationType === 'Hybrid' ? 'bg-blue-100 text-blue-800' :
-                'bg-gray-100 text-gray-700'
-              }`}>
-                {job.locationType}
-              </span>
-            </div>
-            <div className="flex items-center text-sm text-gray-600">
-              <span className="text-green-600 font-semibold">{job.salary}</span>
-              <span className="mx-2">•</span>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                job.type === 'Internship' 
-                  ? 'bg-blue-100 text-blue-800' 
-                  : 'bg-gray-100 text-gray-700'
-              }`}>
-                {job.type}
-              </span>
-            </div>
-          </div>
-          <div className={`px-4 py-2 rounded-lg border font-semibold ${getMatchColor(match.score)}`}>
-            <div className="text-lg">{match.score}%</div>
-            <div className="text-xs">{getMatchLabel(match.score)}</div>
-          </div>
-        </div>
+                {/* Job Description */}
+                <div className="mb-4">
+                  <p className="text-gray-700 text-sm leading-relaxed">{job.description}</p>
+                </div>
 
-        {/* Description */}
-        <p className="text-gray-700 mb-4 line-clamp-3">{job.description}</p>
+                {/* Benefits */}
+                {job.benefits && job.benefits.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Benefits</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {job.benefits.map((benefit, index) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs"
+                        >
+                          {benefit}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-        {/* Skills Analysis */}
-        <div className="grid md:grid-cols-2 gap-4 mb-4">
-          {/* Required Skills */}
-          <div>
-            <h4 className="font-semibold text-sm text-gray-800 mb-2">
-              Required Skills ({match.requiredMatches}/{match.totalRequiredSkills} matches)
-            </h4>
-            <div className="flex flex-wrap gap-1">
-              {job.requiredSkills.map(skill => {
-                const isMatched = match.matchedRequiredSkills.includes(skill.toLowerCase());
-                return (
-                  <span 
-                    key={skill} 
-                    className={`px-2 py-1 rounded text-xs font-medium ${
-                      isMatched 
-                        ? 'bg-green-100 text-green-800 border border-green-200' 
-                        : 'bg-red-50 text-red-700 border border-red-200'
-                    }`}
-                  >
-                    {skill}
-                    {isMatched && ' ✓'}
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-          
-          {/* Preferred Skills */}
-          {job.preferredSkills && job.preferredSkills.length > 0 && (
-            <div>
-              <h4 className="font-semibold text-sm text-gray-800 mb-2">
-                Preferred Skills ({match.preferredMatches}/{match.totalPreferredSkills} matches)
-              </h4>
-              <div className="flex flex-wrap gap-1">
-                {job.preferredSkills.map(skill => {
-                  const isMatched = match.matchedPreferredSkills.includes(skill.toLowerCase());
-                  return (
-                    <span 
-                      key={skill} 
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        isMatched 
-                          ? 'bg-blue-100 text-blue-800 border border-blue-200' 
-                          : 'bg-gray-100 text-gray-600 border border-gray-200'
+                {/* Missing Skills & Action Items */}
+                {job.matchAnalysis.missingRequiredSkills.length > 0 && (
+                  <div className="mb-4 p-3 bg-orange-50 rounded-lg">
+                    <h4 className="text-sm font-medium text-orange-800 mb-2">Skills to Develop</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {job.matchAnalysis.missingRequiredSkills.slice(0, 5).map((skill, index) => (
+                        <span key={index} className="px-2 py-1 bg-orange-200 text-orange-800 rounded text-xs">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                  <div className="text-sm text-gray-500">
+                    Posted: {new Date(job.posted).toLocaleDateString()}
+                  </div>
+                  <div className="space-x-3">
+                    <button className="btn-secondary text-sm">Learn More</button>
+                    <button 
+                      className={`text-sm px-4 py-2 rounded-md font-medium ${
+                        job.matchAnalysis.matchPercentage >= 60
+                          ? 'bg-primary-600 text-white hover:bg-primary-700'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
+                      disabled={job.matchAnalysis.matchPercentage < 60}
                     >
-                      {skill}
-                      {isMatched && ' ✓'}
-                    </span>
-                  );
-                })}
+                      {job.matchAnalysis.matchPercentage >= 60 ? 'Apply Now' : 'Build Skills First'}
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Missing Skills Alert */}
-        {match.missingRequiredSkills.length > 0 && (
-          <div className="bg-orange-50 border border-orange-200 rounded p-3 mb-4">
-            <h5 className="font-medium text-orange-800 text-sm mb-1">
-              Skills to improve your match:
-            </h5>
-            <div className="flex flex-wrap gap-1">
-              {match.missingRequiredSkills.slice(0, 5).map(skill => (
-                <span 
-                  key={skill} 
-                  className="bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
+            ))}
           </div>
         )}
-
-        {/* Benefits */}
-        {job.benefits && job.benefits.length > 0 && (
-          <div className="mb-4">
-            <h5 className="font-medium text-sm text-gray-800 mb-2">Benefits:</h5>
-            <div className="flex flex-wrap gap-2">
-              {job.benefits.map(benefit => (
-                <span 
-                  key={benefit}
-                  className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs"
-                >
-                  {benefit}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex gap-3 pt-4 border-t border-gray-100">
-          <button className="btn-primary flex-1">
-            Apply Now
-          </button>
-          <button className="btn-secondary">
-            Save Job
-          </button>
-          <button className="btn-secondary">
-            View Details
-          </button>
-        </div>
       </div>
     </div>
   );
