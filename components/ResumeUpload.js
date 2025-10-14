@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-
 const ResumeUpload = () => {
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -90,12 +89,14 @@ const ResumeUpload = () => {
           path: result.filePath,
           uploadedAt: new Date().toISOString()
         });
-        setUploading(false);
-        try {
-          if (typeof refreshUser === 'function') await refreshUser();
-        } catch(err) {
-          console.error('Failed to refresh user after upload:', err);
-        }
+          setUploading(false);
+          try {
+            if (typeof refreshUser === 'function') await refreshUser();
+          } catch(err) {
+            console.error('Failed to refresh user after upload:', err);
+          }
+          // The parsed text is no longer needed on the client
+          // setParsedPreview(null);
       }, 1500);
 
     } catch (err) {
