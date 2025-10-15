@@ -59,7 +59,45 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  
+  // AI-parsed resume data
+  parsedResumeData: {
+    extractedSkills: [{
+      type: String,
+      trim: true
+    }],
+    experience: {
+      type: String,
+      trim: true
+    },
+    education: {
+      type: String,
+      trim: true
+    },
+    jobTitles: [{
+      type: String,
+      trim: true
+    }],
+    companies: [{
+      type: String,
+      trim: true
+    }],
+    yearsOfExperience: {
+      type: Number,
+      default: 0
+    },
+    parsedAt: {
+      type: Date,
+      default: null
+    },
+    parsingMethod: {
+      type: String,
+      enum: ['ollama', 'fallback', 'failed'],
+      default: 'ollama'
+    }
+  },
   jobPreferences: {
+    // Legacy/simple fields (kept for backward compatibility)
     location: String,
     jobType: {
       type: String,
@@ -74,7 +112,14 @@ const userSchema = new mongoose.Schema({
     salaryRange: {
       min: Number,
       max: Number
-    }
+    },
+
+    // New LinkedIn-style preferences
+    jobTitles: [{ type: String, trim: true }],
+    locationTypes: [{ type: String, trim: true }], // ['On-site','Hybrid','Remote']
+    locations: [{ type: String, trim: true }],
+    employmentTypes: [{ type: String, trim: true }],
+    desiredPay: { type: String, trim: true }
   }
 }, {
   timestamps: true

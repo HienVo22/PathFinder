@@ -88,7 +88,8 @@ const ResumeUpload = ({ onUploadSuccess }) => {
         setUploadedFile({
           name: file.name,
           path: result.filePath,
-          uploadedAt: new Date().toISOString()
+          uploadedAt: new Date().toISOString(),
+          fileType: file.type
         });
         setUploading(false);
         
@@ -154,7 +155,7 @@ const ResumeUpload = ({ onUploadSuccess }) => {
           ref={inputRef}
           type="file"
           className="hidden"
-          accept=".pdf,.doc,.docx"
+          accept=".docx,.doc,.pdf"
           onChange={handleChange}
         />
 
@@ -201,7 +202,7 @@ const ResumeUpload = ({ onUploadSuccess }) => {
               </button>
             </div>
             <p className="text-xs text-gray-500">
-              Supports PDF, DOC, DOCX (max 10MB)
+              Best: DOCX for AI parsing | Also supports: PDF, DOC (max 10MB)
             </p>
           </div>
         )}
@@ -216,10 +217,21 @@ const ResumeUpload = ({ onUploadSuccess }) => {
 
       {/* Success Message */}
       {uploadedFile && !uploading && (
-        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-green-700 text-sm">
-            Your resume has been uploaded and will be used for job matching!
-          </p>
+        <div className="mt-4 space-y-3">
+          <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+            <p className="text-green-700 text-sm">
+              Your resume has been uploaded successfully!
+            </p>
+          </div>
+          
+          {/* PDF Warning */}
+          {uploadedFile.fileType === 'application/pdf' && (
+            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+              <p className="text-yellow-700 text-sm">
+                <strong>Note:</strong> PDF parsing is temporarily limited. For best AI skill extraction, consider uploading a DOCX version of your resume.
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
