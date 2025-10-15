@@ -1,0 +1,363 @@
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  1) import { NextResponse } from 'next/server'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  2) import jwt from 'jsonwebtoken'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  3) import User from '../../../../models/User'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  4) import connectDB from '../../../../lib/mongodb'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  5) import fs from 'fs'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  6) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  7) const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  8) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  9) export async function DELETE(request) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 10)   try {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 11)     // Get authorization header
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 12)     const authHeader = request.headers.get('authorization')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 13)     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 14)       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 15)     }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 16) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 17)     const token = authHeader.substring(7)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 18)     const decoded = jwt.verify(token, JWT_SECRET)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 19)     if (!decoded || !decoded.userId) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 20)       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 21)     }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 22) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 23)     // Connect to database
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 24)     await connectDB()
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 25) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 26)     // Find the user
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 27)     const user = await User.findById(decoded.userId)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 28)     if (!user) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 29)       return NextResponse.json({ error: 'User not found' }, { status: 404 })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 30)     }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 31) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 32)     // Delete resume file if it exists
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 33)     if (user.resumePath && fs.existsSync(user.resumePath)) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 34)       try {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 35)         fs.unlinkSync(user.resumePath)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 36)       } catch (error) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 37)         console.error('Could not delete resume file:', error)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 38)       }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 39)     }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 40) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 41)     // Delete user from database
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 42)     await User.findByIdAndDelete(decoded.userId)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 43) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 44)     return NextResponse.json({ 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 45)       message: 'Account deleted successfully' 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 46)     })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 47) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 48)   } catch (error) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 49)     console.error('Delete account error:', error)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 50)     return NextResponse.json({ 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 51)       error: 'Could not delete account' 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 52)     }, { status: 500 })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 53)   }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 54) }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 39)         resumeUploadedAt: user.resumeUploadedAt,
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 40)         createdAt: user._id.getTimestamp() // MongoDB ObjectIds contain a timestamp of when they were created
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  1) import { NextResponse } from 'next/server'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  2) import jwt from 'jsonwebtoken'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  3) import User from '../../../../models/User'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  4) import connectDB from '../../../../lib/mongodb'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  5) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  6) const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  7) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  8) export async function POST(request) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  9)   try {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 10)     // Get authorization header
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 11)     const authHeader = request.headers.get('authorization')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 12)     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 13)       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 14)     }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 15) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 16)     const token = authHeader.substring(7)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 17)     const decoded = jwt.verify(token, JWT_SECRET)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 18)     if (!decoded || !decoded.userId) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 19)       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 20)     }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 21) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 22)     // Connect to database
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 23)     await connectDB()
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 24) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 25)     // Get request body
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 26)     const body = await request.json()
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 27)     const { name } = body
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 28) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 29)     if (!name || typeof name !== 'string' || !name.trim()) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 30)       return NextResponse.json({ error: 'Invalid name provided' }, { status: 400 })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 31)     }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 32) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 33)     // Find and update user
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 34)     const user = await User.findById(decoded.userId)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 35)     if (!user) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 36)       return NextResponse.json({ error: 'User not found' }, { status: 404 })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 37)     }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 38) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 39)     user.name = name.trim()
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 40)     await user.save()
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 41) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 42)     return NextResponse.json({ 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 43)       message: 'Name updated successfully',
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 44)       user: {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 45)         id: user._id,
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 46)         name: user.name,
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 47)         email: user.email
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 48)       }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 49)     })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 50) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 51)   } catch (error) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 52)     console.error('Update user error:', error)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 53)     return NextResponse.json({ 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 54)       error: 'Could not update user information' 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 55)     }, { status: 500 })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 56)   }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 57) }
+ef4e9ba9 (Ziad Abdelati  2025-10-14 02:34:26 -0400 193)                 <button 
+ef4e9ba9 (Ziad Abdelati  2025-10-14 02:34:26 -0400 194)                   onClick={() => router.push('/dashboard/settings')}
+ef4e9ba9 (Ziad Abdelati  2025-10-14 02:34:26 -0400 195)                   className="btn-secondary"
+ef4e9ba9 (Ziad Abdelati  2025-10-14 02:34:26 -0400 196)                 >
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400   1) 'use client'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400   2) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400   3) import { useState } from 'react'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400   4) import { useAuth } from '@/contexts/AuthContext'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400   5) import { useRouter } from 'next/navigation'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400   6) import ResumeStatus from '@/components/ResumeStatus'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400   7) import LinkedInLinkPopup from '@/components/LinkedInLinkPopup'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400   8) import LinkedInMockLink from '@/components/LinkedInMockLink'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400   9) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  10) export default function Settings() {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  11)   const { user, loading, logout } = useAuth()
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  12)   const router = useRouter()
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  13)   const [isEditing, setIsEditing] = useState(false)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  14)   const [newName, setNewName] = useState('')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  15)   const [error, setError] = useState('')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  16)   const [success, setSuccess] = useState('')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  17)   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  18)   const [deleteError, setDeleteError] = useState('')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  19) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  20)   if (loading) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  21)     return (
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  22)       <div className="min-h-screen flex items-center justify-center">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  23)         <div className="text-center">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  24)           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 mx-auto"></div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  25)           <p className="mt-4 text-secondary-600">Loading...</p>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  26)         </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  27)       </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  28)     )
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  29)   }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  30) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  31)   if (!user) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  32)     router.push('/')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  33)     return null
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  34)   }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  35) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  36)   const handleNameUpdate = async () => {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  37)     if (!newName.trim()) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  38)       setError('Name cannot be empty')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  39)       return
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  40)     }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  41) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  42)     try {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  43)       const response = await fetch('/api/user/update', {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  44)         method: 'POST',
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  45)         headers: {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  46)           'Content-Type': 'application/json',
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  47)           'Authorization': `Bearer ${localStorage.getItem('token')}`
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  48)         },
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  49)         body: JSON.stringify({ name: newName.trim() })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  50)       })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  51) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  52)       if (!response.ok) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  53)         throw new Error('Failed to update name')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  54)       }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  55) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  56)       setSuccess('Name updated successfully')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  57)       setIsEditing(false)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  58)       window.location.reload() // Refresh to update the user context
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  59)     } catch (err) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  60)       setError('Could not update name. Please try again.')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  61)       console.error('Name update error:', err)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  62)     }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  63)   }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  64) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  65)   const formatDate = (dateString) => {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  66)     if (!dateString) return 'Not available'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  67)     try {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  68)       const date = new Date(dateString)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  69)       if (isNaN(date.getTime())) return 'Invalid date'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  70)       return date.toLocaleDateString('en-US', {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  71)         year: 'numeric',
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  72)         month: 'long',
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  73)         day: 'numeric',
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  74)         hour: '2-digit',
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  75)         minute: '2-digit',
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  76)         timeZone: 'UTC'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  77)       })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  78)     } catch (error) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  79)       console.error('Date formatting error:', error)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  80)       return 'Invalid date'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  81)     }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  82)   }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  83) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  84)   return (
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  85)     <div className="min-h-screen bg-gray-50">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  86)       {/* Header */}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  87)       <header className="bg-white shadow-sm">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  88)         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  89)           <div className="flex justify-between items-center py-6">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  90)             <div className="flex items-center">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  91)               <h1 className="text-2xl font-bold text-primary-600">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  92)                 Settings
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  93)               </h1>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  94)             </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  95)             <button
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  96)               onClick={() => router.push('/dashboard')}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  97)               className="btn-secondary"
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  98)             >
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400  99)               Back to Dashboard
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 100)             </button>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 101)           </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 102)         </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 103)       </header>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 104) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 105)       {/* Main Content */}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 106)       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 107)         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 108)           {/* Profile Card */}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 109)           <div className="bg-white rounded-lg shadow p-6">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 110)             <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Profile</h2>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 111)             <div className="space-y-3">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 112)               <div className="space-y-2">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 113)                 {isEditing ? (
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 114)                   <div className="space-y-2">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 115)                     <input
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 116)                       type="text"
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 117)                       value={newName}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 118)                       onChange={(e) => setNewName(e.target.value)}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 119)                       placeholder="Enter new name"
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 120)                       className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary-500"
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 121)                     />
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 122)                     <div className="flex gap-2">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 123)                       <button
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 124)                         onClick={handleNameUpdate}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 125)                         className="btn-primary"
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 126)                       >
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 127)                         Save
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 128)                       </button>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 129)                       <button
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 130)                         onClick={() => {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 131)                           setIsEditing(false)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 132)                           setNewName('')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 133)                           setError('')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 134)                         }}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 135)                         className="btn-secondary"
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 136)                       >
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 137)                         Cancel
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 138)                       </button>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 139)                     </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 140)                   </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 141)                 ) : (
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 142)                   <p><span className="font-medium">Name:</span> {user.name}</p>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 143)                 )}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 144)                 <p><span className="font-medium">Email:</span> {user.email}</p>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 145)                 <p><span className="font-medium">Account Created:</span> {formatDate(user.createdAt)}</p>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 146)               </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 147)               
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 148)               {error && (
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 149)                 <div className="text-red-600 text-sm">{error}</div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 150)               )}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 151)               {success && (
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 152)                 <div className="text-green-600 text-sm">{success}</div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 153)               )}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 154)               
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 155)               <div className="mt-4 space-y-3">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 156)                 {!isEditing && (
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 157)                   <button
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 158)                     onClick={() => {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 159)                       setIsEditing(true)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 160)                       setNewName(user.name)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 161)                       setError('')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 162)                       setSuccess('')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 163)                     }}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 164)                     className="btn-primary w-full"
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 165)                   >
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 166)                     Change Name
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 167)                   </button>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 168)                 )}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 169)                 <div className="flex items-center justify-center gap-3">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 170)                   <LinkedInLinkPopup />
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 171)                   <LinkedInMockLink />
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 172)                 </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 173) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 174)                 {/* Delete Account Section */}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 175)                 <div className="mt-8 pt-6 border-t border-gray-200">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 176)                   <h3 className="text-lg font-medium text-red-600 mb-4">Danger Zone</h3>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 177)                   {!showDeleteConfirm ? (
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 178)                     <button
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 179)                       onClick={() => setShowDeleteConfirm(true)}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 180)                       className="w-full px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 181)                     >
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 182)                       Delete Account
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 183)                     </button>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 184)                   ) : (
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 185)                     <div className="space-y-4">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 186)                       <p className="text-sm text-gray-600">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 187)                         Are you sure you want to delete your account? This action cannot be undone.
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 188)                         All your data, including your resume and job preferences, will be permanently deleted.
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 189)                       </p>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 190)                       <div className="flex gap-3">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 191)                         <button
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 192)                           onClick={async () => {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 193)                             try {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 194)                               const response = await fetch('/api/user/delete', {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 195)                                 method: 'DELETE',
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 196)                                 headers: {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 197)                                   'Authorization': `Bearer ${localStorage.getItem('token')}`
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 198)                                 }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 199)                               })
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 200) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 201)                               if (!response.ok) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 202)                                 throw new Error('Failed to delete account')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 203)                               }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 204) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 205)                               // First clear token and user data
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 206)                               logout()
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 207)                               // Then redirect to home
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 208)                               window.location.href = '/'
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 209)                             } catch (err) {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 210)                               console.error('Delete account error:', err)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 211)                               setDeleteError('Failed to delete account. Please try again.')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 212)                             }
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 213)                           }}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 214)                           className="flex-1 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 215)                         >
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 216)                           Yes, Delete My Account
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 217)                         </button>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 218)                         <button
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 219)                           onClick={() => {
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 220)                             setShowDeleteConfirm(false)
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 221)                             setDeleteError('')
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 222)                           }}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 223)                           className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 224)                         >
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 225)                           Cancel
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 226)                         </button>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 227)                       </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 228)                       {deleteError && (
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 229)                         <p className="text-sm text-red-600">{deleteError}</p>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 230)                       )}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 231)                     </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 232)                   )}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 233)                 </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 234)               </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 235)             </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 236)           </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 237) 
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 238)           {/* Resume Status Section taking up 2 columns */}
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 239)           <div className="md:col-span-2">
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 240)             <ResumeStatus />
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 241)           </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 242)         </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 243)       </main>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 244)     </div>
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 245)   )
+ef4e9ba9 (Ziad Abdelati 2025-10-14 02:34:26 -0400 246) }
