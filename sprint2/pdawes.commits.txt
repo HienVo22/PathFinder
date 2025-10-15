@@ -224,3 +224,25 @@ de0c302d (Parker 2025-10-13 22:53:44 -0400 51)   });
 de0c302d (Parker 2025-10-13 22:53:44 -0400 52) }
 de0c302d (Parker 2025-10-13 22:53:44 -0400 53)
 de0c302d (Parker 2025-10-13 22:53:44 -0400 54) export { parsePdfBuffer }; 
+de0c302d (Parker 2025-10-13 22:53:44 -0400  1) import React, { useRef, useState } from 'react';
+de0c302d (Parker 2025-10-13 22:53:44 -0400  2) 
+de0c302d (Parker 2025-10-13 22:53:44 -0400  3) function getPdfLib() {
+de0c302d (Parker 2025-10-13 22:53:44 -0400  4)   try {
+de0c302d (Parker 2025-10-13 22:53:44 -0400  5)     const pdfjsLib = require('pdfjs-dist');
+de0c302d (Parker 2025-10-13 22:53:44 -0400  6)     return pdfjsLib;
+de0c302d (Parker 2025-10-13 22:53:44 -0400  7)   } catch (e) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400  8)     // fallback to global pdfjs bundle
+de0c302d (Parker 2025-10-13 22:53:44 -0400  9)     if (typeof window !== 'undefined' && window.pdfjsLib) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 10)       return window.pdfjsLib;
+de0c302d (Parker 2025-10-13 22:53:44 -0400 11)     }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 12)     return null;
+de0c302d (Parker 2025-10-13 22:53:44 -0400 13)   }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 14) }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 15) 
+de0c302d (Parker 2025-10-13 22:53:44 -0400 16) export default function ResumeParser() {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 17)   const canvasRef = useRef(null);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 18)   const [text, setText] = useState('');
+de0c302d (Parker 2025-10-13 22:53:44 -0400 19)   const [error, setError] = useState(null);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 20)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 21)   async function handleFile(file) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 22)     setError(null);
