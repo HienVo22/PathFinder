@@ -1,0 +1,226 @@
+de0c302d (Parker 2025-10-13 22:53:44 -0400  1) import { NextResponse } from 'next/server';
+de0c302d (Parker 2025-10-13 22:53:44 -0400  2) 
+de0c302d (Parker 2025-10-13 22:53:44 -0400  3) // Server-side AI call using Google Gemini (free)
+de0c302d (Parker 2025-10-13 22:53:44 -0400  4) export async function POST(request) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400  5)   try {
+de0c302d (Parker 2025-10-13 22:53:44 -0400  6)     const body = await request.json();
+de0c302d (Parker 2025-10-13 22:53:44 -0400  7)     const text = body.text || '';
+de0c302d (Parker 2025-10-13 22:53:44 -0400  8)     if (!text || typeof text !== 'string' || text.trim().length === 0) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400  9)       return NextResponse.json({ error: 'text required' }, { status: 400 });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 10)     }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 11) 
+de0c302d (Parker 2025-10-13 22:53:44 -0400 12)     const geminiKey = process.env.GEMINI_API_KEY;
+de0c302d (Parker 2025-10-13 22:53:44 -0400 13) 
+de0c302d (Parker 2025-10-13 22:53:44 -0400 14)     if (!geminiKey) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 15)       return NextResponse.json({ error: 'Gemini API key not configured (need GEMINI_API_KEY in .env.local)' }, { status: 500 });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 16)     }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 17)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 18)     console.log('Using Google Gemini for skill extraction');
+de0c302d (Parker 2025-10-13 22:53:44 -0400 19)     const prompt = `Extract a concise JSON array of skills/technologies found in the following resume text. Return only valid JSON (an array of strings). Do not include any explanation or extra text. Example output: ["JavaScript", "React", "Node.js"].\n\nResume text:\n${text}`;
+de0c302d (Parker 2025-10-13 22:53:44 -0400 20)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 21)     const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 22)       method: 'POST',        
+de0c302d (Parker 2025-10-13 22:53:44 -0400 23)       headers: {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 24)         'Content-Type': 'application/json',
+de0c302d (Parker 2025-10-13 22:53:44 -0400 25)       },
+de0c302d (Parker 2025-10-13 22:53:44 -0400 26)       body: JSON.stringify({ 
+de0c302d (Parker 2025-10-13 22:53:44 -0400 27)         contents: [{
+de0c302d (Parker 2025-10-13 22:53:44 -0400 28)           parts: [{
+de0c302d (Parker 2025-10-13 22:53:44 -0400 29)             text: prompt     
+de0c302d (Parker 2025-10-13 22:53:44 -0400 30)           }]
+de0c302d (Parker 2025-10-13 22:53:44 -0400 31)         }]
+de0c302d (Parker 2025-10-13 22:53:44 -0400 32)       })
+de0c302d (Parker 2025-10-13 22:53:44 -0400 33)     });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 34)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 35)     if (!resp.ok) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 36)       const errText = await resp.text();
+de0c302d (Parker 2025-10-13 22:53:44 -0400 37)       console.error('Gemini error', resp.status, errText);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 38)       return NextResponse.json({ error: 'Gemini API request failed' }, { status: 502 });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 39)     }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 40) 
+de0c302d (Parker 2025-10-13 22:53:44 -0400 41)     const data = await resp.json();
+de0c302d (Parker 2025-10-13 22:53:44 -0400 42)     const message = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+de0c302d (Parker 2025-10-13 22:53:44 -0400 43)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 44)     if (!message) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 45)       console.error('No response from Gemini');
+de0c302d (Parker 2025-10-13 22:53:44 -0400 46)       return NextResponse.json({ error: 'No AI response received' }, { status: 502 });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 47)     }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 48)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 49)     console.log('Gemini response received, parsing skills...');
+de0c302d (Parker 2025-10-13 22:53:44 -0400 50)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 51)     // Try to parse JSON from message
+de0c302d (Parker 2025-10-13 22:53:44 -0400 52)     let skills = [];
+de0c302d (Parker 2025-10-13 22:53:44 -0400 53)     try {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 54)       const match = message.match(/\[([\s\S]*?)\]/);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 55)       if (match) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 56)         const arrText = match[0];
+de0c302d (Parker 2025-10-13 22:53:44 -0400 57)         const parsed = JSON.parse(arrText);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 58)         if (Array.isArray(parsed)) skills = parsed.map(s => String(s).trim()).filter(Boolean);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 59)       } else {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 60)         const parsed = JSON.parse(message);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 61)         if (Array.isArray(parsed)) skills = parsed.map(s => String(s).trim()).filter(Boolean);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 62)       }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 63)     } catch (e) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 64)       console.error('Failed to parse OpenAI response as JSON array', e, message);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 65)       const quoted = Array.from(message.matchAll(/"([^\"]+)"/g)).map(m => m[1]);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 66)       if (quoted.length) skills = quoted;
+de0c302d (Parker 2025-10-13 22:53:44 -0400 67)     }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 68)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 69)     skills = Array.from(new Set(skills));
+de0c302d (Parker 2025-10-13 22:53:44 -0400 70)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 71)     return NextResponse.json({ skills });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 72)   } catch (err) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 73)     console.error('AI skills error', err);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 74)     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 75)   }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 76) }
+de0c302d (Parker         2025-10-13 22:53:44 -0400 218)         resumeFilename: savedUser.resumeFilename,
+de0c302d (Parker         2025-10-13 22:53:44 -0400 219)         // parsed text is returned only in the upload response for immediate use; not persisted to the DB
+de0c302d (Parker         2025-10-13 22:53:44 -0400 220)         parsedText: parsedResumeText
+de0c302d (Parker         2025-10-13 22:53:44 -0400 155)
+de0c302d (Parker         2025-10-13 22:53:44 -0400 156)   // If the file is a PDF, extract text and then extract skills
+de0c302d (Parker         2025-10-13 22:53:44 -0400 157)   let parsedResumeText = null;
+de0c302d (Parker         2025-10-13 22:53:44 -0400 158)   if (file.type === 'application/pdf') {
+de0c302d (Parker         2025-10-13 22:53:44 -0400 159)     try {
+de0c302d (Parker         2025-10-13 22:53:44 -0400 160)       parsedResumeText = await parsePdfBuffer(buffer);
+de0c302d (Parker         2025-10-13 22:53:44 -0400 161)
+de0c302d (Parker         2025-10-13 22:53:44 -0400 162)       if (parsedResumeText && parsedResumeText.length > 0) {
+de0c302d (Parker         2025-10-13 22:53:44 -0400 163)         console.log('✓ PDF parsed successfully, text length:', parsedResumeText.length);        
+de0c302d (Parker         2025-10-13 22:53:44 -0400 164)
+de0c302d (Parker         2025-10-13 22:53:44 -0400 165)         // Now, call the AI skills API
+de0c302d (Parker         2025-10-13 22:53:44 -0400 166)         const absoluteUrl = new URL('/api/ai/skills', request.url);
+de0c302d (Parker         2025-10-13 22:53:44 -0400 167)         const aiResponse = await fetch(absoluteUrl.href, {
+de0c302d (Parker         2025-10-13 22:53:44 -0400 168)             method: 'POST',
+de0c302d (Parker         2025-10-13 22:53:44 -0400 169)             headers: {
+de0c302d (Parker         2025-10-13 22:53:44 -0400 170)                 'Content-Type': 'application/json',
+de0c302d (Parker         2025-10-13 22:53:44 -0400 171)                 'Authorization': `Bearer ${token}`
+de0c302d (Parker         2025-10-13 22:53:44 -0400 172)             },
+de0c302d (Parker         2025-10-13 22:53:44 -0400 173)             body: JSON.stringify({ text: parsedResumeText })
+de0c302d (Parker         2025-10-13 22:53:44 -0400 174)         });
+de0c302d (Parker         2025-10-13 22:53:44 -0400 175)
+de0c302d (Parker         2025-10-13 22:53:44 -0400 176)         if (aiResponse.ok) {
+de0c302d (Parker         2025-10-13 22:53:44 -0400 177)             const { skills } = await aiResponse.json();
+de0c302d (Parker         2025-10-13 22:53:44 -0400 178)             console.log('✓ Skills extracted:', skills);
+de0c302d (Parker         2025-10-13 22:53:44 -0400 179)             // Save the new skills to the user, replacing old ones
+de0c302d (Parker         2025-10-13 22:53:44 -0400 180)             user.skills = Array.from(new Set(skills));
+de0c302d (Parker         2025-10-13 22:53:44 -0400 181)         } else {    
+de0c302d (Parker         2025-10-13 22:53:44 -0400 182)             console.error('Failed to extract skills from AI API');
+de0c302d (Parker         2025-10-13 22:53:44 -0400 183)         }
+de0c302d (Parker         2025-10-13 22:53:44 -0400 184)
+de0c302d (Parker         2025-10-13 22:53:44 -0400 185)       } else {      
+de0c302d (Parker         2025-10-13 22:53:44 -0400 186)         console.warn('PDF parsed but no text extracted');
+de0c302d (Parker         2025-10-13 22:53:44 -0400 187)       }
+de0c302d (Parker         2025-10-13 22:53:44 -0400 188)     } catch (err) { 
+de0c302d (Parker         2025-10-13 22:53:44 -0400 189)       console.error('PDF parsing or AI skill extraction error:', err.message);
+de0c302d (Parker         2025-10-13 22:53:44 -0400 190)     }
+de0c302d (Parker         2025-10-13 22:53:44 -0400 191)   }
+de0c302d (Parker 2025-10-13 22:53:44 -0400  1) import { NextResponse } from 'next/server';
+de0c302d (Parker 2025-10-13 22:53:44 -0400  2) import jwt from 'jsonwebtoken';
+de0c302d (Parker 2025-10-13 22:53:44 -0400  3) import connectDB from '../../../../lib/mongodb';
+de0c302d (Parker 2025-10-13 22:53:44 -0400  4) import User from '../../../../models/User';
+de0c302d (Parker 2025-10-13 22:53:44 -0400  5)
+de0c302d (Parker 2025-10-13 22:53:44 -0400  6) const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+de0c302d (Parker 2025-10-13 22:53:44 -0400  7)
+de0c302d (Parker 2025-10-13 22:53:44 -0400  8) export async function POST(request) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400  9)   try {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 10)     // Debug logging: preview auth header and body
+de0c302d (Parker 2025-10-13 22:53:44 -0400 11)     try {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 12)       const previewAuth = request.headers.get('authorization') || 'none';
+de0c302d (Parker 2025-10-13 22:53:44 -0400 13)       const bodyText = await request.clone().text();
+de0c302d (Parker 2025-10-13 22:53:44 -0400 14)       console.log('[user/skills] auth header present:', previewAuth !== 'none');
+de0c302d (Parker 2025-10-13 22:53:44 -0400 15)       console.log('[user/skills] body preview:', bodyText.slice(0, 1000));
+de0c302d (Parker 2025-10-13 22:53:44 -0400 16)     } catch (e) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 17)       console.log('[user/skills] failed to preview request body', e);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 18)     }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 19)     const authHeader = request.headers.get('authorization');
+de0c302d (Parker 2025-10-13 22:53:44 -0400 20)     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 21)       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 22)     }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 23)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 24)     const token = authHeader.substring(7);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 25)     let decoded;
+de0c302d (Parker 2025-10-13 22:53:44 -0400 26)     try {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 27)       decoded = jwt.verify(token, JWT_SECRET);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 28)     } catch (e) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 29)       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 30)     }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 31)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 32)     const body = await request.json();
+de0c302d (Parker 2025-10-13 22:53:44 -0400 33)     const newSkills = Array.isArray(body.skills) ? body.skills.map(s => String(s).trim()).filter(Boolean) : [];
+de0c302d (Parker 2025-10-13 22:53:44 -0400 34)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 35)     await connectDB();       
+de0c302d (Parker 2025-10-13 22:53:44 -0400 36)     const user = await User.findById(decoded.userId);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 37)     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 38)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 39)     // Replace old skills with the new ones
+de0c302d (Parker 2025-10-13 22:53:44 -0400 40)     user.skills = Array.from(new Set(newSkills));
+de0c302d (Parker 2025-10-13 22:53:44 -0400 41)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 42)     const saved = await user.save();
+de0c302d (Parker 2025-10-13 22:53:44 -0400 43)     return NextResponse.json({ skills: Array.isArray(saved.skills) ? saved.skills : [] });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 44)   } catch (err) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 45)     console.error('Save skills error', err);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 46)     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 47)   }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 48) }
+de0c302d (Parker       2025-10-13 22:53:44 -0400  92)           setUploading(false);
+de0c302d (Parker       2025-10-13 22:53:44 -0400  93)           try {       
+de0c302d (Parker       2025-10-13 22:53:44 -0400  94)             if (typeof refreshUser === 'function') await refreshUser();
+de0c302d (Parker       2025-10-13 22:53:44 -0400  95)           } catch(err) {
+de0c302d (Parker       2025-10-13 22:53:44 -0400  96)             console.error('Failed to refresh user after upload:', err);
+de0c302d (Parker       2025-10-13 22:53:44 -0400  97)           }
+de0c302d (Parker       2025-10-13 22:53:44 -0400  98)           // The parsed text is no longer needed on the client
+de0c302d (Parker       2025-10-13 22:53:44 -0400  99)           // setParsedPreview(null);
+de0c302d (Parker 2025-10-13 22:53:44 -0400  1) // PDF parsing utility - using pdf2json (no test file dependencies)
+de0c302d (Parker 2025-10-13 22:53:44 -0400  2)
+de0c302d (Parker 2025-10-13 22:53:44 -0400  3) async function parsePdfBuffer(buffer) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400  4)   return new Promise(async (resolve, reject) => {
+de0c302d (Parker 2025-10-13 22:53:44 -0400  5)     try {
+de0c302d (Parker 2025-10-13 22:53:44 -0400  6)       // Dynamically import pdf2json (CommonJS module)
+de0c302d (Parker 2025-10-13 22:53:44 -0400  7)       const PDFParser = (await import('pdf2json')).default;
+de0c302d (Parker 2025-10-13 22:53:44 -0400  8)       const pdfParser = new PDFParser();
+de0c302d (Parker 2025-10-13 22:53:44 -0400  9)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 10)       pdfParser.on('pdfParser_dataError', (errData) => {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 11)         console.error('PDF parsing error:', errData.parserError);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 12)         reject(new Error(errData.parserError));
+de0c302d (Parker 2025-10-13 22:53:44 -0400 13)       });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 14)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 15)       pdfParser.on('pdfParser_dataReady', (pdfData) => {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 16)         try {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 17)           // Extract text from all pages
+de0c302d (Parker 2025-10-13 22:53:44 -0400 18)           let fullText = ''; 
+de0c302d (Parker 2025-10-13 22:53:44 -0400 19)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 20)           if (pdfData.Pages && Array.isArray(pdfData.Pages)) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 21)             pdfData.Pages.forEach(page => {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 22)               if (page.Texts && Array.isArray(page.Texts)) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 23)                 page.Texts.forEach(textItem => {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 24)                   if (textItem.R && Array.isArray(textItem.R)) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 25)                     textItem.R.forEach(r => {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 26)                       if (r.T) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 27)                         // Decode URI component (pdf2json encodes text)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 28)                         fullText += decodeURIComponent(r.T) + ' ';
+de0c302d (Parker 2025-10-13 22:53:44 -0400 29)                       }      
+de0c302d (Parker 2025-10-13 22:53:44 -0400 30)                     });      
+de0c302d (Parker 2025-10-13 22:53:44 -0400 31)                   }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 32)                 });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 33)               }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 34)               fullText += '\n';
+de0c302d (Parker 2025-10-13 22:53:44 -0400 35)             });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 36)           }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 37)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 38)           resolve(fullText.trim());
+de0c302d (Parker 2025-10-13 22:53:44 -0400 39)         } catch (extractError) {
+de0c302d (Parker 2025-10-13 22:53:44 -0400 40)           console.error('Text extraction error:', extractError.message);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 41)           reject(extractError);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 42)         }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 43)       });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 44)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 45)       // Parse the buffer    
+de0c302d (Parker 2025-10-13 22:53:44 -0400 46)       pdfParser.parseBuffer(buffer);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 47)     } catch (error) {        
+de0c302d (Parker 2025-10-13 22:53:44 -0400 48)       console.error('PDF parsing setup error:', error.message);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 49)       reject(error);
+de0c302d (Parker 2025-10-13 22:53:44 -0400 50)     }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 51)   });
+de0c302d (Parker 2025-10-13 22:53:44 -0400 52) }
+de0c302d (Parker 2025-10-13 22:53:44 -0400 53)
+de0c302d (Parker 2025-10-13 22:53:44 -0400 54) export { parsePdfBuffer }; 
