@@ -34,9 +34,11 @@ export async function GET(request) {
         id: user._id,
         email: user.email,
         name: user.name,
+        theme: user.theme,
         resumeUrl: user.resumeUrl,
         resumeOriginalName: user.resumeOriginalName,
-        resumeUploadedAt: user.resumeUploadedAt
+        resumeUploadedAt: user.resumeUploadedAt,
+        createdAt: user._id.getTimestamp() // MongoDB ObjectIds contain a timestamp of when they were created
       }
     })
   } catch (error) {

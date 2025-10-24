@@ -1,0 +1,90 @@
+Source code lines committed by Hien Vo for Sprint 2:
+
+================== components/JobPreferencesModal.js ==================
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  1) 'use client';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  2) 
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  3) import { useState, useEffect } from 'react';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  4) import { useAuth } from '../contexts/AuthContext';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  5) 
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  6) const JobPreferencesModal = ({ isOpen, onClose, onSave }) => {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  7)   const [jobTitles, setJobTitles] = useState([]);
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  8)   const [newJobTitle, setNewJobTitle] = useState('');
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  9)   const [locationTypes, setLocationTypes] = useState([]);
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 10)   const [locations, setLocations] = useState([]);
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 11)   const [newLocation, setNewLocation] = useState('');
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 12)   const [employmentTypes, setEmploymentTypes] = useState([]);
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 13)   const [desiredPay, setDesiredPay] = useState('');
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 14)   const [saving, setSaving] = useState(false);
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 15)   const { user } = useAuth();
+
+================== utils/resumeParser.js ==================
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  1) import { Ollama } from 'ollama';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  2) import { SKILLS_DATABASE } from '../data/skills.js';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  3) 
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  4) export class ResumeParser {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  5)   constructor() {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  6)     this.ollama = new Ollama({ host: process.env.OLLAMA_HOST || 'http://localhost:11434' });
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  7)     this.model = process.env.OLLAMA_MODEL || 'llama3.2'; // Default to llama3.2
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  8)   }
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  9) 
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 10)   async checkOllamaHealth() {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 11)     try {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 12)       await this.ollama.list();
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 13)       return true;
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 14)     } catch (error) {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 15)       console.error('Ollama health check failed:', error);
+
+================== services/resumeProcessingService.js ==================
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  1) import User from '../models/User.js';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  2) import connectDB from '../lib/mongodb.js';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  3) import { TextExtractor } from '../utils/textExtractor.js';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  4) import { ResumeParser } from '../utils/resumeParser.js';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  5) import fs from 'fs';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  6) import path from 'path';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  7) 
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  8) export class ResumeProcessingService {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  9)   /**
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 10)    * Async function to process resume with AI (runs in background).
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 11)    * Extracts text, parses with AI, and updates user's profile.
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 12)    * @param {string} userId - The ID of the user.
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 13)    * @param {string} filePath - The path to the uploaded resume file.
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 14)    * @param {string} contentType - The MIME type of the uploaded file.
+
+================== app/api/user/preferences/route.js ==================
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  1) import { NextResponse } from 'next/server';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  2) import jwt from 'jsonwebtoken';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  3) import connectDB from '../../../../lib/mongodb';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  4) import User from '../../../../models/User';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  5) 
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  6) function verifyToken(token) {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  7)   try {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  8)     return jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  9)   } catch (error) {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 10)     return null;
+
+================== components/ParsedResumeViewer.js ==================
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  1) 'use client';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  2) 
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  3) import { useState, useEffect } from 'react';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  4) 
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  5) const ParsedResumeViewer = () => {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  6)   const [parsingData, setParsingData] = useState(null);
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  7)   const [loading, setLoading] = useState(true);
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  8)   const [error, setError] = useState(null);
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  9) 
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 10)   useEffect(() => {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 11)     fetchParsingStatus();
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 12)   }, []);
+
+================== utils/textExtractor.js ==================
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  1) import mammoth from 'mammoth';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  2) import fs from 'fs';
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  3) 
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  4) /**
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  5)  * Extract text from different file types
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  6)  */
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  7) export class TextExtractor {
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  8)   /**
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400  9)    * Extracts text content from a given resume file.
+b717303 (Hien Vo           2025-10-14 08:44:01 -0400 10)    * @param {string} filePath - The path to the resume file.
+

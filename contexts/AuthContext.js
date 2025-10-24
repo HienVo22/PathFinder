@@ -1,40 +1,47 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect } from 'react'
+import { useTheme } from 'next-themes'
 
 const AuthContext = createContext(undefined)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const { setTheme } = useTheme()
 
   useEffect(() => {
-    // Check if user is logged in on page load
     const token = localStorage.getItem('token')
     if (token) {
       fetchUser(token)
     } else {
       setLoading(false)
+      setTheme('light')
     }
   }, [])
 
   const fetchUser = async (token) => {
     try {
       const response = await fetch('/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       })
       
       if (response.ok) {
         const data = await response.json()
         setUser(data.user)
+        if (data.user?.theme) {
+          setTheme(data.user.theme)
+        } else {
+          setTheme('light')
+        }
       } else {
         localStorage.removeItem('token')
+        setTheme('light')
       }
     } catch (error) {
       console.error('Error fetching user:', error)
       localStorage.removeItem('token')
+      setTheme('light')
     } finally {
       setLoading(false)
     }
@@ -52,16 +59,15 @@ export function AuthProvider({ children }) {
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
 
       if (response.ok) {
         const data = await response.json()
         localStorage.setItem('token', data.token)
-        setUser(data.user)
+        // Prefer fetching fresh user (ensures theme and other fields are up-to-date)
+        await fetchUser(data.token)
         return true
       } else {
         const error = await response.json()
@@ -79,9 +85,7 @@ export function AuthProvider({ children }) {
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
       })
 
@@ -89,6 +93,7 @@ export function AuthProvider({ children }) {
         const data = await response.json()
         localStorage.setItem('token', data.token)
         setUser(data.user)
+        setTheme('light')
         return true
       } else {
         const error = await response.json()
@@ -105,35 +110,34 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem('token')
     setUser(null)
+    setTheme('light')
   }
 
-    // Google login method
-    const googleLogin = async (credential) => {
-      try {
-        const response = await fetch('/api/auth/google', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ credential })
-        })
-        if (response.ok) {
-          const data = await response.json()
-          localStorage.setItem('token', data.token)
-          setUser(data.user)
-          return true
-        } else {
-          const error = await response.json()
-          alert(error.error || 'Google login failed')
-          return false
-        }
-      } catch (error) {
-        console.error('Google login error:', error)
-        alert('Google login failed. Please try again.')
+  const googleLogin = async (credential) => {
+    try {
+      const response = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential })
+      })
+      if (response.ok) {
+        const data = await response.json()
+        localStorage.setItem('token', data.token)
+        await fetchUser(data.token)
+        return true
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Google login failed')
         return false
       }
+    } catch (error) {
+      console.error('Google login error:', error)
+      alert('Google login failed. Please try again.')
+      return false
     }
+  }
 
   return (
-
     <AuthContext.Provider value={{ user, login, register, logout, loading, googleLogin, refreshUser }}>
       {children}
     </AuthContext.Provider>

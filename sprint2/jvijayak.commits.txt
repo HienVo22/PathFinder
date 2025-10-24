@@ -1,0 +1,96 @@
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  1) const nodemailer = require('nodemailer')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  2) const crypto = require('crypto')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  3)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  1) const nodemailer = require('nodemailer')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  2) const crypto = require('crypto')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  3)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  4) let user2FACodes = {}  // Temporary storage for 2FA codes (you can replace this with a DB)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  5)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  6) const transporter = nodemailer.createTransport({
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  7)   service: 'gmail',  // Use your mail provider
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  1) const nodemailer = require('nodemailer')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  2) const crypto = require('crypto')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  3)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  4) let user2FACodes = {}  // Temporary storage for 2FA codes (you can replace this with a DB)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  5)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  6) const transporter = nodemailer.createTransport({
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  7)   service: 'gmail',  // Use your mail provider
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  8)   auth: {
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  9)     user: 'your-email@gmail.com',
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 10)     pass: 'your-email-password'
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 11)   }
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 12) })
+:...skipping...
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  1) const nodemailer = require('nodemailer')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  2) const crypto = require('crypto')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  3)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  4) let user2FACodes = {}  // Temporary storage for 2FA codes (you can replace this with a DB)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  5)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  6) const transporter = nodemailer.createTransport({
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  1) const nodemailer = require('nodemailer')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  2) const crypto = require('crypto')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  3)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  4) let user2FACodes = {}  // Temporary storage for 2FA codes (you can replace this with a DB)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  5)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  6) const transporter = nodemailer.createTransport({
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  7)   service: 'gmail',  // Use your mail provider
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  8)   auth: {
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  9)     user: 'your-email@gmail.com',
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 10)     pass: 'your-email-password'
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  1) const nodemailer = require('nodemailer')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  2) const crypto = require('crypto')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  3)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  4) let user2FACodes = {}  // Temporary storage for 2FA codes (you can replace this with a DB)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  5)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  6) const transporter = nodemailer.createTransport({
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  7)   service: 'gmail',  // Use your mail provider
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  8)   auth: {
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  9)     user: 'your-email@gmail.com',
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 10)     pass: 'your-email-password'
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 11)   }
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 12) })
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 13)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 14) // Step 1: Generate and send 2FA code to the user's email
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 15) app.post('/api/auth/send-2fa-code', async (req, res) => {
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 16)   const { email } = req.body
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  1) const nodemailer = require('nodemailer')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  2) const crypto = require('crypto')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  3)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  4) let user2FACodes = {}  // Temporary storage for 2FA codes (you can replace this with a DB)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  5)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  6) const transporter = nodemailer.createTransport({
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  7)   service: 'gmail',  // Use your mail provider
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  8)   auth: {
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  9)     user: 'your-email@gmail.com',
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 10)     pass: 'your-email-password'
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 11)   }
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 12) })
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 13)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 14) // Step 1: Generate and send 2FA code to the user's email
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 15) app.post('/api/auth/send-2fa-code', async (req, res) => {
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 16)   const { email } = req.body
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 17)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 18)   // Generate a random 6-digit code
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 19)   const code = crypto.randomInt(100000, 999999)
+:...skipping...
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  1) const nodemailer = require('nodemailer')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  2) const crypto = require('crypto')
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  3)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  4) let user2FACodes = {}  // Temporary storage for 2FA codes (you can replace this with a DB)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  5)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  6) const transporter = nodemailer.createTransport({
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  7)   service: 'gmail',  // Use your mail provider
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  8)   auth: {
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400  9)     user: 'your-email@gmail.com',
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 10)     pass: 'your-email-password'
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 11)   }
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 12) })
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 13)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 14) // Step 1: Generate and send 2FA code to the user's email
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 15) app.post('/api/auth/send-2fa-code', async (req, res) => {
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 16)   const { email } = req.body
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 17)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 18)   // Generate a random 6-digit code
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 19)   const code = crypto.randomInt(100000, 999999)
+e55c35dd (JubinJaydeep Vijayakumar 2025-10-14 22:57:28 -0400 20)
+:
