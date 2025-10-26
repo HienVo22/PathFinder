@@ -1,5 +1,5 @@
 import { Ollama } from 'ollama';
-import { SKILLS_DATABASE } from '../data/skills.js';
+import { SKILLS_DATABASE, TECHNICAL_SKILLS, SOFT_SKILLS } from '../data/skills.js';
 
 /**
  * Resume parsing service using Ollama
@@ -31,12 +31,12 @@ export class ResumeParser {
       const skillsList = SKILLS_DATABASE.join(', ');
       
       const prompt = `
-You are an AI technical resume parser specialized in extracting technical skills. Analyze the following resume text and extract structured information with a focus on technical skills.
+You are an AI resume parser that extracts technical and soft skills from resumes. Be thorough but accurate - extract skills that are clearly demonstrated or mentioned, but don't infer unrelated technologies.
 
 RESUME TEXT:
 ${resumeText}
 
-AVAILABLE TECHNICAL SKILLS LIST:
+ALLOWED SKILLS LIST (ONLY extract skills from this list):
 ${skillsList}
 
 Please extract and return ONLY a valid JSON object with the following structure:
@@ -49,28 +49,50 @@ Please extract and return ONLY a valid JSON object with the following structure:
   "yearsOfExperience": number
 }
 
-CRITICAL TECHNICAL SKILLS EXTRACTION INSTRUCTIONS:
-1. PRIORITY: Focus heavily on extracting ALL technical skills mentioned in the resume
-2. Look for programming languages, frameworks, libraries, tools, databases, cloud platforms, etc.
-3. Check for skills in these sections: Technical Skills, Skills, Technologies, Tools, Programming Languages, Frameworks, Experience descriptions, Project descriptions
-4. For "extractedSkills": Include ALL technical skills found that exist in the provided skills list
-5. Be thorough - look for skills mentioned in context like "experience with Python", "proficient in React", "used AWS", "worked with MongoDB", etc.
-6. Match skills exactly as they appear in the skills list (case-sensitive)
-7. Don't miss variations like "JS" for "JavaScript", "Node" for "Node.js" - use the exact match from the skills list
-8. Include both explicitly listed skills AND skills mentioned in project/work descriptions
-9. For "experience": Provide a 2-3 sentence summary focusing on technical experience
-10. For "education": Include degrees, institutions, relevant technical coursework
-11. For "jobTitles": Extract all job titles/positions held
-12. For "companies": Extract all company names worked at
-13. For "yearsOfExperience": Estimate total years of professional/technical experience as a number
-14. Return ONLY the JSON object, no additional text or explanations
-15. If information is not found, use empty array [] for arrays, empty string "" for strings, and 0 for numbers
+COMPREHENSIVE SKILL EXTRACTION RULES:
 
-EXAMPLES OF SKILL EXTRACTION:
-- "Proficient in Python and Django" → extract "Python", "Django"
-- "Built React applications using Redux" → extract "React", "Redux"  
-- "Experience with AWS, Docker, and Kubernetes" → extract "AWS", "Docker", "Kubernetes"
-- "Database experience: MySQL, PostgreSQL" → extract "MySQL", "PostgreSQL"
+TECHNICAL SKILLS - Extract when you find:
+1. **Direct Usage**: "using X", "with X", "built in X", "developed using X"
+2. **Project Context**: "X application", "X development", "X project"
+3. **Coursework**: "X course", "X class", "studied X"
+4. **Concentrations/Specializations**: "concentration in X", "focus on X"
+5. **Tools/Libraries**: Any specifically named tools, libraries, frameworks
+6. **Technologies in Project Descriptions**: Technologies mentioned in project details
+7. **Academic Context**: Skills from coursework, research, academic projects
+
+SOFT SKILLS - Extract when you find clear evidence:
+1. **Leadership**: "led team", "managed", "supervised", "mentored", "guided"
+2. **Communication**: "presented", "collaborated", "coordinated", "liaised"
+3. **Problem Solving**: "solved", "debugged", "troubleshot", "optimized"
+4. **Project Management**: "managed project", "coordinated", "planned", "delivered"
+5. **Analytical Skills**: "analyzed", "evaluated", "assessed", "researched"
+
+SKILL VARIATIONS TO RECOGNIZE:
+- "JS", "Javascript" → "JavaScript"
+- "Node", "NodeJS" → "Node.js"
+- "Postgres" → "PostgreSQL"
+- "React.js", "ReactJS" → "React"
+- "Vue", "VueJS" → "Vue.js"
+- "ML" → "Machine Learning"
+- "AI" → "Artificial Intelligence"
+
+EXTRACTION EXAMPLES:
+✓ "Concentration: Machine Learning" → extract "Machine Learning"
+✓ "Coursework: Data Structures and Algorithms" → extract both skills
+✓ "Built React applications using TypeScript" → extract "React", "TypeScript"
+✓ "Mentored 6 entry developers" → extract "Mentoring"
+✓ "Managed project progress" → extract "Project Management"
+✓ "Using FAISS for semantic search" → extract "FAISS" (if in allowed list)
+✓ "JWT authentication" → extract "JWT" (if in allowed list)
+
+STILL AVOID:
+✗ Don't infer platform knowledge (Swift ≠ iOS unless iOS explicitly mentioned)
+✗ Don't extract company/product names as skills
+✗ Don't extract very generic terms without technical context
+
+Be thorough - academic coursework, research projects, and work experience all count as valid skill sources.
+
+Return ONLY the JSON object, no additional text.
 `;
 
       const response = await this.ollama.generate({
@@ -179,7 +201,7 @@ EXAMPLES OF SKILL EXTRACTION:
   }
 
   /**
-   * Enhanced fallback parsing using comprehensive keyword matching
+   * Enhanced fallback parsing using conservative keyword matching
    * @param {string} resumeText - Extracted text from resume
    * @returns {Object} Basic parsed data
    */
@@ -188,42 +210,107 @@ EXAMPLES OF SKILL EXTRACTION:
     const originalText = resumeText;
     const foundSkills = [];
 
-    // Enhanced technical skills extraction with context awareness
+    // Thorough technical skills and aggressive soft skills extraction
     SKILLS_DATABASE.forEach(skill => {
       const skillLower = skill.toLowerCase();
+      const isSoftSkill = SOFT_SKILLS.includes(skill);
       
-      // Direct match
-      if (lowerText.includes(skillLower)) {
-        foundSkills.push(skill);
-        return;
-      }
-      
-      // Check for variations and context
-      const skillVariations = this.getSkillVariations(skill);
-      for (const variation of skillVariations) {
-        if (lowerText.includes(variation.toLowerCase())) {
-          foundSkills.push(skill);
-          return;
+      if (isSoftSkill) {
+        // Aggressive soft skills extraction - look for any mention
+        const softSkillPatterns = [
+          `\\b${skillLower}\\b`,
+          `${skillLower} skills?`,
+          `${skillLower} experience`,
+          `${skillLower} abilities`,
+          `strong ${skillLower}`,
+          `excellent ${skillLower}`,
+          `led`,
+          `managed?`,
+          `mentored?`,
+          `collaborated?`,
+          `communicated?`,
+          `presented?`,
+          `organized?`,
+          `coordinated?`
+        ];
+        
+        for (const pattern of softSkillPatterns) {
+          const regex = new RegExp(pattern, 'i');
+          if (regex.test(lowerText)) {
+            foundSkills.push(skill);
+            break;
+          }
         }
-      }
-      
-      // Context-based matching
-      const contextPatterns = [
-        `experience with ${skillLower}`,
-        `proficient in ${skillLower}`,
-        `skilled in ${skillLower}`,
-        `using ${skillLower}`,
-        `worked with ${skillLower}`,
-        `knowledge of ${skillLower}`,
-        `familiar with ${skillLower}`,
-        `${skillLower} development`,
-        `${skillLower} programming`
-      ];
-      
-      for (const pattern of contextPatterns) {
-        if (lowerText.includes(pattern)) {
-          foundSkills.push(skill);
-          return;
+      } else {
+        // Thorough technical skills extraction
+        const technicalContextPatterns = [
+          // Direct mentions
+          `\\b${skillLower}\\b`,
+          // Experience contexts
+          `experience with ${skillLower}`,
+          `proficient in ${skillLower}`,
+          `skilled in ${skillLower}`,
+          `using ${skillLower}`,
+          `worked with ${skillLower}`,
+          `knowledge of ${skillLower}`,
+          `familiar with ${skillLower}`,
+          // Development contexts
+          `${skillLower} development`,
+          `${skillLower} programming`,
+          `${skillLower} framework`,
+          `${skillLower} library`,
+          `${skillLower} database`,
+          `${skillLower} platform`,
+          `programming in ${skillLower}`,
+          `developed in ${skillLower}`,
+          `coded in ${skillLower}`,
+          // Project contexts
+          `built with ${skillLower}`,
+          `implemented using ${skillLower}`,
+          `created with ${skillLower}`,
+          `utilized ${skillLower}`,
+          `employed ${skillLower}`,
+          // Technology stack contexts
+          `stack.*${skillLower}`,
+          `technologies.*${skillLower}`,
+          `tools.*${skillLower}`,
+          // List contexts
+          `${skillLower}[,\\s]`,
+          `[,\\s]${skillLower}`,
+          // Certification/education contexts
+          `certified in ${skillLower}`,
+          `trained in ${skillLower}`
+        ];
+        
+        // Check for skill variations first
+        const skillVariations = this.getSkillVariations(skill);
+        let skillFound = false;
+        
+        // Check variations
+        for (const variation of skillVariations) {
+          const variationPattern = new RegExp(`\\b${variation.toLowerCase()}\\b`, 'i');
+          if (variationPattern.test(lowerText)) {
+            // For technical skills, be more lenient with context validation
+            if (!this.isAmbiguousTerm(skill) || this.isValidSkillContext(lowerText, variation.toLowerCase())) {
+              foundSkills.push(skill);
+              skillFound = true;
+              break;
+            }
+          }
+        }
+        
+        if (!skillFound) {
+          // Check main skill name with context patterns
+          for (const pattern of technicalContextPatterns) {
+            const regex = new RegExp(pattern, 'i');
+            if (regex.test(lowerText)) {
+              // For technical skills, be more lenient with context validation
+              if (!this.isAmbiguousTerm(skill) || this.isValidSkillContext(lowerText, skillLower)) {
+                foundSkills.push(skill);
+                break;
+              }
+            }
+          }
         }
       }
     });
@@ -252,6 +339,83 @@ EXAMPLES OF SKILL EXTRACTION:
   }
 
   /**
+   * Check if a skill term is ambiguous and needs context validation
+   * @param {string} skill - Skill to check
+   * @returns {boolean} True if skill is ambiguous
+   */
+  isAmbiguousTerm(skill) {
+    const ambiguousTerms = [
+      'Go', 'Swift', 'Ruby', 'Scala', 'R',
+      'Android', 'iOS', 'Linux', 'Ubuntu', 'CentOS',
+      'Hadoop', 'Spark', 'Kubernetes', 'Docker',
+      'AWS', 'Azure', 'GCP', 'Firebase'
+    ];
+    return ambiguousTerms.includes(skill);
+  }
+
+  /**
+   * Validate if a skill mention is in a valid technical context
+   * @param {string} text - Full text to search in
+   * @param {string} skill - Skill to validate
+   * @returns {boolean} True if skill is in valid context
+   */
+  isValidSkillContext(text, skill) {
+    const skillLower = skill.toLowerCase();
+    
+    // Define required context patterns for different skill types
+    const contextPatterns = {
+      // Programming Languages
+      'go': ['golang', 'go programming', 'go development', 'go service', 'go api'],
+      'swift': ['swift programming', 'swift development', 'swift app', 'developed in swift'],
+      'ruby': ['ruby programming', 'ruby development', 'ruby on rails', 'developed in ruby'],
+      'scala': ['scala programming', 'scala development', 'apache spark', 'developed in scala'],
+      'r': ['r programming', 'r development', 'r statistical', 'r data', 'developed in r'],
+      
+      // Platforms & Tools
+      'android': ['android development', 'android app', 'android sdk', 'android studio'],
+      'ios': ['ios development', 'ios app', 'ios sdk', 'ios application'],
+      'linux': ['linux server', 'linux system', 'linux administration', 'linux environment'],
+      'ubuntu': ['ubuntu server', 'ubuntu system', 'ubuntu configuration'],
+      'centos': ['centos server', 'centos system', 'centos configuration'],
+      
+      // Cloud & Big Data
+      'hadoop': ['hadoop cluster', 'hadoop ecosystem', 'hadoop mapreduce'],
+      'spark': ['apache spark', 'spark streaming', 'spark processing'],
+      'kubernetes': ['kubernetes cluster', 'k8s', 'kubernetes deployment', 'kubernetes orchestration'],
+      'docker': ['docker container', 'docker image', 'containerization', 'docker compose'],
+      
+      // Cloud Platforms
+      'aws': ['amazon web services', 'aws cloud', 'aws service', 'aws lambda', 'aws ec2', 'aws s3'],
+      'azure': ['microsoft azure', 'azure cloud', 'azure service', 'azure function'],
+      'gcp': ['google cloud platform', 'gcp cloud', 'gcp service'],
+      'firebase': ['firebase database', 'firebase auth', 'firebase hosting']
+    };
+    
+    // If not an ambiguous term, still require some technical context
+    const generalTechnicalContext = [
+      'developed', 'implemented', 'built', 'created', 'designed',
+      'programmed', 'engineered', 'architected', 'deployed',
+      'experience with', 'worked with', 'using', 'utilized'
+    ];
+    
+    // Get surrounding context (100 characters before and after the skill mention)
+    const skillIndex = text.toLowerCase().indexOf(skillLower);
+    if (skillIndex === -1) return false;
+    
+    const start = Math.max(0, skillIndex - 100);
+    const end = Math.min(text.length, skillIndex + skill.length + 100);
+    const context = text.substring(start, end).toLowerCase();
+    
+    // For ambiguous terms, check for specific required context
+    if (contextPatterns[skillLower]) {
+      return contextPatterns[skillLower].some(pattern => context.includes(pattern.toLowerCase()));
+    }
+    
+    // For non-ambiguous terms, require at least one technical context indicator
+    return generalTechnicalContext.some(keyword => context.includes(keyword.toLowerCase()));
+  }
+
+  /**
    * Get skill variations for better matching
    * @param {string} skill - Original skill name
    * @returns {Array} Array of skill variations
@@ -277,7 +441,9 @@ EXAMPLES OF SKILL EXTRACTION:
       '.NET': ['DotNet', 'Dotnet'],
       'SQL Server': ['SQLServer', 'MS SQL'],
       'Apache Spark': ['Spark'],
-      'Spring Boot': ['SpringBoot']
+      'Spring Boot': ['SpringBoot'],
+      'Google Cloud Platform': ['GCP'],
+      'Amazon Web Services': ['AWS']
     };
     
     return variations[skill] || [];

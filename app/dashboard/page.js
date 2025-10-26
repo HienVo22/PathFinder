@@ -3,18 +3,22 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { toast } from 'react-hot-toast'
 import ResumeUpload from '@/components/ResumeUpload'
 import ResumeStatus from '@/components/ResumeStatus'
 import JobMatching from '@/components/JobMatching'
 import JobPreferences from '@/components/JobPreferences'
 import LinkedInLinkPopup from '@/components/LinkedInLinkPopup'
 import LinkedInMockLink from '@/components/LinkedInMockLink'
+import ProcessingSuccessModal from '@/components/ProcessingSuccessModal'
 
 export default function Dashboard() {
   const { user, logout, loading } = useAuth()
   const router = useRouter()
   const resumeStatusRef = useRef(null)
   const [activeTab, setActiveTab] = useState('overview')
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [uploadedFileName, setUploadedFileName] = useState('')
 
   // Handle successful resume upload
   const handleUploadSuccess = (result) => {
@@ -23,6 +27,28 @@ export default function Dashboard() {
     if (resumeStatusRef.current) {
       resumeStatusRef.current.refreshStatus();
     }
+    toast.success('Resume uploaded successfully! Processing your document...');
+  }
+
+  // Handle showing the modal after upload
+  const handleShowModal = (fileInfo) => {
+    setUploadedFileName(fileInfo.name);
+    setShowSuccessModal(true);
+  }
+
+  // Handle resume processing completion
+  const handleProcessingComplete = (result) => {
+    if (result.status === 'completed') {
+      toast.success('Resume processing complete! Your skills have been extracted.');
+    } else {
+      toast.error('Resume processing took longer than expected. Please check back in a few minutes.');
+    }
+  }
+
+  // Handle viewing job matches
+  const handleViewJobs = () => {
+    setShowSuccessModal(false);
+    setActiveTab('jobs');
   }
 
   useEffect(() => {
@@ -48,6 +74,12 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ProcessingSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        onViewJobs={handleViewJobs}
+        uploadedFileName={uploadedFileName}
+      />
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -115,7 +147,11 @@ export default function Dashboard() {
           <>
             {/* Resume Upload Section */}
             <div className="mb-8">
-              <ResumeUpload onUploadSuccess={handleUploadSuccess} />
+              <ResumeUpload 
+                onUploadSuccess={handleUploadSuccess}
+                onProcessingComplete={handleProcessingComplete}
+                onShowModal={handleShowModal}
+              />
             </div>
 
             {/* Resume Status Section */}
