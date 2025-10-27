@@ -1,8 +1,8 @@
 import fs from 'fs';
+import mammoth from 'mammoth';
 
 /**
  * Extract text from different file types
- * Note: Currently simplified to work without external dependencies
  */
 export class TextExtractor {
   /**
@@ -52,28 +52,35 @@ export class TextExtractor {
   }
 
   /**
-   * Extract text from DOCX buffer (Basic extraction without mammoth)
+   * Extract text from DOCX buffer using mammoth for better accuracy
    * @param {Buffer} buffer - DOCX file buffer
    * @returns {Promise<string>} Extracted text
    */
   static async extractFromDOCX(buffer) {
     try {
-      // Basic text extraction without mammoth - convert buffer to string and clean
-      // This is a fallback method that won't be as accurate as mammoth
-      const text = buffer.toString('utf8');
-      // Try to extract readable text from the XML structure
-      const cleanedText = text
-        .replace(/<[^>]*>/g, ' ') // Remove XML tags
-        .replace(/[^\x20-\x7E\n]/g, ' ') // Keep only printable ASCII and newlines
-        .replace(/\s+/g, ' ') // Normalize whitespace
-        .trim();
+      // Use mammoth for proper DOCX text extraction with formatting preservation
+      const result = await mammoth.extractRawText({ buffer });
       
-      if (cleanedText.length < 50) {
+      if (result.messages && result.messages.length > 0) {
+        console.log('DOCX extraction warnings:', result.messages);
+      }
+      
+      const text = result.value;
+      
+      if (!text || text.length < 50) {
         throw new Error('Unable to extract meaningful text from DOCX file');
       }
       
+      // Clean up the text while preserving important structure
+      const cleanedText = text
+        .replace(/\t/g, ' ')  // Replace tabs with spaces
+        .replace(/\r\n/g, '\n')  // Normalize line endings
+        .replace(/ {2,}/g, ' ')  // Replace multiple spaces with single space
+        .trim();
+      
       return cleanedText;
     } catch (error) {
+      console.error('DOCX extraction error:', error);
       throw new Error(`DOCX extraction failed: ${error.message}`);
     }
   }

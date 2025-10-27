@@ -316,7 +316,7 @@ Return ONLY the JSON object.
     const foundSkills = [];
     const lines = text.split('\n');
     
-    // Skills section headers to look for
+    // Skills section headers to look for (more comprehensive)
     const skillsHeaders = [
       /^skills?:?$/i,
       /^technical skills?:?$/i,
@@ -332,7 +332,11 @@ Return ONLY the JSON object.
       /^databases?:?$/i,
       /^core competencies:?$/i,
       /^technical competencies:?$/i,
-      /^relevant skills?:?$/i
+      /^relevant skills?:?$/i,
+      /^frameworks?\s*(&|and)\s*libraries:?$/i,
+      /^programming\s*languages?:?$/i,
+      /^tools?\s*(&|and)\s*technologies:?$/i,
+      /^technical\s*tools?:?$/i
     ];
 
     let inSkillsSection = false;
@@ -373,11 +377,16 @@ Return ONLY the JSON object.
 
     // Parse the skills section content
     if (skillsSectionContent) {
-      // Split by common delimiters
+      // Split by common delimiters (commas, semicolons, bullets, slashes, pipes, newlines)
       const skillsText = skillsSectionContent.toLowerCase();
-      const potentialSkills = skillsText.split(/[,;•·\n\r\t\|\/]+/)
+      const potentialSkills = skillsText
+        .split(/[,;•·\n\r\t\|\/]+/)
         .map(s => s.trim())
-        .filter(s => s.length > 0);
+        .map(s => s.replace(/^[-–—]\s*/, '')) // Remove leading dashes
+        .map(s => s.replace(/^[•◦▪▫]\s*/, '')) // Remove bullets
+        .filter(s => s.length > 1);
+
+      console.log(`Found ${potentialSkills.length} potential skills in skills section:`, potentialSkills.slice(0, 20));
 
       // Match against our skills database
       SKILLS_DATABASE.forEach(skill => {
@@ -385,12 +394,31 @@ Return ONLY the JSON object.
         const skillVariations = [skillLower, ...this.getSkillVariations(skill).map(v => v.toLowerCase())];
         
         for (const variation of skillVariations) {
-          if (potentialSkills.some(ps => ps.includes(variation) || variation.includes(ps))) {
+          // Check for exact matches or if the potential skill contains the variation
+          const found = potentialSkills.some(ps => {
+            // Exact match
+            if (ps === variation) return true;
+            // Potential skill contains the variation (e.g., "html/css" contains "html")
+            if (ps.includes(variation)) {
+              // Make sure it's a word boundary match
+              const regex = new RegExp(`\\b${this.escapeRegex(variation)}\\b`, 'i');
+              return regex.test(ps);
+            }
+            // Variation contains potential skill (e.g., "javascript" matches "js")
+            if (variation.includes(ps) && ps.length >= 2) {
+              return variation === ps;
+            }
+            return false;
+          });
+          
+          if (found) {
             foundSkills.push(this.normalizeSkill(skill));
             break;
           }
         }
       });
+      
+      console.log(`Extracted ${foundSkills.length} skills from skills section`);
     }
 
     return foundSkills;
