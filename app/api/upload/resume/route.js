@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 import User from '../../../../models/User';
 import connectDB from '../../../../lib/mongodb';
-import { ResumeProcessingService } from '../../../../services/pdfParser';
+import { ResumeProcessingService } from '../../../../services/resumeProcessingService';
 
 // Configure upload directory
 const uploadDir = path.join(process.cwd(), 'uploads', 'resumes');
@@ -127,43 +127,6 @@ export async function POST(request) {
   user.resumeFilename = filename;
   user.resumeContentType = file.type;
   user.resumeData = buffer;
-
-  // If the file is a PDF, extract text and then extract skills
-  let parsedResumeText = null;
-  if (file.type === 'application/pdf') {
-    try {
-      parsedResumeText = await parsePdfBuffer(buffer);
-      
-      if (parsedResumeText && parsedResumeText.length > 0) {
-        console.log('✓ PDF parsed successfully, text length:', parsedResumeText.length);
-
-        // Now, call the AI skills API
-        const absoluteUrl = new URL('/api/ai/skills', request.url);
-        const aiResponse = await fetch(absoluteUrl.href, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ text: parsedResumeText })
-        });
-
-        if (aiResponse.ok) {
-            const { skills } = await aiResponse.json();
-            console.log('✓ Skills extracted:', skills);
-            // Save the new skills to the user, replacing old ones
-            user.skills = Array.from(new Set(skills));
-        } else {
-            console.error('Failed to extract skills from AI API');
-        }
-
-      } else {
-        console.warn('PDF parsed but no text extracted');
-      }
-    } catch (err) {
-      console.error('PDF parsing or AI skill extraction error:', err.message);
-    }
-  }
     
     console.log('Updating user with resume info:', {
       userId: decoded.userId,
@@ -200,9 +163,7 @@ export async function POST(request) {
         userId: decoded.userId,
         savedToMongoDB: true,
         resumePath: savedUser.resumePath,
-        resumeFilename: savedUser.resumeFilename,
-        // parsed text is returned only in the upload response for immediate use; not persisted to the DB
-        parsedText: parsedResumeText
+        resumeFilename: savedUser.resumeFilename
       }
     });
 
@@ -219,6 +180,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const filename = searchParams.get('file');
+    const download = searchParams.get('download') === 'true';
     
     if (!filename) {
       return NextResponse.json({ error: 'Filename required' }, { status: 400 });
@@ -230,10 +192,11 @@ export async function GET(request) {
     if (userWithFile && userWithFile.resumeData) {
       const fileBuffer = Buffer.from(userWithFile.resumeData);
       const contentType = userWithFile.resumeContentType || 'application/octet-stream';
+      const disposition = download ? 'attachment' : 'inline';
       return new Response(fileBuffer, {
         headers: {
           'Content-Type': contentType,
-          'Content-Disposition': `attachment; filename="${userWithFile.resumeOriginalName || filename}"`,
+          'Content-Disposition': `${disposition}; filename="${userWithFile.resumeOriginalName || filename}"`,
         },
       });
     }
@@ -257,10 +220,11 @@ export async function GET(request) {
       contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     }
 
+    const disposition = download ? 'attachment' : 'inline';
     return new Response(fileBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Disposition': `${disposition}; filename="${filename}"`,
       },
     });
 

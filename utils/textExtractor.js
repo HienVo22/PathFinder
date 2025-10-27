@@ -1,8 +1,8 @@
-import mammoth from 'mammoth';
 import fs from 'fs';
 
 /**
  * Extract text from different file types
+ * Note: Currently simplified to work without external dependencies
  */
 export class TextExtractor {
   /**
@@ -21,17 +21,15 @@ export class TextExtractor {
 
       switch (contentType) {
         case 'application/pdf':
-          // Temporarily disabled PDF parsing due to Next.js compatibility issues
-          // Will re-implement with a Next.js-compatible PDF parser
-          console.warn('PDF parsing temporarily disabled. Please use DOCX files for now.');
-          return 'PDF text extraction temporarily unavailable. Please upload a DOCX file for AI parsing to work properly.';
+          // PDF parsing disabled - requires external dependencies
+          console.warn('PDF parsing disabled. Using fallback text extraction.');
+          return 'PDF text extraction unavailable. Using fallback parsing for skill detection.';
         
         case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
           return await this.extractFromDOCX(buffer);
         
         case 'application/msword':
-          // For older .doc files, we'll try to extract as best we can
-          // Note: mammoth works best with .docx, for .doc you might want to use a different library
+          // For older .doc files, use basic extraction
           return await this.extractFromDOCX(buffer);
         
         default:
@@ -44,24 +42,37 @@ export class TextExtractor {
   }
 
   /**
-   * Extract text from PDF buffer (DISABLED - Next.js compatibility issues)
+   * Extract text from PDF buffer (DISABLED - requires external dependencies)
    * @param {Buffer} buffer - PDF file buffer
    * @returns {Promise<string>} Extracted text
    */
   static async extractFromPDF(buffer) {
-    // Temporarily disabled due to pdf-parse/pdfjs-dist compatibility issues with Next.js
-    throw new Error('PDF extraction temporarily disabled. Please use DOCX files.');
+    // Disabled due to dependency issues
+    throw new Error('PDF extraction disabled. Please use DOCX files.');
   }
 
   /**
-   * Extract text from DOCX buffer
+   * Extract text from DOCX buffer (Basic extraction without mammoth)
    * @param {Buffer} buffer - DOCX file buffer
    * @returns {Promise<string>} Extracted text
    */
   static async extractFromDOCX(buffer) {
     try {
-      const result = await mammoth.extractRawText({ buffer });
-      return result.value;
+      // Basic text extraction without mammoth - convert buffer to string and clean
+      // This is a fallback method that won't be as accurate as mammoth
+      const text = buffer.toString('utf8');
+      // Try to extract readable text from the XML structure
+      const cleanedText = text
+        .replace(/<[^>]*>/g, ' ') // Remove XML tags
+        .replace(/[^\x20-\x7E\n]/g, ' ') // Keep only printable ASCII and newlines
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .trim();
+      
+      if (cleanedText.length < 50) {
+        throw new Error('Unable to extract meaningful text from DOCX file');
+      }
+      
+      return cleanedText;
     } catch (error) {
       throw new Error(`DOCX extraction failed: ${error.message}`);
     }

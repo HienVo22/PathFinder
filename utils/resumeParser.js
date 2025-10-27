@@ -234,7 +234,11 @@ Return ONLY the JSON object, no additional text.
           `coordinated?`
         ];
         
-        for (const pattern of softSkillPatterns) {
+        const escapedSkillSoft = skillLower.replace(/[+\-\[\]{}()*?.,\\^$|#\s]/g, '\\$&');
+        const escapedSoftPatterns = softSkillPatterns.map(pattern => 
+          pattern.replace(/\$\{skillLower\}/g, escapedSkillSoft)
+        );
+        for (const pattern of escapedSoftPatterns) {
           const regex = new RegExp(pattern, 'i');
           if (regex.test(lowerText)) {
             foundSkills.push(skill);
@@ -243,43 +247,44 @@ Return ONLY the JSON object, no additional text.
         }
       } else {
         // Thorough technical skills extraction
+        const escapedSkill = skillLower.replace(/[+\-\[\]{}()*?.,\\^$|#\s]/g, '\\$&');
         const technicalContextPatterns = [
           // Direct mentions
-          `\\b${skillLower}\\b`,
+          `\\b${escapedSkill}\\b`,
           // Experience contexts
-          `experience with ${skillLower}`,
-          `proficient in ${skillLower}`,
-          `skilled in ${skillLower}`,
-          `using ${skillLower}`,
-          `worked with ${skillLower}`,
-          `knowledge of ${skillLower}`,
-          `familiar with ${skillLower}`,
+          `experience with ${escapedSkill}`,
+          `proficient in ${escapedSkill}`,
+          `skilled in ${escapedSkill}`,
+          `using ${escapedSkill}`,
+          `worked with ${escapedSkill}`,
+          `knowledge of ${escapedSkill}`,
+          `familiar with ${escapedSkill}`,
           // Development contexts
-          `${skillLower} development`,
-          `${skillLower} programming`,
-          `${skillLower} framework`,
-          `${skillLower} library`,
-          `${skillLower} database`,
-          `${skillLower} platform`,
-          `programming in ${skillLower}`,
-          `developed in ${skillLower}`,
-          `coded in ${skillLower}`,
+          `${escapedSkill} development`,
+          `${escapedSkill} programming`,
+          `${escapedSkill} framework`,
+          `${escapedSkill} library`,
+          `${escapedSkill} database`,
+          `${escapedSkill} platform`,
+          `programming in ${escapedSkill}`,
+          `developed in ${escapedSkill}`,
+          `coded in ${escapedSkill}`,
           // Project contexts
-          `built with ${skillLower}`,
-          `implemented using ${skillLower}`,
-          `created with ${skillLower}`,
-          `utilized ${skillLower}`,
-          `employed ${skillLower}`,
+          `built with ${escapedSkill}`,
+          `implemented using ${escapedSkill}`,
+          `created with ${escapedSkill}`,
+          `utilized ${escapedSkill}`,
+          `employed ${escapedSkill}`,
           // Technology stack contexts
-          `stack.*${skillLower}`,
-          `technologies.*${skillLower}`,
-          `tools.*${skillLower}`,
+          `stack.*${escapedSkill}`,
+          `technologies.*${escapedSkill}`,
+          `tools.*${escapedSkill}`,
           // List contexts
-          `${skillLower}[,\\s]`,
-          `[,\\s]${skillLower}`,
+          `${escapedSkill}[,\\s]`,
+          `[,\\s]${escapedSkill}`,
           // Certification/education contexts
-          `certified in ${skillLower}`,
-          `trained in ${skillLower}`
+          `certified in ${escapedSkill}`,
+          `trained in ${escapedSkill}`
         ];
         
         // Check for skill variations first
@@ -288,7 +293,8 @@ Return ONLY the JSON object, no additional text.
         
         // Check variations
         for (const variation of skillVariations) {
-          const variationPattern = new RegExp(`\\b${variation.toLowerCase()}\\b`, 'i');
+          const escapedVariation = variation.toLowerCase().replace(/[+\-\[\]{}()*?.,\\^$|#\s]/g, '\\$&');
+          const variationPattern = new RegExp(`\\b${escapedVariation}\\b`, 'i');
           if (variationPattern.test(lowerText)) {
             // For technical skills, be more lenient with context validation
             if (!this.isAmbiguousTerm(skill) || this.isValidSkillContext(lowerText, variation.toLowerCase())) {
