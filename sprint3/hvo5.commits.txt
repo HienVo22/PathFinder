@@ -1,0 +1,119 @@
+# PathFinder Commit History - Hien Vo (hvo5)
+# This file tracks all commits made to the PathFinder project
+# Format: [commit_hash] [commit_message] [date/status]
+
+## Recent Commits (Sprint 3)
+5a2585d cleaning up upload resume and resume status and job parsing [2025-10-27 - CURRENT]
+d01b289 manual backup [Previous]
+
+## Sprint 2 Commits
+4db04d7 Improve skill extraction: enhanced AI prompt and comprehensive skills database
+0340b78 Merging pull request
+8dd81cf Merge branch 'main' into pdawes
+615a31b Improve skill extraction: enhanced AI prompt and comprehensive skills database
+bd28fab feat(theme): persist theme in DB, apply on login; stabilize ThemeProvider; settings toggle; default light on logout; keep auth pages light; dark mode across components
+86caaa3 sprint 2
+bc761c0 Sprint2
+30bf815 Create jvijayak.commits.txt
+210015d Merge pull request #45 from HienVo22/two-fa
+53528cf Update hvo5.md
+fb2be0b Create jvijayak.md
+d938c86 Merge pull request #44 from HienVo22/AIParsing/hien
+edfb8b1 Add Sprint 2 reflection files
+a6b4e9e WIP on AIParsing/hien: b717303 Add LinkedIn-style job preferences modal and AI resume parsing with job matching
+de7c752 index on AIParsing/hien: b717303 Add LinkedIn-style job preferences modal and AI resume parsing with job matching
+e55c35d Create TwoFA.js
+aa7eb61 Update pdawes.md
+aed2dbb Update pdawes.commits.txt
+4504676 commits for sprint 2
+127cdbc Create pdawes.md
+b717303 Add LinkedIn-style job preferences modal and AI resume parsing with job matching
+
+## Sprint 1 Commits
+98d8500 Merge pull request #40 from HienVo22/ziad-settings-page
+ef4e9ba added settings page, change name and delete account functionality
+035b575 Merge pull request #27 from HienVo22/linkedin
+de0c302 feat: Implement resume parsing and AI skill extraction
+1ff3e28 linkedin
+af76991 Update README.md
+0d39e4f sprint1 docs
+cea7278 Merge branch 'main' of https://github.com/HienVo22/PathFinder
+e0fd50d sprint 1 reflection
+2cc2bb4 Resolve merge conflict and update Sprint 1
+518ee50 Update Sprint 1
+61e8113 Update hvo5.md
+c36a3ff Update hvo5.md
+5c310c2 Merge jobmatching/hien branch with Sprint 1 documentation
+9e23b5e Add Sprint 1 reflection
+426f52a pdawes commits
+a23b3e0 Add Sprint 1 directory
+487cadb Merge pull request #17 from HienVo22/mongoDBchanges
+c84fd71 PDF upload
+8c0478a Merge pull request #16 from HienVo22/ziad-google-auth
+adcf45f Merge branch 'main' into ziad-google-auth
+c4acdc9 initial google auth login
+9a0e6cc Merge pull request #15 from HienVo22/pdawes
+27d6fd2 updated server name in mongodb.js
+f1b92fc Fix resume URL on Windows and refresh user after upload
+66ffe5c Add refreshUser to AuthContext
+cb55d0a Refresh resume spot to notify that resume upload worked
+e6742dc Use path.basename for resume filename extraction
+e758353 simple job matching MVP with preferences system
+39cf184 added several resume upload features
+b944709 Merge pull request #14 from HienVo22/resumeupload/hien
+75a1b59 Merge pull request #4 from HienVo22/main
+7d64b7c resolve merge conflicts with main branch
+49b925b docs: update README with MongoDB Compass setup and resume upload testing instructions
+ae7992f added resume upload features with mongodb integration for storage
+19420aa Update README with MongoDB and resume upload instructions
+4bd0204 updated readme
+
+## Initial Development Commits
+ada3fab ziad assignment 7 hello world
+0ae999c Delete helloplus/README.md
+091760e Create README.md
+efd6625 Merge branch 'main' of https://github.com/HienVo22/PathFinder
+c918a47 adding part 2 of helloplus
+37914c6 Create test_file.txt
+7c61683 Create simpleparser.py for pdawes
+091dafb Create README.md for pdawes
+5c6e5de adding helloplus
+889c2b9 Update README.md
+518138a Update README.md
+2943854 Update README.md
+120429f Update README.md
+ca4bf01 Update README.md
+0686640 Update README.md
+3ffd42b Update README.md
+ad32616 Update README.md
+2680fca Update README.md
+6f03853 Update README.md
+dfab462 Update README.md
+1e4bc39 Update README.md
+285733b Added Assignment 7 Hello World Plus: simple file upload program
+73217fb Update README.md
+0b5f734 Update README.md
+864c424 update readme
+337477f udpate readme
+df86f9b Update README.md
+21bd3ca Update README.md
+9b9b60b Update README.md
+7ff844a Initial commit: Pathfinder MVP - Clean JavaScript codebase
+
+## Branch History
+- linkedinAPI/hien [DELETED 2025-10-27]
+- generalDebugging/hien [CREATED 2025-10-27] [CURRENT]
+
+## Key Changes Summary
+- Resume viewer enhancement for original format display
+- Mammoth dependency removal and cleanup
+- Download/preview functionality separation
+- Branch reorganization and tracking system establishment
+- Compilation error fixes and dependency management
+
+## Instructions for Future Updates
+1. When adding new commits, prepend them to the "Recent Commits" section
+2. When removing/reverting commits, mark them as [REMOVED] with reason
+3. Update branch history when creating/deleting branches
+4. Maintain chronological order (newest first)
+5. Include meaningful commit descriptions and context
