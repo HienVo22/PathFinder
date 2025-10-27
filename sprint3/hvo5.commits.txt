@@ -160,3 +160,15 @@ b7173036 (Hien Vo 2025-10-14 08:44:01 -0400  7) export class TextExtractor {
 - Removed mammoth dependency
 - Simplified to work without external dependencies
 - Added documentation notes
+
+### 8. **AI Model Upgrade to llama3.1:8b** (8a9e887a):
+- Upgraded from llama3.2 (3.2B parameters) to llama3.1:8b (8B parameters)
+- Expected accuracy improvement from 85-92% to 90-95%
+- Better skill extraction, especially for:
+  * Skills in dedicated sections
+  * Skills mentioned in project contexts
+  * Abbreviated skills (JS → JavaScript)
+  * Special characters (C++, C#)
+
+================== AI Model Upgrade (utils/resumeParser.js) ==================
+8a9e887a (Hien Vo 2025-10-27 13:56:59 -0400  12)     this.model = 'llama3.1:8b'; // Using llama3.1:8b for better accuracy (90-95%)
