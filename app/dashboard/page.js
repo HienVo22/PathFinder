@@ -35,8 +35,8 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-secondary-600">Loading...</p>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 mx-auto dark:border-primary-400 dark:border-b-primary-400"></div>
+          <p className="mt-4 text-secondary-600 dark:text-secondary-400">Loading...</p>
         </div>
       </div>
     )
@@ -47,9 +47,9 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
@@ -58,7 +58,7 @@ export default function Dashboard() {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-secondary-600">Welcome, {user.name}!</span>
+              <span className="text-secondary-600 dark:text-secondary-400">Welcome, {user.name}!</span>
               <button
                 onClick={logout}
                 className="btn-secondary"
@@ -71,17 +71,17 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white dark:bg-gray-900">
         {/* Navigation Tabs */}
         <div className="mb-8">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
+          <div className="border-b border-gray-200 dark:border-gray-700">
+            <nav className="-mb-px flex space-x-8 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setActiveTab('overview')}
                 className={`py-2 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'overview'
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
               >
                 Overview
@@ -90,8 +90,8 @@ export default function Dashboard() {
                 onClick={() => setActiveTab('jobs')}
                 className={`py-2 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'jobs'
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
               >
                 Job Matches
@@ -100,8 +100,8 @@ export default function Dashboard() {
                 onClick={() => setActiveTab('preferences')}
                 className={`py-2 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'preferences'
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
               >
                 Preferences
@@ -125,8 +125,8 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Profile Card */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Profile</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Your Profile</h2>
             <div className="space-y-2">
               <p><span className="font-medium">Name:</span> {user.name}</p>
               <p><span className="font-medium">Email:</span> {user.email}</p>
@@ -146,9 +146,9 @@ export default function Dashboard() {
           </div>
 
           {/* Job Recommendations */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Job Recommendations</h2>
-            <p className="text-secondary-600 mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Job Recommendations</h2>
+            <p className="text-secondary-600 dark:text-secondary-400 mb-4">
               Discover jobs that match your skills and experience using our smart matching algorithm.
             </p>
             <button 
@@ -160,9 +160,9 @@ export default function Dashboard() {
           </div>
 
           {/* Applications */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Applications</h2>
-            <p className="text-secondary-600 mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Your Applications</h2>
+            <p className="text-secondary-600 dark:text-secondary-400 mb-4">
               Track your job applications and their status.
             </p>
             <button className="btn-secondary w-full">
@@ -172,8 +172,8 @@ export default function Dashboard() {
         </div>
 
             {/* Quick Actions */}
-            <div className="mt-8 bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+            <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <button 
                   onClick={() => setActiveTab('jobs')}
