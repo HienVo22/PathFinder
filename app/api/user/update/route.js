@@ -24,11 +24,7 @@ export async function POST(request) {
 
     // Get request body
     const body = await request.json()
-    const { name } = body
-
-    if (!name || typeof name !== 'string' || !name.trim()) {
-      return NextResponse.json({ error: 'Invalid name provided' }, { status: 400 })
-    }
+    const { name, theme } = body
 
     // Find and update user
     const user = await User.findById(decoded.userId)
@@ -36,15 +32,21 @@ export async function POST(request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    user.name = name.trim()
+    if (name && typeof name === 'string' && name.trim()) {
+      user.name = name.trim()
+    }
+    if (theme && (theme === 'light' || theme === 'dark')) {
+      user.theme = theme
+    }
     await user.save()
 
     return NextResponse.json({ 
-      message: 'Name updated successfully',
+      message: 'User updated successfully',
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        theme: user.theme
       }
     })
 

@@ -146,23 +146,23 @@ const JobMatching = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Job Matches</h1>
-        <p className="text-gray-600">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Job Matches</h1>
+        <p className="text-gray-600 dark:text-gray-300">
           Based on your extracted skills: <span className="font-medium">{userSkills.length} skills found</span>
         </p>
       </div>
 
       {/* User Skills Display */}
-      <div className="mb-8 bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Your Skills</h2>
+      <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Your Skills</h2>
         <div className="flex flex-wrap gap-2">
           {userSkills.map((skill, index) => (
             <span
               key={index}
-              className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm"
+              className="px-3 py-1 bg-primary-100 dark:bg-primary-700 text-primary-700 dark:text-primary-100 rounded-full text-sm"
             >
               {skill}
             </span>
@@ -170,7 +170,7 @@ const JobMatching = () => {
         </div>
         <button 
           onClick={loadUserSkills}
-          className="mt-4 text-sm text-primary-600 hover:text-primary-700 underline"
+          className="mt-4 text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 underline"
         >
           Refresh Skills
         </button>
@@ -178,18 +178,18 @@ const JobMatching = () => {
 
       {/* Skill Gap Analysis */}
       {skillGapAnalysis && (
-        <div className="mb-8 bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Skill Development Recommendations</h2>
+        <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Skill Development Recommendations</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Most In-Demand Missing Skills */}
             <div>
-              <h3 className="text-lg font-medium text-gray-700 mb-3">Top Skills to Learn</h3>
+              <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">Top Skills to Learn</h3>
               <div className="space-y-3">
                 {skillGapAnalysis.topMissingSkills.slice(0, 5).map((skillGap, index) => (
                   <div key={index} className="border rounded-lg p-3">
                     <div className="flex justify-between items-start">
                       <div>
-                        <span className="font-medium text-gray-800">{skillGap.skill}</span>
+                        <span className="font-medium text-gray-800 dark:text-gray-100">{skillGap.skill}</span>
                         <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
                           skillGap.importance === 'required' 
                             ? 'bg-red-100 text-red-800' 
@@ -198,7 +198,7 @@ const JobMatching = () => {
                           {skillGap.importance}
                         </span>
                       </div>
-                      <span className="text-sm text-gray-500">{skillGap.opportunityCount} jobs</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">{skillGap.opportunityCount} jobs</span>
                     </div>
                   </div>
                 ))}
@@ -207,18 +207,18 @@ const JobMatching = () => {
 
             {/* Statistics */}
             <div>
-              <h3 className="text-lg font-medium text-gray-700 mb-3">Match Statistics</h3>
+              <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">Match Statistics</h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Average Match</span>
+                  <span className="text-gray-600 dark:text-gray-400">Average Match</span>
                   <span className="font-medium">{Math.round(skillGapAnalysis.averageMatchPercentage)}%</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Jobs Analyzed</span>
+                  <span className="text-gray-600 dark:text-gray-400">Jobs Analyzed</span>
                   <span className="font-medium">{skillGapAnalysis.totalJobsAnalyzed}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Your Skills</span>
+                  <span className="text-gray-600 dark:text-gray-400">Your Skills</span>
                   <span className="font-medium">{userSkills.length}</span>
                 </div>
               </div>
@@ -228,12 +228,12 @@ const JobMatching = () => {
       )}
 
       {/* Preferences (replaces Filters) */}
-      <div className="mb-8 bg-white rounded-lg shadow-md p-6">
+      <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Job Preferences</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Job Preferences</h2>
           <button
             onClick={() => setIsPreferencesOpen(true)}
-            className="px-4 py-2 rounded-md bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium"
+            className="px-4 py-2 rounded-md bg-primary-600 dark:bg-primary-500 hover:bg-primary-700 dark:hover:bg-primary-600 text-white text-sm font-medium"
           >
             Edit Preferences
           </button>
@@ -260,7 +260,7 @@ const JobMatching = () => {
             <span className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm">Pay: {filters.desiredPay}</span>
           )}
           {(!filters.locationTypes?.length && !filters.locations?.length && !filters.employmentTypes?.length && !filters.desiredPay) && (
-            <span className="text-sm text-gray-500">No preferences set. Click Edit Preferences to personalize matches.</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">No preferences set. Click Edit Preferences to personalize matches.</span>
           )}
         </div>
       </div>
@@ -274,30 +274,30 @@ const JobMatching = () => {
 
       {/* Job Matches */}
       <div className="space-y-6">
-        <h2 className="text-2xl font-semibold text-gray-800">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
           Job Matches ({jobMatches.length} found)
         </h2>
 
         {jobMatches.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-gray-500 mb-4">
+            <div className="text-gray-500 dark:text-gray-400 mb-4">
               <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <p className="text-lg text-gray-600">No job matches found with current filters.</p>
-            <p className="text-gray-500 mt-2">Try adjusting your filters or develop more skills!</p>
+            <p className="text-lg text-gray-600 dark:text-gray-300">No job matches found with current filters.</p>
+            <p className="text-gray-500 dark:text-gray-400 mt-2">Try adjusting your filters or develop more skills!</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6">
             {jobMatches.map((job) => (
-              <div key={job.id} className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+              <div key={job.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
                 {/* Job Header */}
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900">{job.title}</h3>
-                    <p className="text-lg text-gray-600">{job.company}</p>
-                    <p className="text-sm text-gray-500">{job.location} • {job.type}</p>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{job.title}</h3>
+                    <p className="text-lg text-gray-600 dark:text-gray-300">{job.company}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{job.location} • {job.type}</p>
                   </div>
                   <div className="text-right">
                     <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
@@ -309,7 +309,7 @@ const JobMatching = () => {
                     }`}>
                       {job.matchAnalysis.matchPercentage}% Match
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">{job.salary}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{job.salary}</p>
                   </div>
                 </div>
 
@@ -318,7 +318,7 @@ const JobMatching = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Required Skills */}
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Required Skills ({job.matchAnalysis.matchedRequiredSkills.length}/{job.matchAnalysis.totalRequiredSkills})
                       </h4>
                       <div className="flex flex-wrap gap-1">
@@ -340,7 +340,7 @@ const JobMatching = () => {
                     {/* Preferred Skills */}
                     {job.preferredSkills && job.preferredSkills.length > 0 && (
                       <div>
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Preferred Skills ({job.matchAnalysis.matchedPreferredSkills.length}/{job.matchAnalysis.totalPreferredSkills})
                         </h4>
                         <div className="flex flex-wrap gap-1">
@@ -364,13 +364,13 @@ const JobMatching = () => {
 
                 {/* Job Description */}
                 <div className="mb-4">
-                  <p className="text-gray-700 text-sm leading-relaxed">{job.description}</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{job.description}</p>
                 </div>
 
                 {/* Benefits */}
                 {job.benefits && job.benefits.length > 0 && (
                   <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Benefits</h4>
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Benefits</h4>
                     <div className="flex flex-wrap gap-2">
                       {job.benefits.map((benefit, index) => (
                         <span
@@ -399,8 +399,8 @@ const JobMatching = () => {
                 )}
 
                 {/* Actions */}
-                <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">
+                <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
                     Posted: {new Date(job.posted).toLocaleDateString()}
                   </div>
                   <div className="space-x-3">
@@ -408,7 +408,7 @@ const JobMatching = () => {
                     <button 
                       className={`text-sm px-4 py-2 rounded-md font-medium ${
                         job.matchAnalysis.matchPercentage >= 60
-                          ? 'bg-primary-600 text-white hover:bg-primary-700'
+                          ? 'bg-primary-600 dark:bg-primary-500 text-white hover:bg-primary-700 dark:hover:bg-primary-600'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                       disabled={job.matchAnalysis.matchPercentage < 60}

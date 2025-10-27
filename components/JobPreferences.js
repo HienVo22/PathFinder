@@ -113,22 +113,22 @@ const JobPreferences = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Job Preferences</h1>
-        <p className="text-gray-600">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Job Preferences</h1>
+        <p className="text-gray-600 dark:text-gray-300">
           Set your preferences to get more relevant job recommendations
         </p>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         {/* Location Types */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Work Location Type</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Work Location Type</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {locationTypeOptions.map(type => (
-              <label key={type} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+              <label key={type} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={preferences.locationTypes.includes(type)}
@@ -136,8 +136,8 @@ const JobPreferences = () => {
                   className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 />
                 <div>
-                  <span className="font-medium text-gray-900">{type}</span>
-                  <p className="text-sm text-gray-500">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{type}</span>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {type === 'Remote' && 'Work from anywhere'}
                     {type === 'Hybrid' && 'Mix of office and remote'}
                     {type === 'In-Person' && 'Work from office'}
@@ -150,17 +150,17 @@ const JobPreferences = () => {
 
         {/* Locations */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Preferred Cities</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Preferred Cities</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {locationOptions.map(location => (
-              <label key={location} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+              <label key={location} className="flex items-center space-x-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer">
                 <input
                   type="checkbox"
                   checked={preferences.locations.includes(location)}
                   onChange={() => handleCheckboxChange('locations', location)}
                   className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 />
-                <span className="text-gray-900">{location}</span>
+                <span className="text-gray-900 dark:text-gray-100">{location}</span>
               </label>
             ))}
           </div>
@@ -168,10 +168,10 @@ const JobPreferences = () => {
 
         {/* Employment Types */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Employment Type</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Employment Type</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {employmentTypeOptions.map(type => (
-              <label key={type} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+              <label key={type} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={preferences.employmentTypes.includes(type)}
@@ -179,8 +179,8 @@ const JobPreferences = () => {
                   className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 />
                 <div>
-                  <span className="font-medium text-gray-900">{type}</span>
-                  <p className="text-sm text-gray-500">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{type}</span>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {type === 'Full-time' && 'Standard 40+ hours per week'}
                     {type === 'Part-time' && 'Less than 40 hours per week'}
                     {type === 'Internship' && 'Temporary learning position'}
@@ -193,10 +193,10 @@ const JobPreferences = () => {
 
         {/* Salary Range */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Salary Range</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Salary Range</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {salaryRanges.map((range, index) => (
-              <label key={index} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+              <label key={index} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
                 <input
                   type="radio"
                   name="salaryRange"
@@ -204,16 +204,16 @@ const JobPreferences = () => {
                   onChange={() => handleSalaryRangeChange(range)}
                   className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
                 />
-                <span className="text-gray-900">{range.label}</span>
+                <span className="text-gray-900 dark:text-gray-100">{range.label}</span>
               </label>
             ))}
           </div>
         </div>
 
         {/* Current Preferences Summary */}
-        <div className="mb-8 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-medium text-gray-900 mb-2">Current Preferences Summary:</h4>
-          <div className="text-sm text-gray-600 space-y-1">
+        <div className="mb-8 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Current Preferences Summary:</h4>
+          <div className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
             <p><strong>Location Types:</strong> {preferences.locationTypes.length > 0 ? preferences.locationTypes.join(', ') : 'Any'}</p>
             <p><strong>Cities:</strong> {preferences.locations.length > 0 ? preferences.locations.slice(0, 3).join(', ') + (preferences.locations.length > 3 ? ` +${preferences.locations.length - 3} more` : '') : 'Any'}</p>
             <p><strong>Employment:</strong> {preferences.employmentTypes.length > 0 ? preferences.employmentTypes.join(', ') : 'Any'}</p>
@@ -222,17 +222,17 @@ const JobPreferences = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+        <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={handleReset}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+            className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 font-medium"
           >
             Reset All
           </button>
           
           <div className="flex items-center space-x-3">
             {isSaved && (
-              <span className="text-green-600 text-sm font-medium">
+              <span className="text-green-600 dark:text-green-400 text-sm font-medium">
                 ✓ Preferences saved!
               </span>
             )}
@@ -241,8 +241,8 @@ const JobPreferences = () => {
               disabled={isLoading}
               className={`px-6 py-2 rounded-lg font-medium ${
                 isLoading 
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-primary-600 hover:bg-primary-700 text-white'
+                  ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                  : 'bg-primary-600 dark:bg-primary-500 hover:bg-primary-700 dark:hover:bg-primary-600 text-white'
               }`}
             >
               {isLoading ? 'Saving...' : 'Save Preferences'}

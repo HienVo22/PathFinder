@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 import path from 'path';
 
 const userSchema = new mongoose.Schema({
+  theme: {
+    type: String,
+    enum: ['light', 'dark'],
+    default: 'light'
+  },
   name: {
     type: String,
     required: true,

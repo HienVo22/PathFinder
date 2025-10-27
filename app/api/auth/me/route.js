@@ -34,6 +34,7 @@ export async function GET(request) {
         id: user._id,
         email: user.email,
         name: user.name,
+        theme: user.theme,
         resumeUrl: user.resumeUrl,
         resumeOriginalName: user.resumeOriginalName,
         resumeUploadedAt: user.resumeUploadedAt,

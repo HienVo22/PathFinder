@@ -74,34 +74,34 @@ const ResumeStatus = forwardRef((props, ref) => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold mb-4">Resume Status</h3>
-        <p>Loading...</p>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">Resume Status</h3>
+        <p className="dark:text-gray-300">Loading...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold mb-4">Resume Status</h3>
-        <p className="text-red-600">{error}</p>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">Resume Status</h3>
+        <p className="text-red-600 dark:text-red-400">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold mb-4">Resume Status</h3>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">Resume Status</h3>
       
       {resumeStatus?.hasResume ? (
         <div className="space-y-3">
-          <div className="flex items-center text-green-600">
+          <div className="flex items-center text-green-600 dark:text-green-400">
             <span className="text-xl mr-2">✅</span>
             <span className="font-medium">Resume uploaded</span>
           </div>
           
-          <div className="bg-gray-50 rounded p-4 space-y-2">
+          <div className="bg-gray-50 dark:bg-gray-900 rounded p-4 space-y-2">
             <div>
               <strong>File:</strong> {resumeStatus.resumeInfo.resumeOriginalName}
             </div>
@@ -124,7 +124,7 @@ const ResumeStatus = forwardRef((props, ref) => {
                 <>
                   <button
                     onClick={() => setViewerOpen(true)}
-                    className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700"
+                    className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600"
                   >
                     View Resume
                   </button>
@@ -132,7 +132,7 @@ const ResumeStatus = forwardRef((props, ref) => {
                     href={resumeStatus.resumeInfo.resumeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-3 py-1 border rounded text-primary-600 hover:bg-gray-50"
+                    className="px-3 py-1 border rounded text-primary-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-primary-400 dark:border-gray-600"
                   >
                     Download
                   </a>
@@ -150,11 +150,11 @@ const ResumeStatus = forwardRef((props, ref) => {
         </div>
       ) : (
         <div className="space-y-3">
-          <div className="flex items-center text-yellow-600">
+          <div className="flex items-center text-yellow-600 dark:text-yellow-400">
             <span className="text-xl mr-2">⚠️</span>
             <span className="font-medium">No resume uploaded</span>
           </div>
-          <p className="text-gray-600">Upload your resume to get started with job matching!</p>
+          <p className="text-gray-600 dark:text-gray-300">Upload your resume to get started with job matching!</p>
         </div>
       )}
 

@@ -44,7 +44,8 @@ export async function POST(request) {
         id: user._id,
         email: user.email,
         name: user.name,
-        resumeUrl: user.resumeUrl
+        resumeUrl: user.resumeUrl,
+        theme: user.theme
       }
     })
   } catch (error) {
