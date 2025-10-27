@@ -152,43 +152,6 @@ export async function POST(request) {
   user.resumeFilename = filename;
   user.resumeContentType = file.type;
   user.resumeData = buffer;
-
-  // If the file is a PDF, extract text and then extract skills
-  let parsedResumeText = null;
-  if (file.type === 'application/pdf') {
-    try {
-      parsedResumeText = await parsePdfBuffer(buffer);
-      
-      if (parsedResumeText && parsedResumeText.length > 0) {
-        console.log('✓ PDF parsed successfully, text length:', parsedResumeText.length);
-
-        // Now, call the AI skills API
-        const absoluteUrl = new URL('/api/ai/skills', request.url);
-        const aiResponse = await fetch(absoluteUrl.href, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ text: parsedResumeText })
-        });
-
-        if (aiResponse.ok) {
-            const { skills } = await aiResponse.json();
-            console.log('✓ Skills extracted:', skills);
-            // Save the new skills to the user, replacing old ones
-            user.skills = Array.from(new Set(skills));
-        } else {
-            console.error('Failed to extract skills from AI API');
-        }
-
-      } else {
-        console.warn('PDF parsed but no text extracted');
-      }
-    } catch (err) {
-      console.error('PDF parsing or AI skill extraction error:', err.message);
-    }
-  }
     
     console.log('Updating user with resume info:', {
       userId: decoded.userId,
@@ -205,19 +168,26 @@ export async function POST(request) {
       resumeUploadedAt: savedUser.resumeUploadedAt
     });
 
+    // Trigger AI processing in the background (don't wait for it)
+    ResumeProcessingService.processResumeWithAI(decoded.userId, filePath, file.type)
+      .catch(error => {
+        console.error('Background AI processing error:', error);
+      });
     return NextResponse.json({
       message: 'Resume uploaded successfully',
       filePath: `/uploads/resumes/${filename}`,
       originalName: file.name,
       size: file.size,
       uploadedAt: new Date().toISOString(),
+      aiProcessing: {
+        status: 'started',
+        message: 'AI parsing will complete in the background'
+      },
       debug: {
         userId: decoded.userId,
         savedToMongoDB: true,
         resumePath: savedUser.resumePath,
-        resumeFilename: savedUser.resumeFilename,
-        // parsed text is returned only in the upload response for immediate use; not persisted to the DB
-        parsedText: parsedResumeText
+        resumeFilename: savedUser.resumeFilename
       }
     });
 
@@ -284,3 +254,4 @@ export async function GET(request) {
     return NextResponse.json({ error: 'Could not serve file' }, { status: 500 });
   }
 }
+

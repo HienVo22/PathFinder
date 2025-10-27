@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import fetch from 'node-fetch';
 import jwt from 'jsonwebtoken';
-import connectDB from '../../../../../../lib/mongodb';
-import User from '../../../../../../models/User';
+import connectDB from '../../../../../lib/mongodb';
+import User from '../../../../../models/User';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
