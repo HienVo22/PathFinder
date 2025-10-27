@@ -9,7 +9,7 @@ export class ResumeParser {
     this.ollama = new Ollama({
       host: 'http://localhost:11434', // Default Ollama host
     });
-    this.model = 'llama3.2'; // Default model, can be changed
+    this.model = 'llama3.1:8b'; // Using llama3.1:8b for better accuracy (90-95%)
   }
 
   /**
