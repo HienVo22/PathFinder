@@ -99,6 +99,10 @@ const userSchema = new mongoose.Schema({
       type: String,
       enum: ['ollama', 'fallback', 'failed'],
       default: 'ollama'
+    },
+    errorMessage: {
+      type: String,
+      default: null
     }
   },
   jobPreferences: {

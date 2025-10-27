@@ -199,25 +199,20 @@ Return ONLY the JSON object.
   }
 
   /**
-   * Parse resume with fallback handling
+   * Parse resume with AI - requires Ollama to be running
    * @param {string} resumeText - Extracted text from resume
-   * @returns {Promise<Object>} Parsed resume data with fallback
+   * @returns {Promise<Object>} Parsed resume data
+   * @throws {Error} If Ollama is not available
    */
   async parseResumeWithFallback(resumeText) {
-    try {
-      // Check if Ollama is healthy first
-      const isHealthy = await this.checkOllamaHealth();
-      if (!isHealthy) {
-        console.warn('Ollama not available, using fallback parsing');
-        return this.fallbackParsing(resumeText);
-      }
-
-      // Try AI parsing
-      return await this.parseResume(resumeText);
-    } catch (error) {
-      console.error('AI parsing failed, using fallback:', error);
-      return this.fallbackParsing(resumeText);
+    // Check if Ollama is healthy first
+    const isHealthy = await this.checkOllamaHealth();
+    if (!isHealthy) {
+      throw new Error('AI_NOT_AVAILABLE: Ollama service is not running. Please start Ollama with "ollama serve" to enable AI-powered resume parsing.');
     }
+
+    // Try AI parsing
+    return await this.parseResume(resumeText);
   }
 
   /**
