@@ -172,3 +172,47 @@ b7173036 (Hien Vo 2025-10-14 08:44:01 -0400  7) export class TextExtractor {
 
 ================== AI Model Upgrade (utils/resumeParser.js) ==================
 8a9e887a (Hien Vo 2025-10-27 13:56:59 -0400  12)     this.model = 'llama3.1:8b'; // Using llama3.1:8b for better accuracy (90-95%)
+
+### 9. **Remove Fallback Parsing Method** (d6b9354c):
+- Removed regex-based fallback parsing entirely
+- Now throws error if Ollama AI service is not running
+- Added specific error handling for AI unavailable scenario
+- Better user experience with clear error messages
+
+================== Remove Fallback Parsing (utils/resumeParser.js) ==================
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 201)   /**
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 202)    * Parse resume with AI - requires Ollama to be running
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 203)    * @param {string} resumeText - Extracted text from resume
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 204)    * @returns {Promise<Object>} Parsed resume data
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 205)    * @throws {Error} If Ollama is not available
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 206)    */
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 207)   async parseResumeWithFallback(resumeText) {
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 208)     // Check if Ollama is healthy first
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 209)     const isHealthy = await this.checkOllamaHealth();
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 210)     if (!isHealthy) {
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 211)       throw new Error('AI_NOT_AVAILABLE: Ollama service is not running. Please start Ollama with "ollama serve" to enable AI-powered resume parsing.');
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 212)     }
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 213) 
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 214)     // Try AI parsing
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 215)     return await this.parseResume(resumeText);
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 216)   }
+
+================== Enhanced Error Handling (services/resumeProcessingService.js) ==================
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400  65)       // Check if this is an AI not available error
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400  66)       const isAINotAvailable = error.message && error.message.includes('AI_NOT_AVAILABLE');
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400  82)             errorMessage: isAINotAvailable 
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400  83)               ? 'AI service not available. Please start Ollama to enable skill extraction.'
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400  84)               : 'Resume parsing failed. Please try again.'
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400  91)           error: isAINotAvailable 
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400  92)             ? 'AI_NOT_AVAILABLE' 
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400  93)             : error.message,
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400  94)           userFriendlyMessage: isAINotAvailable
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400  95)             ? 'AI service is not running. Please start Ollama with "ollama serve" to enable skill extraction.'
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400  96)             : 'Resume parsing failed. Please try again.',
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 146)           errorMessage: user.parsedResumeData?.errorMessage || null
+
+================== User Model Update (models/User.js) ==================
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 103)     errorMessage: {
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 104)       type: String,
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 105)       default: null
+d6b9354c (Hien Vo 2025-10-27 14:04:20 -0400 106)     }

@@ -35,6 +35,30 @@
 - Improved handling of technical abbreviations
 - Enhanced soft skill detection
 
+### 2. Remove Fallback Parsing Method
+**Date**: October 27, 2025
+
+**Changes Made**:
+- Removed fallback regex-based parsing completely
+- Now requires Ollama AI service to be running for skill extraction
+- Added user-friendly error messages when AI is not available
+- Updated error handling to distinguish between AI unavailable vs other errors
+
+**Files Modified**:
+- `utils/resumeParser.js` - Removed fallback method, throw error if AI not available
+- `services/resumeProcessingService.js` - Enhanced error handling with specific messages
+- `models/User.js` - Added errorMessage field to parsedResumeData
+
+**Reasoning**:
+- Fallback method only extracted 7 skills vs 20+ with AI
+- AI extraction is significantly more accurate (90-95% vs ~60% fallback)
+- Better to require AI than provide low-quality results
+- Clear error messages guide users to start Ollama service
+
+**User Experience**:
+- When AI not running: Shows clear message "AI service not available. Please start Ollama to enable skill extraction."
+- When AI running: Extracts 20+ skills with high accuracy using llama3.1:8b
+
 ## Future Plans
 - Implement real job board API integration (JSearch or similar)
 - Enhanced job matching algorithm based on extracted skills
