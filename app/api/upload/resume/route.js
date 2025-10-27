@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 import User from '../../../../models/User';
 import connectDB from '../../../../lib/mongodb';
-import { parsePdfBuffer } from '../../../../lib/pdfParser';
+import { ResumeProcessingService } from '../../../../services/pdfParser';
 
 // Configure multer for file upload
 const uploadDir = path.join(process.cwd(), 'uploads', 'resumes');
@@ -70,6 +70,7 @@ function verifyToken(token) {
     return null;
   }
 }
+
 
 export async function POST(request) {
   try {
@@ -205,12 +206,22 @@ export async function POST(request) {
       resumeUploadedAt: savedUser.resumeUploadedAt
     });
 
+    // Trigger AI processing in the background (don't wait for it)
+    ResumeProcessingService.processResumeWithAI(decoded.userId, filePath, file.type)
+      .catch(error => {
+        console.error('Background AI processing error:', error);
+      });
+
     return NextResponse.json({
       message: 'Resume uploaded successfully',
       filePath: `/uploads/resumes/${filename}`,
       originalName: file.name,
       size: file.size,
       uploadedAt: new Date().toISOString(),
+      aiProcessing: {
+        status: 'started',
+        message: 'AI parsing will complete in the background'
+      },
       debug: {
         userId: decoded.userId,
         savedToMongoDB: true,
