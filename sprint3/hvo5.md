@@ -9,31 +9,29 @@
 
 ## Key Changes
 
-### 1. AI Model Upgrade (llama3.1:8b)
+### 1. AI Model Configuration (llama3.2)
 **Date**: October 27, 2025
 
+**Current Model**: llama3.2 (lightweight, optimized for 8GB RAM systems)
+
 **Changes Made**:
-- Downloaded and configured llama3.1:8b model (4.9GB)
-- Updated `utils/resumeParser.js` to use new model
-- Improved expected accuracy from 85-92% (llama3.2) to 90-95% (llama3.1:8b)
+- Using llama3.2 for resume parsing
+- Model is lightweight and suitable for laptops with limited memory
+- Expected accuracy: 85-92% skill extraction
 
 **Technical Details**:
-- Model: llama3.1:8b (8 billion parameters)
-- Previous: llama3.2 (3.2 billion parameters)
-- Performance: Better skill extraction, especially for:
+- Model: llama3.2 (3.2 billion parameters)
+- Memory requirements: ~2GB RAM
+- Performance: Good skill extraction for:
   - Skills in dedicated sections
   - Skills mentioned in project contexts
   - Abbreviated skills (JS → JavaScript, ML → Machine Learning)
   - Special characters (C++, C#)
 
 **Files Modified**:
-- `utils/resumeParser.js` - Updated model from 'llama3.2' to 'llama3.1:8b'
+- `utils/resumeParser.js` - Using 'llama3.2'
 
-**Benefits**:
-- More accurate skill extraction
-- Better understanding of resume context
-- Improved handling of technical abbreviations
-- Enhanced soft skill detection
+**Note**: llama3.1:8b (4.9GB model) was tested but reverted due to high memory requirements. For systems with 16GB+ RAM, llama3.1:8b provides 90-95% accuracy.
 
 ### 2. Remove Fallback Parsing Method
 **Date**: October 27, 2025
@@ -57,7 +55,7 @@
 
 **User Experience**:
 - When AI not running: Shows clear message "AI service not available. Please start Ollama to enable skill extraction."
-- When AI running: Extracts 20+ skills with high accuracy using llama3.1:8b
+- When AI running: Extracts 20+ skills with good accuracy using llama3.2
 
 ## Future Plans
 - Implement real job board API integration (JSearch or similar)
