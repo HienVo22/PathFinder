@@ -84,10 +84,41 @@ export class JobMatcher {
    * Get all jobs with match analysis sorted by match percentage
    * @param {Array} userSkills - Array of user's skills
    * @param {Object} filters - Optional filters (location, jobType, etc.)
-   * @returns {Array} Array of jobs with match analysis, sorted by match percentage
+   * @returns {Promise<Array>} Array of jobs with match analysis, sorted by match percentage
    */
-  static getJobMatches(userSkills, filters = {}) {
-    let jobs = [...SAMPLE_JOBS];
+  static async getJobMatches(userSkills, filters = {}) {
+    // Fetch jobs from JSearch API
+    let jobs = [];
+    try {
+      const params = new URLSearchParams();
+      
+      // Build search query from filters
+      const query = filters.query || filters.jobTitle || 'software developer';
+      params.append('query', query);
+      
+      if (filters.location && filters.location !== 'any') {
+        params.append('location', filters.location);
+      }
+      
+      if (filters.remoteOnly) {
+        params.append('remote_jobs_only', 'true');
+      }
+      
+      const response = await fetch(`/api/jobs/search?${params.toString()}`);
+      const data = await response.json();
+      
+      if (data.success && data.jobs) {
+        jobs = data.jobs;
+      } else {
+        console.error('Failed to fetch jobs from JSearch API:', data.error);
+        // Fallback to sample jobs if API fails
+        jobs = [...SAMPLE_JOBS];
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      // Fallback to sample jobs on error
+      jobs = [...SAMPLE_JOBS];
+    }
     
     // Normalize new preferences structure
     const pref = {
@@ -161,10 +192,11 @@ export class JobMatcher {
    * Get skill gap analysis for career development
    * @param {Array} userSkills - Array of user's skills
    * @param {number} topN - Number of top jobs to analyze (default: 10)
-   * @returns {Object} Skill gap analysis
+   * @returns {Promise<Object>} Skill gap analysis
    */
-  static getSkillGapAnalysis(userSkills, topN = 10) {
-    const topJobs = this.getJobMatches(userSkills).slice(0, topN);
+  static async getSkillGapAnalysis(userSkills, topN = 10) {
+    const allJobs = await this.getJobMatches(userSkills);
+    const topJobs = allJobs.slice(0, topN);
     
     // Count frequency of missing skills across top jobs
     const skillGaps = {};
@@ -313,10 +345,10 @@ export class JobMatcher {
    * @param {Array} userSkills - User's skills
    * @param {Object} userPreferences - User preferences (location, jobType, etc.)
    * @param {number} limit - Number of recommendations to return
-   * @returns {Array} Personalized job recommendations
+   * @returns {Promise<Array>} Personalized job recommendations
    */
-  static getPersonalizedRecommendations(userSkills, userPreferences = {}, limit = 5) {
-    const matches = this.getJobMatches(userSkills, userPreferences);
+  static async getPersonalizedRecommendations(userSkills, userPreferences = {}, limit = 5) {
+    const matches = await this.getJobMatches(userSkills, userPreferences);
     
     return matches.slice(0, limit).map(job => ({
       ...job,
