@@ -1,279 +1,69 @@
-'use client'
-
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useAuth } from '@/contexts/AuthContext'
-import { useRouter } from 'next/navigation'
-// Google One Tap
-import Script from 'next/script'
 
-export default function Home() {
-  const [isLogin, setIsLogin] = useState(true)
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: ''
-  })
-  const { user, login, register, loading } = useAuth()
-  const router = useRouter()
-    const [googleLoading, setGoogleLoading] = useState(false)
-
-    // Google login handler
-    const handleGoogleLogin = async (credential) => {
-      setGoogleLoading(true)
-      try {
-        console.log('Sending credential to backend (first 20 chars):', credential?.slice(0, 20) + '...');
-        const response = await fetch('/api/auth/google', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ credential })
-        });
-        
-        const data = await response.json();
-        console.log('Backend response:', data);
-        
-        if (response.ok && data.token) {
-          console.log('Login successful, setting token and redirecting');
-          localStorage.setItem('token', data.token);
-          window.location.href = '/dashboard';  // Using window.location for hard reload
-        } else {
-          console.error('Login failed:', data.error || 'Unknown error');
-          alert(data.error || 'Google login failed. Please try again.');
-        }
-      } catch (error) {
-        console.error('Login error:', error);
-        alert('Google login failed. Please try again.');
-      } finally {
-        setGoogleLoading(false)
-      }
-    }
-  useEffect(() => {
-    if (!loading && user) {
-      router.push('/dashboard')
-    }
-  }, [user, loading, router])
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    
-    if (isLogin) {
-      const success = await login(formData.email, formData.password)
-      if (success) {
-        router.push('/dashboard')
-      }
-    } else {
-      const success = await register(formData.name, formData.email, formData.password)
-      if (success) {
-        router.push('/dashboard')
-      }
-    }
-  }
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-secondary-600">Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
-      <div className="w-full max-w-md mx-auto px-4">
-        {/* Logo and Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary-600 mb-4">
-            🧭 Pathfinder
-          </h1>
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-            Find Your
-            <span className="text-primary-600"> Dream Job</span>
-            <br />
-            with AI
-          </h2>
-          <p className="text-lg text-secondary-600 mb-8">
-            Pathfinder uses machine learning to match you with the perfect job opportunities. 
-            Upload your resume, set your preferences, and let AI do the work.
-          </p>
-        </div>
-        
-        {/* Auth Section */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
-            {/* Google Login Button */}
-            <div className="mb-4 flex flex-col items-center">
-              <style jsx global>{`
-                #google-login-btn {
-                  width: 100% !important;
-                }
-                #google-login-btn > div {
-                  width: 100% !important;
-                  border-radius: 0.5rem !important;
-                  background-color: rgb(243 244 246) !important;
-                  transition: background-color 0.2s !important;
-                }
-                #google-login-btn > div:hover {
-                  background-color: rgb(229 231 235) !important;
-                }
-                #google-login-btn > div > iframe {
-                  width: 100% !important;
-                }
-                #google-login-btn > div > div {
-                  padding: 8px !important;
-                }
-              `}</style>
-              <div id="google-login-btn" className="w-full flex justify-center mb-2"></div>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 text-gray-800">
+      {/* Navigation Bar */}
+      <nav className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex-shrink-0">
+              <Link href="/" className="text-2xl font-bold text-primary-600">
+                🧭 Pathfinder
+              </Link>
             </div>
-            <Script
-              src="https://accounts.google.com/gsi/client"
-              strategy="afterInteractive"
-              onLoad={() => {
-                console.log('Initializing Google Sign-In with client ID:', process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
-                window.google?.accounts.id.initialize({
-                  client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-                  callback: (response) => {
-                    console.log('Google Sign-In response:', { ...response, credential: response.credential?.slice(0, 20) + '...' });
-                    handleGoogleLogin(response.credential);
-                  }
-                })
-                window.google?.accounts.id.renderButton(
-                  document.getElementById('google-login-btn'),
-                  {
-                    theme: 'outline',
-                    size: 'large',
-                    width: '100%',
-                    type: 'standard',
-                    text: 'signin_with',
-                    shape: 'rectangular'
-                  }
-                )
-              }}
-            />
-          <div className="flex mb-6">
-            <button
-              onClick={() => setIsLogin(true)}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-                isLogin 
-                  ? 'bg-primary-600 text-white' 
-                  : 'text-secondary-600 hover:text-primary-600'
-              }`}
-            >
-              Login
-            </button>
-            <button
-              onClick={() => setIsLogin(false)}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-                !isLogin 
-                  ? 'bg-primary-600 text-white' 
-                  : 'text-secondary-600 hover:text-primary-600'
-              }`}
-            >
-              Sign Up
-            </button>
+            <div className="hidden md:block">
+              <div className="ml-4 flex items-center md:ml-6">
+                <p className="text-secondary-600">
+                  Already have an account?{' '}
+                  <Link href="/login" className="text-primary-600 font-medium hover:underline">
+                    Log In
+                  </Link>
+                </p>
+              </div>
+            </div>
           </div>
-
-          {isLogin ? (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="input-field"
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="input-field"
-                  placeholder="Enter your password"
-                  required
-                />
-              </div>
-              <button type="submit" className="btn-primary w-full">
-                Login
-              </button>
-              <p className="text-sm text-center text-secondary-600">
-                Demo: demo@pathfinder.com / password
-              </p>
-            </form>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="input-field"
-                  placeholder="Enter your full name"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="input-field"
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="input-field"
-                  placeholder="Create a password"
-                  required
-                />
-              </div>
-              <button type="submit" className="btn-primary w-full">
-                Create Account
-              </button>
-            </form>
-          )}
         </div>
+      </nav>
+
+      {/* Header Section */}
+      <header className="text-center py-16 px-4">
+        <h2 className="text-3xl font-bold text-primary-600 mb-2">🧭 Pathfinder</h2>
+        <h1 className="text-5xl font-extrabold text-gray-800 mb-4">
+          Your AI-Powered Career Co-Pilot
+        </h1>
+        <p className="text-xl text-secondary-700 max-w-3xl mx-auto">
+          Upload your resume, set your preferences, and let Pathfinder discover jobs tailored just for you.
+        </p>
+      </header>
+
+      {/* Image Banner */}
+      <div className="w-full h-96 overflow-hidden">
+        <img 
+          src="https://image.shutterstock.com/image-photo/appealing-woman-engages-conversation-man-260nw-2474018917.jpg" 
+          alt="Professional woman in a discussion during an interview" 
+          className="w-full h-full object-cover"
+        />
       </div>
+
+      {/* Call-to-action Banner */}
+      <main className="text-center py-16 px-4">
+        <h2 className="text-3xl font-bold text-gray-800 mb-4">Find Your Perfect Job Today</h2>
+        <p className="text-secondary-600 mb-8 max-w-2xl mx-auto">
+          Stop searching, start matching. Our intelligent platform analyzes your skills and experience to connect you with opportunities that truly fit.
+        </p>
+        <Link href="/login?form=signup" className="btn-primary inline-block px-10 py-4 text-lg font-semibold">
+          Get Started
+        </Link>
+      </main>
+
+      <footer className="bg-transparent text-center py-8 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8 text-secondary-600">
+          <Link href="/about-us" className="hover:text-primary-600 hover:underline">About Us</Link>
+          <Link href="/about-ai" className="hover:text-primary-600 hover:underline">About the AI</Link>
+          <span>Pathfinder 2025</span>
+        </div>
+      </footer>
     </div>
   )
 }

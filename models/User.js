@@ -121,14 +121,7 @@ const userSchema = new mongoose.Schema({
     salaryRange: {
       min: Number,
       max: Number
-    },
-
-    // New LinkedIn-style preferences
-    jobTitles: [{ type: String, trim: true }],
-    locationTypes: [{ type: String, trim: true }], // ['On-site','Hybrid','Remote']
-    locations: [{ type: String, trim: true }],
-    employmentTypes: [{ type: String, trim: true }],
-    desiredPay: { type: String, trim: true }
+    }
   }
 }, {
   timestamps: true

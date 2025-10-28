@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import User from '../../../../models/User';
 import connectDB from '../../../../lib/mongodb';
 import { ResumeProcessingService } from '../../../../services/resumeProcessingService';
+import { parsePdfBuffer } from '../../../../lib/pdfParser';
 
 // Configure upload directory
 const uploadDir = path.join(process.cwd(), 'uploads', 'resumes');
@@ -31,7 +32,6 @@ function verifyToken(token) {
     return null;
   }
 }
-
 
 export async function POST(request) {
   try {
@@ -148,7 +148,6 @@ export async function POST(request) {
       .catch(error => {
         console.error('Background AI processing error:', error);
       });
-
     return NextResponse.json({
       message: 'Resume uploaded successfully',
       filePath: `/uploads/resumes/${filename}`,

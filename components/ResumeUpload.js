@@ -73,7 +73,7 @@ const ResumeUpload = ({ onUploadSuccess, onProcessingComplete, onShowModal }) =>
       
       // Simulate progress for better UX
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
+        setUploadProgress((prev) => {
           if (prev >= 90) {
             clearInterval(progressInterval);
             return 90;
@@ -83,7 +83,7 @@ const ResumeUpload = ({ onUploadSuccess, onProcessingComplete, onShowModal }) =>
       }, 100);
 
       // Complete the upload and refresh user data
-      setTimeout(async() => {
+      setTimeout(async () => {
         setUploadProgress(100);
         const fileInfo = {
           name: file.name,
@@ -101,10 +101,10 @@ const ResumeUpload = ({ onUploadSuccess, onProcessingComplete, onShowModal }) =>
         
         try {
           if (typeof refreshUser === 'function') await refreshUser();
-        } catch(err) {
+        } catch (err) {
           console.error('Failed to refresh user after upload:', err);
         }
-        
+
         // Notify parent component about successful upload
         if (onUploadSuccess) {
           onUploadSuccess(result);
@@ -192,15 +192,15 @@ const ResumeUpload = ({ onUploadSuccess, onProcessingComplete, onShowModal }) =>
   return (
     <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
       <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Upload Resume</h3>
-      
+
       {/* Upload Area */}
       <div
         className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors duration-200 ${
-          dragActive 
-            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900' 
-            : uploadedFile 
-              ? 'border-green-400 bg-green-50 dark:bg-green-900'
-              : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700'
+          dragActive
+            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900'
+            : uploadedFile
+            ? 'border-green-400 bg-green-50 dark:bg-green-900'
+            : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700'
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -220,7 +220,7 @@ const ResumeUpload = ({ onUploadSuccess, onProcessingComplete, onShowModal }) =>
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
             <p className="text-gray-600 dark:text-gray-300">Uploading resume...</p>
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div 
+              <div
                 className="bg-primary-600 dark:bg-primary-500 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${uploadProgress}%` }}
               ></div>
@@ -279,8 +279,7 @@ const ResumeUpload = ({ onUploadSuccess, onProcessingComplete, onShowModal }) =>
               Your resume has been uploaded successfully!
             </p>
           </div>
-          
-          {/* PDF Warning */}
+
           {uploadedFile.fileType === 'application/pdf' && (
             <div className="p-3 bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-md">
               <p className="text-yellow-700 dark:text-yellow-300 text-sm">
