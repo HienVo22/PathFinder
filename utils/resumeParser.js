@@ -39,7 +39,7 @@ ${resumeText}
 REFERENCE SKILLS LIST (extract skills from this list, but also extract similar/related skills):
 ${skillsList}
 
-Return ONLY a valid JSON object with this structure:
+Return ONLY a valid JSON object with this EXACT structure:
 {
   "extractedSkills": ["skill1", "skill2", "skill3"],
   "experience": "Brief summary of work experience",
@@ -48,6 +48,12 @@ Return ONLY a valid JSON object with this structure:
   "companies": ["company1", "company2"],
   "yearsOfExperience": number
 }
+
+**CRITICAL: extractedSkills MUST be an array of INDIVIDUAL skill names ONLY.**
+❌ WRONG: ["Frameworks & Libraries: React, Node.js, Express", "Tools: Git, Docker"]
+✅ CORRECT: ["React", "Node.js", "Express", "Git", "Docker"]
+
+DO NOT group skills into categories. List each skill separately.
 
 COMPREHENSIVE EXTRACTION RULES:
 
@@ -125,12 +131,23 @@ Return ONLY the JSON object.
         }
       });
 
+      console.log('🤖 Ollama Raw Response (first 500 chars):', response.response.substring(0, 500));
+
       // Parse the JSON response
       const cleanedResponse = this.cleanJsonResponse(response.response);
       const parsedData = JSON.parse(cleanedResponse);
 
+      console.log('📊 AI Extracted Skills (before validation):', parsedData.extractedSkills);
+      console.log('📊 Total skills extracted by AI:', parsedData.extractedSkills?.length || 0);
+
       // Validate and clean the extracted skills
       parsedData.extractedSkills = this.validateSkills(parsedData.extractedSkills);
+
+      // Remove duplicates
+      parsedData.extractedSkills = [...new Set(parsedData.extractedSkills)];
+
+      console.log('✅ AI Extracted Skills (after validation):', parsedData.extractedSkills);
+      console.log('✅ Total validated skills (after dedup):', parsedData.extractedSkills.length);
 
       return parsedData;
     } catch (error) {
@@ -170,9 +187,56 @@ Return ONLY the JSON object.
       return [];
     }
 
-    return extractedSkills.filter(skill => 
-      SKILLS_DATABASE.includes(skill)
-    );
+    const validatedSkills = [];
+    const rejected = [];
+
+    extractedSkills.forEach(skill => {
+      const normalizedSkill = this.normalizeSkill(skill);
+      
+      // Check if skill exists in database (exact match)
+      if (SKILLS_DATABASE.includes(normalizedSkill)) {
+        validatedSkills.push(normalizedSkill);
+      } 
+      // Check if skill exists in database (case-insensitive)
+      else {
+        const matchedSkill = SKILLS_DATABASE.find(dbSkill => 
+          dbSkill.toLowerCase() === normalizedSkill.toLowerCase()
+        );
+        if (matchedSkill) {
+          validatedSkills.push(matchedSkill);
+        } 
+        // Check if it's a valid technical skill (even if not in database)
+        else if (this.isLikelyTechnicalSkill(skill)) {
+          validatedSkills.push(normalizedSkill);
+        } else {
+          rejected.push(skill);
+        }
+      }
+    });
+
+    console.log('🚫 Rejected skills (not in database):', rejected);
+
+    return validatedSkills;
+  }
+
+  /**
+   * Check if a skill is likely a valid technical skill
+   * @param {string} skill - Skill to check
+   * @returns {boolean} True if likely a technical skill
+   */
+  isLikelyTechnicalSkill(skill) {
+    // Allow skills that look like technical terms
+    const technicalPatterns = [
+      /^[A-Z][a-zA-Z0-9]*(\.[a-z]+)?$/, // React, Node.js, Vue.js
+      /^[A-Z][a-zA-Z0-9]*\s*(\/|\+|#).*$/, // C++, C#, HTML/CSS
+      /^[a-zA-Z]+\s+\d+(\.\d+)?$/, // Java 8, Python 3
+      /^[A-Z]{2,}$/, // AWS, GCP, AI, ML, CI, CD
+    ];
+
+    // Check if skill matches technical patterns
+    return technicalPatterns.some(pattern => pattern.test(skill)) && 
+           skill.length >= 2 && 
+           skill.length <= 50;
   }
 
   /**
