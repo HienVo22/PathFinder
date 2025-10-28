@@ -1,20 +1,33 @@
-'use client'
+"use client"
 
 import { useAuth } from '@/contexts/AuthContext'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import ResumeUpload from '@/components/ResumeUpload'
 import ResumeStatus from '@/components/ResumeStatus'
 import JobMatching from '@/components/JobMatching'
 import JobPreferences from '@/components/JobPreferences'
-import LinkedInLinkPopup from '@/components/LinkedInLinkPopup'
-import LinkedInMockLink from '@/components/LinkedInMockLink'
+// LinkedIn link components removed from dashboard overview to simplify layout
+import DashboardNav from '@/components/DashboardNav'
 
 export default function Dashboard() {
   const { user, logout, loading } = useAuth()
   const router = useRouter()
   const resumeStatusRef = useRef(null)
   const [activeTab, setActiveTab] = useState('overview')
+  const searchParams = useSearchParams()
+
+  // If the URL includes a ?tab=... param, honor it as the initial tab
+  useEffect(() => {
+    try {
+      const tab = searchParams?.get('tab')
+      if (tab && ['overview', 'jobs', 'preferences'].includes(tab)) {
+        setActiveTab(tab)
+      }
+    } catch (err) {
+      // ignore
+    }
+  }, [searchParams])
 
   // Handle successful resume upload
   const handleUploadSuccess = (result) => {
@@ -72,43 +85,8 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white dark:bg-gray-900">
-        {/* Navigation Tabs */}
-        <div className="mb-8">
-          <div className="border-b border-gray-200 dark:border-gray-700">
-            <nav className="-mb-px flex space-x-8 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-              <button
-                onClick={() => setActiveTab('overview')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'overview'
-                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
-                }`}
-              >
-                Overview
-              </button>
-              <button
-                onClick={() => setActiveTab('jobs')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'jobs'
-                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
-                }`}
-              >
-                Job Matches
-              </button>
-              <button
-                onClick={() => setActiveTab('preferences')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'preferences'
-                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
-                }`}
-              >
-                Preferences
-              </button>
-            </nav>
-          </div>
-        </div>
+          {/* Navigation Tabs */}
+          <DashboardNav activeTab={activeTab} onChange={setActiveTab} />
 
         {/* Tab Content */}
         {activeTab === 'overview' && (
@@ -123,28 +101,7 @@ export default function Dashboard() {
               <ResumeStatus ref={resumeStatusRef} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Profile Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Your Profile</h2>
-            <div className="space-y-2">
-              <p><span className="font-medium">Name:</span> {user.name}</p>
-              <p><span className="font-medium">Email:</span> {user.email}</p>
-              {user.resumeOriginalName && (
-                <p><span className="font-medium">Resume:</span> {user.resumeOriginalName}</p>
-              )}
-            </div>
-            <div className="mt-4 space-y-3">
-              <button className="btn-primary w-full">
-                Edit Profile
-              </button>
-              <div className="flex items-center justify-center gap-3">
-                <LinkedInLinkPopup />
-                <LinkedInMockLink />
-              </div>
-            </div>
-          </div>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Job Recommendations */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Job Recommendations</h2>
@@ -174,7 +131,7 @@ export default function Dashboard() {
             {/* Quick Actions */}
             <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
                 <button 
                   onClick={() => setActiveTab('jobs')}
                   className="btn-primary"
@@ -189,12 +146,6 @@ export default function Dashboard() {
                 </button>
                 <button className="btn-secondary">
                   View Analytics
-                </button>
-                <button 
-                  onClick={() => router.push('/dashboard/settings')}
-                  className="btn-secondary"
-                >
-                  Settings
                 </button>
               </div>
             </div>
