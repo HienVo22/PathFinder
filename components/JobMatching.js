@@ -11,6 +11,7 @@ const JobMatching = () => {
   const [skillGapAnalysis, setSkillGapAnalysis] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showAllSkills, setShowAllSkills] = useState(false);
   const [filters, setFilters] = useState({
     // New LinkedIn-style preferences (also used for filtering)
     jobTitles: [],
@@ -157,9 +158,18 @@ const JobMatching = () => {
 
       {/* User Skills Display */}
       <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Your Skills</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Your Skills</h2>
+          <button 
+            onClick={loadUserSkills}
+            className="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
+          >
+            Refresh Skills
+          </button>
+        </div>
+        
         <div className="flex flex-wrap gap-2">
-          {userSkills.map((skill, index) => (
+          {(showAllSkills ? userSkills : userSkills.slice(0, 12)).map((skill, index) => (
             <span
               key={index}
               className="px-3 py-1 bg-primary-100 dark:bg-primary-700 text-primary-700 dark:text-primary-100 rounded-full text-sm"
@@ -168,12 +178,15 @@ const JobMatching = () => {
             </span>
           ))}
         </div>
-        <button 
-          onClick={loadUserSkills}
-          className="mt-4 text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 underline"
-        >
-          Refresh Skills
-        </button>
+        
+        {userSkills.length > 12 && (
+          <button 
+            onClick={() => setShowAllSkills(!showAllSkills)}
+            className="mt-4 text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 underline"
+          >
+            {showAllSkills ? 'Show Less' : `Show All ${userSkills.length} Skills`}
+          </button>
+        )}
       </div>
 
       {/* Skill Gap Analysis */}

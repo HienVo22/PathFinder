@@ -55,7 +55,8 @@ export const TECHNICAL_SKILLS = {
   // Essential Tools (frequently mentioned)
   tools: [
     'Git', 'GitHub', 'GitLab', 'Jira',
-    'Postman', 'VS Code', 'Docker Compose', 'JWT'
+    'Postman', 'VS Code', 'Docker Compose', 'JWT',
+    'Jupyter Notebook'
   ],
   
   // Architecture & Patterns (high-value skills)
