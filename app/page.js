@@ -8,8 +8,13 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex-shrink-0">
-              <Link href="/" className="text-2xl font-bold text-primary-600">
-                🧭 Pathfinder
+              <Link href="/" className="flex items-center space-x-2">
+                <img 
+                  src="/pathfinder-logo.svg" 
+                  alt="PathFinder Logo" 
+                  className="w-8 h-8"
+                />
+                <span className="text-2xl font-bold text-primary-600">Pathfinder</span>
               </Link>
             </div>
             <div className="hidden md:block">
@@ -26,25 +31,25 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Header Section */}
+      {/* Header Section with Logo */}
       <header className="text-center py-16 px-4">
-        <h2 className="text-3xl font-bold text-primary-600 mb-2">🧭 Pathfinder</h2>
+        <div className="flex justify-center mb-8">
+          <img 
+            src="/pathfinder-logo.svg" 
+            alt="PathFinder Logo" 
+            className="w-48 h-48"
+          />
+        </div>
         <h1 className="text-5xl font-extrabold text-gray-800 mb-4">
-          Your AI-Powered Career Co-Pilot
+          PATHFINDER
         </h1>
+        <h2 className="text-2xl font-bold text-primary-600 mb-6">
+          AI-POWERED JOB SEARCHING
+        </h2>
         <p className="text-xl text-secondary-700 max-w-3xl mx-auto">
           Upload your resume, set your preferences, and let Pathfinder discover jobs tailored just for you.
         </p>
       </header>
-
-      {/* Image Banner */}
-      <div className="w-full h-96 overflow-hidden">
-        <img 
-          src="https://image.shutterstock.com/image-photo/appealing-woman-engages-conversation-man-260nw-2474018917.jpg" 
-          alt="Professional woman in a discussion during an interview" 
-          className="w-full h-full object-cover"
-        />
-      </div>
 
       {/* Call-to-action Banner */}
       <main className="text-center py-16 px-4">
