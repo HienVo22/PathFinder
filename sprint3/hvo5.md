@@ -93,6 +93,30 @@
 - Users now see comprehensive skill extraction matching their resume
 - Better job matching due to complete skill profiles
 
+### 4. UI Improvements and Skills Database Enhancement
+**Date**: October 28, 2025
+
+**Changes Made**:
+1. **Added Missing Skills** - Added "Jupyter Notebook" to the skills database in tools category
+   - Resolves issue where Jupyter Notebook was being rejected during validation
+
+2. **Improved Skills Display UI**:
+   - **Refresh Button**: Moved to top-right corner as a black button for better UX
+   - **Expandable Skills List**: Shows first 12 skills by default with "Show All X Skills" button
+   - **Consistent Design**: Applied same UI improvements to both JobMatching and ParsedResumeViewer components
+   - **Removed Duplicate**: Removed redundant refresh button from bottom of ParsedResumeViewer
+
+**Files Modified**:
+- `data/skills.js` - Added "Jupyter Notebook" to tools array
+- `components/JobMatching.js` - Added expandable skills UI with top-right refresh button
+- `components/ParsedResumeViewer.js` - Added same UI improvements, removed duplicate refresh button
+
+**User Experience**:
+- Cleaner, more professional skills display
+- Better space utilization with collapsible skills list
+- Consistent refresh button placement across components
+- All tools (including Jupyter Notebook) now properly recognized
+
 ## Future Plans
 - Implement real job board API integration (JSearch or similar)
 - Enhanced job matching algorithm based on extracted skills
