@@ -28,6 +28,7 @@ const JobMatching = () => {
     query: 'software developer' // Default search query
   });
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
+  const [usingMockData, setUsingMockData] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -88,6 +89,10 @@ const JobMatching = () => {
       setLoading(true);
       // Get job matches using the new JobMatcher (now async)
       const matches = await JobMatcher.getJobMatches(userSkills, filters);
+      
+      // Check if we're using mock data (look for mock job IDs)
+      const isMockData = matches.some(job => job.id && job.id.startsWith('mock-'));
+      setUsingMockData(isMockData);
       
       // Get skill gap analysis
       const gapAnalysis = await JobMatcher.getSkillGapAnalysis(userSkills, 10);
@@ -186,6 +191,11 @@ const JobMatching = () => {
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
                 {userSkills.length} skills matched • {jobMatches.length} jobs found
+                {usingMockData && (
+                  <span className="ml-2 px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 text-xs rounded-full">
+                    Demo Data (API Rate Limited)
+                  </span>
+                )}
               </p>
             </div>
             <button

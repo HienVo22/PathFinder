@@ -109,10 +109,21 @@ export class JobMatcher {
       
       if (data.success && data.jobs) {
         jobs = data.jobs;
+        if (data.mockData) {
+          console.log('🔄 Using mock JSearch data (rate limited):', jobs.length, 'jobs');
+        } else {
+          console.log('✅ Successfully fetched', jobs.length, 'jobs from JSearch API');
+        }
       } else {
-        console.error('Failed to fetch jobs from JSearch API:', data.error);
+        console.error('❌ Failed to fetch jobs from JSearch API:', data.error);
+        if (data.rateLimited) {
+          console.warn('⚠️ JSearch API rate limit exceeded, using sample jobs');
+        } else if (data.message?.includes('RAPIDAPI_KEY')) {
+          console.error('🔑 API credentials not configured properly');
+        }
         // Fallback to sample jobs if API fails
         jobs = [...SAMPLE_JOBS];
+        console.log('📋 Using', jobs.length, 'sample jobs as fallback');
       }
     } catch (error) {
       console.error('Error fetching jobs:', error);
