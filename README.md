@@ -110,8 +110,26 @@ cp .env.example .env.local
 npm install
 ```
 
-#### Step 6: Start Development Server
+#### Step 6: Start All Services
+
+**Option 1 - Using the start script (Recommended):**
 ```bash
+# Make sure you're in the PathFinder directory
+./start-all.sh
+```
+
+**Option 2 - Manual start (portable commands for any computer):**
+```bash
+# Navigate to your PathFinder directory first
+cd /path/to/PathFinder
+
+# Start MongoDB (uses relative path)
+mongod --dbpath data/db_new --port 27017 > /dev/null 2>&1 &
+
+# Start Ollama
+ollama serve > /dev/null 2>&1 &
+
+# Start Next.js
 npm run dev
 ```
 
@@ -119,6 +137,11 @@ npm run dev
 - Open your browser
 - Go to: **http://localhost:3000** (or http://localhost:3001 if 3000 is busy)
 - You should see the Pathfinder login page!
+
+#### Step 8: Stop All Services
+```bash
+./stop-all.sh
+```
 
 ### Testing the Application
 
@@ -167,8 +190,6 @@ source ~/.bashrc  # or ~/.zshrc
 
 ### Quick Setup Commands (Copy & Paste)
 
-
-
 ```bash
 # 1. Clone and navigate
 git clone https://github.com/HienVo22/PathFinder.git
@@ -179,12 +200,16 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 nvm use default
 
-# 3. Install and run
+# 3. Install dependencies
 npm install
-npm run dev
 
-# 4. Open http://localhost:3000 in your browser
+# 4. Start all services (MongoDB, Ollama, Next.js)
+./start-all.sh
+
+# 5. Open http://localhost:3000 in your browser
 ```
+
+**Note:** The MongoDB command uses relative paths (`data/db_new`) so it works from any PathFinder folder location.
 
 ## Project Structure
 

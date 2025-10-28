@@ -6,8 +6,8 @@
 echo "🚀 Starting PathFinder..."
 echo ""
 
-# Check if MongoDB is running
-if pgrep -x "mongod" > /dev/null; then
+# Check if MongoDB is running (portable check)
+if ps aux | grep -v grep | grep "mongod" > /dev/null; then
     echo "✓ MongoDB is already running"
 else
     echo "Starting MongoDB..."
@@ -37,7 +37,7 @@ else
     sleep 2
     
     # Verify MongoDB started successfully
-    if pgrep -x "mongod" > /dev/null; then
+    if ps aux | grep -v grep | grep "mongod" > /dev/null; then
         echo "✓ MongoDB started on port 27017 with data path: $MONGODB_DATA_PATH"
     else
         echo "❌ Failed to start MongoDB. Check the logs for more details."
@@ -46,8 +46,8 @@ else
     fi
 fi
 
-# Check if Ollama is running
-if pgrep -x "ollama" > /dev/null; then
+# Check if Ollama is running (portable check)
+if ps aux | grep -v grep | grep "ollama" > /dev/null; then
     echo "✓ Ollama is already running"
 else
     echo "Starting Ollama AI service..."
