@@ -43,3 +43,5 @@ echo "Open your browser: http://localhost:3000"
 echo ""
 echo "To stop all services, run: ./stop-all.sh"
 
+
+
