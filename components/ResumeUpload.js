@@ -121,9 +121,26 @@ const ResumeUpload = ({ onUploadSuccess, onProcessingComplete, onShowModal }) =>
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
               }
             });
-            const statusData = await statusResponse.json();
             
-            if (statusData.status === 'completed' || attempts >= maxAttempts) {
+            if (!statusResponse.ok) {
+              console.error('Resume status API error:', statusResponse.status, statusResponse.statusText);
+              if (attempts >= maxAttempts) {
+                clearInterval(pollInterval);
+                if (onProcessingComplete) {
+                  onProcessingComplete({ 
+                    parsing: { completed: false, failed: true }, 
+                    error: 'Failed to check processing status' 
+                  });
+                }
+              }
+              return;
+            }
+            
+            const statusData = await statusResponse.json();
+            console.log(`Resume processing poll attempt ${attempts}:`, statusData);
+            
+            // Check if processing is complete or failed
+            if (statusData.parsing?.completed || statusData.parsing?.failed || attempts >= maxAttempts) {
               clearInterval(pollInterval);
               if (onProcessingComplete) {
                 onProcessingComplete(statusData);
@@ -133,6 +150,12 @@ const ResumeUpload = ({ onUploadSuccess, onProcessingComplete, onShowModal }) =>
             console.error('Error checking resume status:', error);
             if (attempts >= maxAttempts) {
               clearInterval(pollInterval);
+              if (onProcessingComplete) {
+                onProcessingComplete({ 
+                  parsing: { completed: false, failed: true }, 
+                  error: 'Network error while checking processing status' 
+                });
+              }
             }
           }
         }, 1000); // Check every second

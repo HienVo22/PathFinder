@@ -11,9 +11,39 @@ if pgrep -x "mongod" > /dev/null; then
     echo "✓ MongoDB is already running"
 else
     echo "Starting MongoDB..."
-    mongod --dbpath data/db_new --port 27017 > /dev/null 2>&1 &
+    
+    # Set configurable MongoDB data path
+    MONGODB_DATA_PATH=${MONGODB_DATA_PATH:-"data/db_new"}
+    
+    # Ensure MongoDB data directory exists
+    if [ ! -d "$MONGODB_DATA_PATH" ]; then
+        echo "Creating MongoDB data directory: $MONGODB_DATA_PATH"
+        mkdir -p "$MONGODB_DATA_PATH"
+        if [ $? -ne 0 ]; then
+            echo "❌ Failed to create MongoDB data directory: $MONGODB_DATA_PATH"
+            echo "Please check permissions or create the directory manually"
+            exit 1
+        fi
+    fi
+    
+    # Check if directory is writable
+    if [ ! -w "$MONGODB_DATA_PATH" ]; then
+        echo "❌ MongoDB data directory is not writable: $MONGODB_DATA_PATH"
+        echo "Please check permissions: chmod 755 $MONGODB_DATA_PATH"
+        exit 1
+    fi
+    
+    mongod --dbpath "$MONGODB_DATA_PATH" --port 27017 > /dev/null 2>&1 &
     sleep 2
-    echo "✓ MongoDB started on port 27017"
+    
+    # Verify MongoDB started successfully
+    if pgrep -x "mongod" > /dev/null; then
+        echo "✓ MongoDB started on port 27017 with data path: $MONGODB_DATA_PATH"
+    else
+        echo "❌ Failed to start MongoDB. Check the logs for more details."
+        echo "You can run 'mongod --dbpath $MONGODB_DATA_PATH --port 27017' manually to see error messages."
+        exit 1
+    fi
 fi
 
 # Check if Ollama is running

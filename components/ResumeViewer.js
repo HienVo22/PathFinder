@@ -33,11 +33,22 @@ export default function ResumeViewer({ resumeFilename, onClose }) {
         if (mounted) {
           setBlobUrl(objectUrl);
           
-          // For DOCX files, we'll use Google Docs viewer for better formatting
+          // For DOCX files, check if we can use Google Docs viewer
           if (fetchedContentType.includes('wordprocessingml') || fetchedContentType.includes('msword')) {
-            // Create a viewer URL using Google Docs viewer
-            const fileUrl = encodeURIComponent(`${window.location.origin}/api/upload/resume?file=${encodeURIComponent(resumeFilename)}`);
-            setViewerUrl(`https://docs.google.com/gview?url=${fileUrl}&embedded=true`);
+            // Google Docs viewer only works with publicly accessible URLs
+            // For localhost/development, we'll skip the Google viewer and show a message
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1' || 
+                               window.location.hostname.includes('localhost');
+            
+            if (!isLocalhost && window.location.protocol === 'https:') {
+              // Only use Google Docs viewer for HTTPS production URLs
+              const fileUrl = encodeURIComponent(`${window.location.origin}/api/upload/resume?file=${encodeURIComponent(resumeFilename)}`);
+              setViewerUrl(`https://docs.google.com/gview?url=${fileUrl}&embedded=true`);
+            } else {
+              // For localhost or non-HTTPS, we'll show a fallback message
+              setViewerUrl(null);
+            }
           }
         }
       } catch (err) {
@@ -97,19 +108,47 @@ export default function ResumeViewer({ resumeFilename, onClose }) {
           )}
           {!loading && !error && (
             <>
-              {/* DOCX files - use Google Docs viewer for original formatting */}
-              {(contentType.includes('wordprocessingml') || contentType.includes('msword')) && viewerUrl && (
-                <iframe
-                  src={viewerUrl}
-                  title="Resume Preview"
-                  className="w-full h-full border-0"
-                  onContextMenu={handleDownload}
-                  onLoad={() => console.log('Google Docs viewer loaded')}
-                  onError={() => {
-                    console.warn('Google Docs viewer failed, falling back to direct view');
-                    setError('Document viewer unavailable. Please download to view the original format.');
-                  }}
-                />
+              {/* DOCX files - use Google Docs viewer for original formatting when available */}
+              {(contentType.includes('wordprocessingml') || contentType.includes('msword')) && (
+                <>
+                  {viewerUrl ? (
+                    <iframe
+                      src={viewerUrl}
+                      title="Resume Preview"
+                      className="w-full h-full border-0"
+                      onContextMenu={handleDownload}
+                      onLoad={() => console.log('Google Docs viewer loaded')}
+                      onError={() => {
+                        console.warn('Google Docs viewer failed, falling back to direct view');
+                        setError('Document viewer unavailable. Please download to view the original format.');
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 p-8">
+                      <div className="max-w-md text-center">
+                        <div className="mb-4">
+                          <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">DOCX Preview Not Available</h3>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Document preview is not available in development mode. 
+                          Please download the file to view the original formatting.
+                        </p>
+                        <button
+                          onClick={handleDownload}
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                        >
+                          <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          Download Resume
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
               
               {/* PDF files - native browser PDF viewer */}

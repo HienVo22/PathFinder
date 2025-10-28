@@ -38,8 +38,14 @@ export default function Dashboard() {
 
   // Handle resume processing completion
   const handleProcessingComplete = (result) => {
-    if (result.status === 'completed') {
+    console.log('Processing completion result:', result);
+    
+    if (result.parsing?.completed) {
       toast.success('Resume processing complete! Your skills have been extracted.');
+    } else if (result.parsing?.failed) {
+      toast.error(result.error || 'Resume processing failed. Please try uploading again.');
+    } else if (result.error) {
+      toast.error(result.error);
     } else {
       toast.error('Resume processing took longer than expected. Please check back in a few minutes.');
     }
