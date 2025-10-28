@@ -176,21 +176,21 @@ const JobMatching = () => {
         onSave={handlePreferencesSaved}
       />
 
-      <div className="h-full flex flex-col bg-gray-50">
+      <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
         {/* Top Header Bar */}
-        <div className="bg-white border-b px-6 py-4">
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900">
-                Top picks for you based on your extracted skills
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                Top picks for you
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
                 {userSkills.length} skills matched • {jobMatches.length} jobs found
               </p>
             </div>
             <button
               onClick={() => setIsPreferencesOpen(true)}
-              className="px-4 py-2 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
             >
               Preferences
             </button>
@@ -200,9 +200,9 @@ const JobMatching = () => {
         {/* LinkedIn-Style Split Layout */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left Sidebar - Job Listings */}
-          <div className="w-1/3 bg-white border-r overflow-y-auto">
+          <div className="w-1/3 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
             {jobMatches.length === 0 ? (
-              <div className="p-6 text-center text-gray-500">
+              <div className="p-6 text-center text-gray-500 dark:text-gray-400">
                 <svg className="mx-auto h-12 w-12 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -222,7 +222,7 @@ const JobMatching = () => {
           </div>
 
           {/* Right Side - Job Detail */}
-          <div className="flex-1 bg-white">
+          <div className="flex-1 bg-white dark:bg-gray-800">
             <JobDetail
               job={selectedJob}
               onSkillsInsightClick={(job) => setSkillsModalJob(job)}
