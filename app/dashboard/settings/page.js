@@ -7,6 +7,7 @@ import ResumeStatus from '@/components/ResumeStatus'
 import LinkedInLinkPopup from '@/components/LinkedInLinkPopup'
 import LinkedInMockLink from '@/components/LinkedInMockLink'
 import { useTheme } from 'next-themes'
+import DashboardNav from '@/components/DashboardNav'
 
 export default function Settings() {
   const { user, loading, logout, refreshUser } = useAuth()
@@ -18,6 +19,10 @@ export default function Settings() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteError, setDeleteError] = useState('')
   const { theme, setTheme } = useTheme()
+  const handleNavChange = (tab) => {
+    // navigate back to dashboard and set the requested tab
+    router.push(`/dashboard?tab=${tab}`)
+  }
 
   // On mount or when user preference changes, set theme once from user preference
   useEffect(() => {
@@ -123,18 +128,23 @@ export default function Settings() {
                 Settings
               </h1>
             </div>
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="btn-secondary"
-            >
-              Back to Dashboard
-            </button>
+            <div className="flex items-center space-x-4">
+              <span className="text-secondary-600 dark:text-secondary-400">Welcome, {user.name}!</span>
+              <button
+                onClick={logout}
+                className="btn-secondary"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Include the dashboard navigation so users can jump back to tabs */}
+        <DashboardNav activeTab={null} onChange={handleNavChange} />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="md:col-span-1 space-y-8">
