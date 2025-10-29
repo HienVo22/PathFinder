@@ -1,11 +1,22 @@
 # Sprint 3 - Resume Matching Enhancement
 
-## Branch: ResumeMatching/hien
+## Branch: ResumeMatching/hien → JSearchAPI/hien
+
+## GitHub Issues Assigned
+Based on GitHub project assignments, the following issues were worked on:
+- **Apply Externally**: Implemented external job application functionality with JSearch API integration
+- **Job Filtering**: Enhanced job filtering capabilities with LinkedIn-style preferences
+- **Visual and Styling Details**: Comprehensive dark mode support and UI improvements
+- **Resume Matching to Jobs**: Advanced skill matching algorithm with percentage-based scoring
+- **Integrate JSearch API to Pull Job Listings**: Complete JSearch API integration with mock data fallback
 
 ## Objectives
 - Upgrade AI model for better resume parsing accuracy
 - Improve skill extraction from 85-92% to 90-95%
-- Prepare system for enhanced job matching capabilities
+- Integrate JSearch API for real job listings
+- Implement LinkedIn-style job matching interface
+- Add comprehensive dark mode support
+- Create personal profile system
 
 ## Key Changes
 
@@ -187,10 +198,73 @@
 - Apply directly to employer websites from the interface
 - Professional LinkedIn-style interface familiar to users
 
+### 8. Dark Mode Support
+**Date**: October 28, 2025
+
+**Changes Made**:
+- Comprehensive dark mode support across all job matching components
+- Proper color transitions and hover effects for both themes
+- Visual indicators for demo data usage
+- Consistent theming with existing application
+
+**Files Modified**:
+- `components/JobMatching.js` - Dark mode backgrounds and text
+- `components/JobCard.js` - Dark mode card styling
+- `components/JobDetail.js` - Dark mode content and buttons
+- All components now support `dark:` Tailwind classes
+
+### 9. Personal Profile System
+**Date**: October 28, 2025
+
+**Changes Made**:
+- New personal profile page displaying parsed resume data
+- UserDropdown component with navigation menu
+- Integration with existing authentication system
+- Display of skills, experience, education, and projects
+
+**Files Created**:
+- `app/profile/page.js` - Personal profile page
+- `components/UserDropdown.js` - Header dropdown menu
+
+**Features**:
+- View extracted skills from resume
+- Display work experience and education
+- Show projects and job titles
+- Dropdown navigation menu in header
+
+### 10. UI/UX Improvements
+**Date**: October 27-28, 2025
+
+**Changes Made**:
+- Custom PathFinder logo design and integration
+- Removal of LinkedIn buttons and Quick Actions
+- Gear icon settings button in header
+- Expandable skills lists with "Show All" functionality
+- Black refresh buttons and improved button styling
+
+**Files Modified**:
+- `public/pathfinder-logo.svg` - Custom logo design
+- `app/page.js` - Logo integration on homepage
+- `app/dashboard/page.js` - UI cleanup and settings button
+- `components/ParsedResumeViewer.js` - Expandable skills UI
+
+### 11. Cross-Platform Compatibility
+**Date**: October 28, 2025
+
+**Changes Made**:
+- Replaced pgrep commands with portable ps aux | grep alternatives
+- Fixed compatibility issues for teammates on different systems
+- Improved start-all.sh script reliability
+
+**Files Modified**:
+- `start-all.sh` - Cross-platform process detection
+
 ## Future Plans
+- Continue monitoring skill extraction accuracy with JSearch job matching
+- Implement job application tracking system
+- Add user feedback system for skill validation and job recommendations
+- Enhance job filtering with location, salary, and experience level filters
+- Consider implementing OpenAI GPT-4 for production deployment
+- Add job bookmarking and application history features
 - Add search/filter functionality for jobs (by title, company, location)
 - Implement pagination for large result sets
-- Add ability to save/bookmark favorite jobs
-- Job application tracking
-- Resume scoring system
-- Cover letter generation based on job requirements
