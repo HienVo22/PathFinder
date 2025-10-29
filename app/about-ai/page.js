@@ -7,8 +7,13 @@ export default function AboutAI() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex-shrink-0">
-              <Link href="/" className="text-2xl font-bold text-primary-600">
-                🧭 Pathfinder
+              <Link href="/" className="flex items-center space-x-2">
+                <img 
+                  src="/pathfinder-logo.svg" 
+                  alt="PathFinder Logo" 
+                  className="w-8 h-8"
+                />
+                <span className="text-2xl font-bold text-primary-600">Pathfinder</span>
               </Link>
             </div>
             <div className="hidden md:block">

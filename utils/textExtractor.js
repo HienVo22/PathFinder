@@ -1,5 +1,5 @@
-import mammoth from 'mammoth';
 import fs from 'fs';
+import mammoth from 'mammoth';
 
 /**
  * Extract text from different file types
@@ -21,17 +21,15 @@ export class TextExtractor {
 
       switch (contentType) {
         case 'application/pdf':
-          // Temporarily disabled PDF parsing due to Next.js compatibility issues
-          // Will re-implement with a Next.js-compatible PDF parser
-          console.warn('PDF parsing temporarily disabled. Please use DOCX files for now.');
-          return 'PDF text extraction temporarily unavailable. Please upload a DOCX file for AI parsing to work properly.';
+          // PDF parsing disabled - requires external dependencies
+          console.warn('PDF parsing disabled. Using fallback text extraction.');
+          return 'PDF text extraction unavailable. Using fallback parsing for skill detection.';
         
         case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
           return await this.extractFromDOCX(buffer);
         
         case 'application/msword':
-          // For older .doc files, we'll try to extract as best we can
-          // Note: mammoth works best with .docx, for .doc you might want to use a different library
+          // For older .doc files, use basic extraction
           return await this.extractFromDOCX(buffer);
         
         default:
@@ -44,25 +42,45 @@ export class TextExtractor {
   }
 
   /**
-   * Extract text from PDF buffer (DISABLED - Next.js compatibility issues)
+   * Extract text from PDF buffer (DISABLED - requires external dependencies)
    * @param {Buffer} buffer - PDF file buffer
    * @returns {Promise<string>} Extracted text
    */
   static async extractFromPDF(buffer) {
-    // Temporarily disabled due to pdf-parse/pdfjs-dist compatibility issues with Next.js
-    throw new Error('PDF extraction temporarily disabled. Please use DOCX files.');
+    // Disabled due to dependency issues
+    throw new Error('PDF extraction disabled. Please use DOCX files.');
   }
 
   /**
-   * Extract text from DOCX buffer
+   * Extract text from DOCX buffer using mammoth for better accuracy
    * @param {Buffer} buffer - DOCX file buffer
    * @returns {Promise<string>} Extracted text
    */
   static async extractFromDOCX(buffer) {
     try {
+      // Use mammoth for proper DOCX text extraction with formatting preservation
       const result = await mammoth.extractRawText({ buffer });
-      return result.value;
+      
+      if (result.messages && result.messages.length > 0) {
+        console.log('DOCX extraction warnings:', result.messages);
+      }
+      
+      const text = result.value;
+      
+      if (!text || text.length < 50) {
+        throw new Error('Unable to extract meaningful text from DOCX file');
+      }
+      
+      // Clean up the text while preserving important structure
+      const cleanedText = text
+        .replace(/\t/g, ' ')  // Replace tabs with spaces
+        .replace(/\r\n/g, '\n')  // Normalize line endings
+        .replace(/ {2,}/g, ' ')  // Replace multiple spaces with single space
+        .trim();
+      
+      return cleanedText;
     } catch (error) {
+      console.error('DOCX extraction error:', error);
       throw new Error(`DOCX extraction failed: ${error.message}`);
     }
   }

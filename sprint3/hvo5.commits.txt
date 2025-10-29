@@ -1,0 +1,211 @@
+Source code lines committed by Hien Vo for Sprint 3:
+
+================== JSEARCH API INTEGRATION ==================
+
+=== app/api/jobs/search/route.js ===
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400   1) import { NextResponse } from 'next/server';
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400   2) import { SKILLS_DATABASE } from '../../../../data/skills';
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400   3) 
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400   4) export async function GET(request) {
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400  16)   // Check if we have API credentials
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400  17)   if (!process.env.RAPIDAPI_KEY) {
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400  18)     console.error('RAPIDAPI_KEY not found in environment variables');
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400  45)   console.log('Making JSearch API request:', `https://${process.env.RAPIDAPI_HOST}/search?${params.toString()}`);
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400  52)   console.log('JSearch API response status:', response.status, response.statusText);
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400  58)   // If rate limited, return mock data in development
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400  59)   if (response.status === 429) {
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400  60)     if (process.env.NODE_ENV === 'development') {
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400  61)       console.log('🔄 Rate limited - returning mock JSearch data for development');
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400  62)       return getMockJSearchResponse(query, location);
+
+=== utils/jobMatcher.js ===
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400  89)   static async getJobMatches(userSkills, filters = {}) {
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400  90)     // Fetch jobs from JSearch API
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400  91)     let jobs = [];
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400  92)     try {
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400  107)       const response = await fetch(`/api/jobs/search?${params.toString()}`);
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400  108)       const data = await response.json();
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400  112)       if (data.mockData) {
+d2e27f1 (Hien Vo 2025-10-28 14:30:15 -0400  113)         console.log('🔄 Using mock JSearch data (rate limited):', jobs.length, 'jobs');
+
+================== LINKEDIN-STYLE JOB MATCHING UI ==================
+
+=== components/JobMatching.js ===
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400   1) 'use client';
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400   5) import { JobMatcher } from '../utils/jobMatcher';
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400   7) import JobCard from './JobCard';
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400   8) import JobDetail from './JobDetail';
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400   9) import SkillsInsightModal from './SkillsInsightModal';
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400  31)   const [usingMockData, setUsingMockData] = useState(false);
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400  94)       // Check if we're using mock data (look for mock job IDs)
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400  95)       const isMockData = matches.some(job => job.id && job.id.startsWith('mock-'));
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400  96)       setUsingMockData(isMockData);
+
+=== components/JobCard.js ===
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400   1) 'use client';
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400   7) export default function JobCard({ job, isSelected, onClick }) {
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400  18)   return (
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400  19)     <div
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400  20)       onClick={onClick}
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400  22)         p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-colors
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400  24)           ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-600' 
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400  25)           : 'hover:bg-gray-50 dark:hover:bg-gray-700 border-l-4 border-l-transparent'
+
+=== components/JobDetail.js ===
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400   1) 'use client';
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400   9) export default function JobDetail({ job, onSkillsInsightClick }) {
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400  43)     <div className="h-full overflow-y-auto bg-white dark:bg-gray-800">
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400 101)           <a
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400 105)             className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-center"
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400 107)             Apply
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400 109)           <button
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400 114)             className="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center gap-2"
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400 120)             Save
+
+=== components/SkillsInsightModal.js ===
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400   1) 'use client';
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400   5) export default function SkillsInsightModal({ job, isOpen, onClose }) {
+0e34ca5 (Hien Vo 2025-10-27 21:45:32 -0400  43)       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden">
+
+================== DARK MODE SUPPORT ==================
+
+=== components/JobMatching.js (Dark Mode) ===
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400 179)       <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400 181)         <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400 184)               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400 187)               <p className="text-gray-600 dark:text-gray-400 mt-1">
+ebcfafa (Hien Vo 2025-10-28 13:15:47 -0400 195)                   <span className="ml-2 px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 text-xs rounded-full">
+
+================== PERSONAL PROFILE PAGE ==================
+
+=== app/profile/page.js ===
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400   1) 'use client';
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400   3) import { useState, useEffect } from 'react';
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400   4) import { useAuth } from '../contexts/AuthContext';
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400   6) export default function ProfilePage() {
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400   7)   const { user } = useAuth();
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400   8)   const [parsedData, setParsedData] = useState(null);
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400  35)         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400  36)           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">My Profile</h1>
+
+=== components/UserDropdown.js ===
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400   1) 'use client';
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400   3) import { useState, useRef, useEffect } from 'react';
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400   4) import Link from 'next/link';
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400   6) export default function UserDropdown({ user }) {
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400  38)             <Link href="/profile" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400  42)             <Link href="/dashboard" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+
+================== PATHFINDER LOGO AND UI CLEANUP ==================
+
+=== public/pathfinder-logo.svg ===
+a84447a (Hien Vo 2025-10-27 20:15:28 -0400   1) <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+a84447a (Hien Vo 2025-10-27 20:15:28 -0400   2)   <!-- Head silhouette -->
+a84447a (Hien Vo 2025-10-27 20:15:28 -0400   3)   <circle cx="20" cy="12" r="8" fill="#3B82F6" opacity="0.8"/>
+
+=== app/page.js (Logo Integration) ===
+a84447a (Hien Vo 2025-10-27 20:15:28 -0400  15)             <img src="/pathfinder-logo.svg" alt="Pathfinder" className="w-8 h-8" />
+a84447a (Hien Vo 2025-10-27 20:15:28 -0400  25)           <img src="/pathfinder-logo.svg" alt="Pathfinder" className="w-24 h-24 mx-auto mb-6" />
+a84447a (Hien Vo 2025-10-27 20:15:28 -0400  26)           <h1 className="text-5xl font-bold text-gray-900 mb-4">PATHFINDER</h1>
+a84447a (Hien Vo 2025-10-27 20:15:28 -0400  27)           <p className="text-xl text-gray-600 mb-8">AI-POWERED JOB SEARCHING</p>
+
+=== app/dashboard/page.js (UI Cleanup) ===
+bb21cb8 (Hien Vo 2025-10-27 19:45:15 -0400  25)           <button
+bb21cb8 (Hien Vo 2025-10-27 19:45:15 -0400  26)             onClick={() => router.push('/dashboard/settings')}
+bb21cb8 (Hien Vo 2025-10-27 19:45:15 -0400  27)             className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+bb21cb8 (Hien Vo 2025-10-27 19:45:15 -0400  29)             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+92a5bd6 (Hien Vo 2025-10-28 11:45:23 -0400  18)         <UserDropdown user={user} />
+
+================== SKILLS DATABASE AND UI IMPROVEMENTS ==================
+
+=== data/skills.js ===
+4f3a5f9 (Hien Vo 2025-10-27 16:30:42 -0400 185)     'Jupyter Notebook',
+
+=== components/ParsedResumeViewer.js (Expandable Skills) ===
+4f3a5f9 (Hien Vo 2025-10-27 16:30:42 -0400  17)   const [showAllSkills, setShowAllSkills] = useState(false);
+4f3a5f9 (Hien Vo 2025-10-27 16:30:42 -0400  85)               <button
+4f3a5f9 (Hien Vo 2025-10-27 16:30:42 -0400  86)                 onClick={refreshSkills}
+4f3a5f9 (Hien Vo 2025-10-27 16:30:42 -0400  87)                 className="px-4 py-2 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors"
+4f3a5f9 (Hien Vo 2025-10-27 16:30:42 -0400  89)                 Refresh
+4f3a5f9 (Hien Vo 2025-10-27 16:30:42 -0400  95)               {(showAllSkills ? extractedSkills : extractedSkills.slice(0, 12)).map((skill, index) => (
+4f3a5f9 (Hien Vo 2025-10-27 16:30:42 -0400 104)               <button
+4f3a5f9 (Hien Vo 2025-10-27 16:30:42 -0400 105)                 onClick={() => setShowAllSkills(!showAllSkills)}
+4f3a5f9 (Hien Vo 2025-10-27 16:30:42 -0400 108)                 {showAllSkills ? 'Show Less' : `Show All ${extractedSkills.length} Skills`}
+
+================== AI SKILL EXTRACTION IMPROVEMENTS ==================
+
+=== utils/resumeParser.js (AI Prompt Fix) ===
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400  34) You are an expert AI resume parser. Your task is to extract ALL technical and soft skills mentioned in the resume. Be extremely thorough and comprehensive - extract every skill that is explicitly mentioned or clearly demonstrated.
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400 113) **CRITICAL: extractedSkills MUST be an array of INDIVIDUAL skill names ONLY.**
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400 114) DO NOT group skills into categories. List each skill separately.
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400 115) 
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400 116) WRONG: ["Frontend: React, Vue.js", "Backend: Node.js, Python"]
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400 117) CORRECT: ["React", "Vue.js", "Node.js", "Python"]
+
+=== utils/resumeParser.js (Validation Enhancement) ===
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400 248)   validateSkills(skills) {
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400 254)     const validSkills = skills.filter(skill => {
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400 258)       const skillLower = skill.toLowerCase();
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400 261)       const isInDatabase = SKILLS_DATABASE.some(dbSkill => 
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400 262)         dbSkill.toLowerCase() === skillLower
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400 263)       );
+1e30651 (Hien Vo 2025-10-27 15:45:18 -0400 266)       const isTechnicalPattern = /^[A-Za-z][A-Za-z0-9\s\.\+\#\-]{1,25}$/.test(skill) &&
+
+================== CROSS-PLATFORM COMPATIBILITY ==================
+
+=== start-all.sh (Process Detection Fix) ===
+95dcffc (Hien Vo 2025-10-28 15:30:22 -0400  10) if ps aux | grep -v grep | grep "mongod" > /dev/null; then
+95dcffc (Hien Vo 2025-10-28 15:30:22 -0400  40)     if ps aux | grep -v grep | grep "mongod" > /dev/null; then
+95dcffc (Hien Vo 2025-10-28 15:30:22 -0400  50) if ps aux | grep -v grep | grep "ollama" > /dev/null; then
+
+## SUMMARY OF MAJOR FEATURES IMPLEMENTED:
+
+### 1. **JSearch API Integration** (0e34ca5, d2e27f1):
+- Complete integration with JSearch API for real job listings
+- Mock data fallback system for development when rate limited
+- Comprehensive error handling and logging
+- Environment variable validation and API credential management
+
+### 2. **LinkedIn-Style Job Matching UI** (0e34ca5, ebcfafa):
+- Split-pane layout with job cards on left, details on right
+- JobCard component with company logos, match percentages, skill previews
+- JobDetail component with full job descriptions, salary, qualifications
+- SkillsInsightModal for detailed skill matching analysis
+- Apply and Save buttons with proper styling
+
+### 3. **Dark Mode Support** (ebcfafa):
+- Complete dark mode implementation across all job matching components
+- Proper color transitions and hover effects
+- Visual indicators for demo data usage
+- Consistent theming with existing application
+
+### 4. **Personal Profile System** (92a5bd6):
+- New profile page displaying parsed resume data
+- UserDropdown component with navigation menu
+- Integration with existing authentication system
+- Display of skills, experience, education, and projects
+
+### 5. **UI/UX Improvements** (bb21cb8, a84447a, 4f3a5f9):
+- Custom PathFinder logo design and integration
+- Removal of LinkedIn buttons and Quick Actions
+- Gear icon settings button in header
+- Expandable skills lists with "Show All" functionality
+- Black refresh buttons and improved button styling
+
+### 6. **AI Skill Extraction Enhancements** (1e30651):
+- Fixed AI prompt to return individual skills instead of grouped categories
+- Enhanced skill validation with case-insensitive matching
+- Pattern-based validation for technical skills
+- Comprehensive logging for debugging AI responses
+
+### 7. **Cross-Platform Compatibility** (95dcffc):
+- Replaced pgrep commands with portable ps aux | grep alternatives
+- Fixed compatibility issues for teammates on different systems
+- Improved start-all.sh script reliability
+
+### 8. **Skills Database Expansion** (4f3a5f9):
+- Added Jupyter Notebook and other tools to skills database
+- Enhanced skill recognition and normalization
+- Better handling of technical skill variations
+
+All features include comprehensive error handling, logging, and user feedback mechanisms. The implementation follows modern React patterns with proper state management and responsive design principles.
