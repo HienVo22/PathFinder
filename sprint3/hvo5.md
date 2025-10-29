@@ -8,7 +8,7 @@
 ## What you planned to do
 
 - Integrate JSearch API for real job listings
-- Implement LinkedIn-style job matching interface
+- Implement LinkedIn style job matching interface
 - Add comprehensive dark mode support across all components
 - Create personal profile system for users
 - Improve AI skill extraction accuracy
@@ -18,7 +18,6 @@
 
 - Did not implement job application tracking system
 - Did not add advanced job filtering by salary ranges
-- Did not create cover letter generation feature
 - Did not implement job bookmarking persistence
 
 ## What problems you encountered
@@ -56,7 +55,7 @@ Based on GitHub project assignments, the following issues were worked on:
 
 ## Use of AI and/or 3rd party software
 
-Used GitHub Copilot for code completion and suggestions while writing utility functions. Used standard JavaScript ES6 features and no external libraries beyond the existing Next.js framework.
+Used Cursor for code completion and suggestions while writing utility functions. 
 
 ## What you accomplished
 
