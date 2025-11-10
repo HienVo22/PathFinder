@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Script from 'next/script'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
@@ -93,7 +94,12 @@ export default function LoginPage() {
     )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 px-4">
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle showLabel={true} />
+      </div>
+
       <div className="w-full max-w-md mx-auto px-4">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-6">

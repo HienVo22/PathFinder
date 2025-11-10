@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
@@ -66,11 +67,11 @@ export default function ProfilePage() {
   const hasResumeData = profileData?.hasResume && profileData?.parsing?.completed;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+          <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-2">
               <img 
                 src="/pathfinder-logo.svg" 
@@ -81,12 +82,15 @@ export default function ProfilePage() {
                 Pathfinder
               </h1>
             </div>
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="btn-secondary"
-            >
-              Back to Dashboard
-            </button>
+            <div className="flex items-center gap-4">
+              <ThemeToggle showLabel={true} />
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="btn-secondary"
+              >
+                Back to Dashboard
+              </button>
+            </div>
           </div>
         </div>
       </header>

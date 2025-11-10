@@ -1,26 +1,35 @@
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
-import { Providers } from './providers'
+import { ThemeProvider } from '@/contexts/ThemeContext'
 import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Pathfinder - Job Recommendation Platform',
-  description: 'Find your perfect job with AI-powered recommendations',
+  title: 'PathFinder - Smart Job Matching Platform',
+  description: 'Find your perfect job with AI-powered matching',
 }
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <Providers>
+        <ThemeProvider>
           <AuthProvider>
-            <Toaster position="top-right" />
             {children}
+            <Toaster 
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: 'var(--toast-bg)',
+                  color: 'var(--toast-color)',
+                },
+              }}
+            />
           </AuthProvider>
-        </Providers>
+        </ThemeProvider>
       </body>
     </html>
   )
