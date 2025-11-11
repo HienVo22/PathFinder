@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Script from 'next/script'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
@@ -93,10 +94,22 @@ export default function LoginPage() {
     )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 px-4">
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle showLabel={true} />
+      </div>
+
       <div className="w-full max-w-md mx-auto px-4">
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary-600 mb-4">🧭 Pathfinder</h1>
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/pathfinder-logo.svg" 
+              alt="PathFinder Logo" 
+              className="w-24 h-24"
+            />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-primary-600 mb-4">Pathfinder</h1>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Find Your <span className="text-primary-600"> Dream Job</span><br />with AI</h2>
           <p className="text-lg text-secondary-600 mb-8">Pathfinder uses machine learning to match you with the perfect job opportunities. Upload your resume, set your preferences, and let AI do the work.</p>
         </div>

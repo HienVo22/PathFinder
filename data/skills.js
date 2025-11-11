@@ -1,56 +1,85 @@
-// Comprehensive skills database for job matching
-export const SKILLS_DATABASE = [
-  // Frontend Technologies
-  'JavaScript', 'TypeScript', 'React', 'Vue.js', 'Angular', 'Svelte',
-  'HTML', 'CSS', 'Sass', 'SCSS', 'Less', 'Bootstrap', 'Tailwind CSS',
-  'Material-UI', 'Styled Components', 'jQuery', 'Redux', 'MobX', 'Vuex',
-  'Next.js', 'Nuxt.js', 'Gatsby', 'Webpack', 'Vite', 'Parcel',
+// Job-focused technical skills database - only skills explicitly mentioned in job listings
+export const TECHNICAL_SKILLS = {
+  // Core Programming Languages (commonly required in job listings)
+  languages: [
+    'JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'C++',
+    'PHP', 'Ruby', 'Swift', 'Kotlin', 'Go'
+  ],
   
-  // Backend Technologies
-  'Node.js', 'Express', 'Koa', 'Fastify', 'Python', 'Django', 'Flask',
-  'FastAPI', 'Java', 'Spring', 'Spring Boot', 'PHP', 'Laravel', 'Symfony',
-  'Ruby', 'Ruby on Rails', 'C#', '.NET', 'ASP.NET', 'Go', 'Gin', 'Rust',
-  'Actix', 'Scala', 'Play Framework',
+  // Frontend Development (key skills in frontend job listings)
+  frontend: [
+    'React', 'Vue.js', 'Angular', 'HTML', 'CSS',
+    'Redux', 'Next.js', 'Webpack', 'Tailwind CSS',
+    'Bootstrap', 'Material-UI', 'Sass'
+  ],
   
-  // Databases
-  'MySQL', 'PostgreSQL', 'SQLite', 'Oracle', 'SQL Server', 'MongoDB',
-  'Redis', 'Elasticsearch', 'Cassandra', 'DynamoDB', 'Firebase',
-  'Supabase', 'PlanetScale', 'Prisma', 'Sequelize', 'TypeORM',
+  // Backend Development (common backend requirements)
+  backend: [
+    'Node.js', 'Express', 'Django', 'Flask', 'FastAPI',
+    'Spring Boot', '.NET', 'ASP.NET', 'GraphQL', 'REST API'
+  ],
   
-  // Cloud & DevOps
-  'AWS', 'Azure', 'Google Cloud Platform', 'GCP', 'Heroku', 'Vercel',
-  'Netlify', 'DigitalOcean', 'Docker', 'Kubernetes', 'Jenkins', 'GitLab CI',
-  'GitHub Actions', 'CircleCI', 'Travis CI', 'Terraform', 'Ansible',
-  'Chef', 'Puppet', 'Vagrant',
+  // Database Technologies (frequently required)
+  databases: [
+    'MySQL', 'PostgreSQL', 'MongoDB', 'Redis',
+    'SQL Server', 'Oracle', 'Firebase'
+  ],
   
-  // Mobile Development
-  'React Native', 'Flutter', 'Swift', 'Kotlin', 'Java', 'Objective-C',
-  'Xamarin', 'Ionic', 'Cordova', 'PhoneGap',
+  // Cloud & DevOps (key modern requirements)
+  cloudDevOps: [
+    'AWS', 'Azure', 'Google Cloud Platform',
+    'Docker', 'Kubernetes', 'Jenkins', 'GitHub Actions',
+    'Linux', 'Ubuntu', 'CI/CD'
+  ],
   
-  // Data Science & AI
-  'Python', 'R', 'Pandas', 'NumPy', 'Matplotlib', 'Seaborn', 'Scikit-learn',
-  'TensorFlow', 'PyTorch', 'Keras', 'OpenCV', 'NLTK', 'spaCy', 'Jupyter',
-  'Apache Spark', 'Hadoop', 'Kafka', 'Airflow',
+  // Mobile Development (specific to mobile jobs)
+  mobile: [
+    'React Native', 'Flutter', 'Swift', 'Kotlin',
+    'Android SDK', 'iOS SDK'
+  ],
   
-  // Version Control & Tools
-  'Git', 'GitHub', 'GitLab', 'Bitbucket', 'SVN', 'Mercurial',
-  'Jira', 'Confluence', 'Slack', 'Discord', 'Figma', 'Adobe XD',
-  'Sketch', 'InVision', 'Postman', 'Insomnia',
+  // Data Science & ML (for AI/ML positions)
+  dataScienceML: [
+    'Machine Learning', 'Data Structures and Algorithms', 'Computer Organization',
+    'Matrix Algebra', 'System Programming', 'Reinforcement Learning',
+    'Pandas', 'NumPy', 'TensorFlow', 'PyTorch', 'Scikit-learn', 'Matplotlib',
+    'FAISS', 'Computer Science'
+  ],
   
-  // Testing
-  'Jest', 'Mocha', 'Chai', 'Cypress', 'Selenium', 'Playwright', 'Puppeteer',
-  'JUnit', 'TestNG', 'PyTest', 'RSpec', 'PHPUnit',
+  // Testing & Tools (commonly required)
+  testing: [
+    'Jest', 'Cypress', 'Selenium', 'JUnit',
+    'PyTest', 'Mocha', 'Chai'
+  ],
   
-  // Other Technologies
-  'GraphQL', 'REST API', 'SOAP', 'WebSocket', 'Socket.io', 'RabbitMQ',
-  'Apache', 'Nginx', 'Linux', 'Ubuntu', 'CentOS', 'Windows Server',
-  'Microservices', 'Serverless', 'Lambda', 'API Gateway',
+  // Essential Tools (frequently mentioned)
+  tools: [
+    'Git', 'GitHub', 'GitLab', 'Jira',
+    'Postman', 'VS Code', 'Docker Compose', 'JWT',
+    'Jupyter Notebook'
+  ],
   
-  // Soft Skills
-  'Team Leadership', 'Project Management', 'Agile', 'Scrum', 'Kanban',
-  'Problem Solving', 'Communication', 'Mentoring', 'Code Review',
-  'Technical Writing', 'Public Speaking'
+  // Architecture & Patterns (high-value skills)
+  architecture: [
+    'Microservices', 'Serverless', 'RESTful APIs',
+    'WebSocket', 'System Design'
+  ]
+};
+
+// Convert to flat array for compatibility
+export const TECHNICAL_SKILLS_LIST = Object.values(TECHNICAL_SKILLS).flat();
+
+// Soft skills that are valuable in tech roles
+export const SOFT_SKILLS = [
+  'Leadership', 'Team Leadership', 'Project Management', 'Communication',
+  'Problem Solving', 'Critical Thinking', 'Analytical Skills', 'Mentoring',
+  'Collaboration', 'Adaptability', 'Time Management', 'Decision Making',
+  'Creativity', 'Innovation', 'Strategic Thinking', 'Conflict Resolution',
+  'Presentation Skills', 'Technical Writing', 'Code Review', 'Agile', 'Scrum'
 ];
+
+// Combined skills database
+export const SKILLS_DATABASE = [...TECHNICAL_SKILLS_LIST, ...SOFT_SKILLS];
 
 // Skills categorized for better organization
 export const SKILLS_CATEGORIES = {

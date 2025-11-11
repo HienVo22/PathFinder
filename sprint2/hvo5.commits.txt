@@ -88,3 +88,4 @@ b717303 (Hien Vo           2025-10-14 08:44:01 -0400  8)   /**
 b717303 (Hien Vo           2025-10-14 08:44:01 -0400  9)    * Extracts text content from a given resume file.
 b717303 (Hien Vo           2025-10-14 08:44:01 -0400 10)    * @param {string} filePath - The path to the resume file.
 
+

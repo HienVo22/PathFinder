@@ -1,0 +1,216 @@
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  1) import Link from 'next/link';
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  2) 
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  3) export default function AboutAI() {
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  4)   return (
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  5)     <div className="min-h-screen bg-gray-50">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  6)       <nav className="bg-white shadow-sm">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  7)         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  8)           <div className="flex items-center justify-between h-16">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  9)             <div className="flex-shrink-0">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 17)               </Link>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 18)             </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 19)             <div className="hidden md:block">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 20)               <Link href="/login" className="text-primary-600 font-medium hover:underline">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 21)                 Log In
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 22)               </Link>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 23)             </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 24)           </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 25)         </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 26)       </nav>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 27)
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 28)       <div className="py-16 px-4 sm:px-6 lg:px-8">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 29)         <div className="max-w-3xl mx-auto">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 30)           <header className="text-center mb-16">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 31)             <h1 className="text-5xl font-extrabold text-gray-900">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 32)               About Our AI
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 33)             </h1>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 34)             <p className="mt-4 text-xl text-gray-600">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 35)               Harnessing the Power of AI for Intelligent Job Matching
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 36)             </p>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 37)           </header>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 38)
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 39)           <div className="prose prose-xl text-gray-700 mx-auto space-y-6">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 40)             <p className="text-lg"> 
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 41)               At Pathfinder, we are committed to providing the most accurate and personalized job recommendations possible. To achieve this, we leverage the advanced capabilities of Llama, a state-of-the-art large language model (LLM).
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 42)             </p>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 43)             
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 44)             <h2 className="text-3xl font-bold !mt-12">How It Works</h2>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 45)             <p>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 46)               When you upload your resume and specify your job preferences, our system doesn't just look for simple keyword matches. Instead, it uses Llama to perform a deep, semantic analysis of your skills, experience, and career goals.
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 47)             </p>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 48)             <ul className="space-y-4">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 49)               <li><strong>Resume Parsing:</strong> The AI reads and understands the nuances of your resume, identifying not just your listed skills but also the context in which you used them.</li>       
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 50)               <li><strong>Skill Inference:</strong> It can infer related skills that you might not have explicitly listed, giving you a more comprehensive professional profile.</li>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 51)               <li><strong>Job Description Analysis:</strong> Similarly, it analyzes job descriptions to understand the true requirements and responsibilities beyond the bullet points.</li>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 52)               <li><strong>Intelligent Matching:</strong> By comparing the rich understanding of your profile with its analysis of available jobs, Llama identifies opportunities that are a genuine fit for your career trajectory, not just a keyword match.</li>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 53)             </ul>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 54)
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 55)             <h2 className="text-3xl font-bold !mt-12">Why Llama?</h2>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 56)             <p>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 57)               We chose Llama for its exceptional natural language understanding and generation capabilities. This allows us to create a more human-like matching process that considers the subtleties of language and intent, resulting in higher quality recommendations for our users.       
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 58)             </p>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 59)
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 60)             <p>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 61)               Our goal is to make your job search smarter, faster, and more effective. With the power of Llama, Pathfinder is your trusted co-pilot in navigating the path to your dream job.
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 62)             </p>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 63)           </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 64)
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 65)           <div className="text-center mt-16">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 66)             <Link href="/" className="btn-primary">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 67)               Back to Home
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 68)             </Link>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 69)           </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 70)         </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 71)       </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 72)     </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 73)   );
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 74) }
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  1) import Link from 'next/link';
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  2)
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  3) export default function AboutUs() { 
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  4)   const teamMembers = ["Anjaney", "Hien", "Jubin", "Parker", "Ziad"];
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  5)
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  6)   return (
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  7)     <div className="min-h-screen bg-gray-50">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  8)       <nav className="bg-white shadow-sm">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400  9)         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 10)           <div className="flex items-center justify-between h-16">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 11)             <div className="flex-shrink-0">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 19)               </Link>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 20)             </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 21)             <div className="hidden md:block">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 22)               <Link href="/login" className="text-primary-600 font-medium hover:underline">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 23)                 Log In
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 24)               </Link>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 25)             </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 26)           </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 27)         </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 28)       </nav>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 29)
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 30)       <div className="py-16 px-4 sm:px-6 lg:px-8">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 31)         <div className="max-w-3xl mx-auto">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 32)           <header className="text-center mb-16">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 33)             <h1 className="text-5xl font-extrabold text-gray-900">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 34)               The Pathfinder Team   
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 35)             </h1>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 36)             <p className="mt-4 text-xl text-gray-600">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 37)               The innovative minds behind your career co-pilot.
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 38)             </p>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 39)           </header>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 40)
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 41)           <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 42)             <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Meet the Team</h2>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 43)             <p className="text-center text-gray-600 mb-10">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 44)               We are a dedicated team of students passionate about leveraging technology to solve real-world challenges. Pathfinder was born from our shared vision to make the job search process more intelligent, personal, and effective for everyone.
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 45)             </p>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 46)             <div className="flex flex-wrap justify-center gap-8">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 47)               {teamMembers.map((name) => (
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 48)                 <div key={name} className="text-center">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 49)                   <div className="w-32 h-32 bg-gradient-to-br from-primary-100 to-secondary-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 50)                     <span className="text-4xl font-bold text-primary-600">{name.charAt(0)}</span>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 51)                   </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 52)                   <h3 className="text-xl font-semibold text-gray-800">{name}</h3>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 53)                 </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 54)               ))}
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 55)             </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 56)           </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 57)
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 58)           <div className="text-center mt-16">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 59)             <Link href="/" className="btn-primary">
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 60)               Back to Home
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 61)             </Link>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 62)           </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 63)         </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 64)       </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 65)     </div>
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 66)   );
+bd28fab8 (Parker  2025-10-24 17:15:36 -0400 67) }
+
+0de65d5d (Parker         2025-10-27 15:20:49 -0400  69)           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 mx-auto dark:border-primary-400 dark:border-b-primary-400"></div>
+0de65d5d (Parker         2025-10-27 15:20:49 -0400  70)           <p className="mt-4 text-secondary-600 dark:text-secondary-400">Loading...</p>
+0de65d5d (Parker         2025-10-27 15:20:49 -0400  81)     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">     
+0de65d5d (Parker         2025-10-27 15:20:49 -0400  89)       <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">    
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 113)           <div className="border-b border-gray-200 dark:border-gray-700">
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 114)             <nav className="-mb-px flex space-x-8 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 119)                     ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 120)                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 129)                     ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 130)                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 139)                     ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 140)                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 168)           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 169)             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Your Profile</h2>       
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 188)           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 189)             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Job Recommendations</h2>
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 190)             <p className="text-secondary-600 dark:text-secondary-400 mb-4">
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 202)           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 203)             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Your Applications</h2>  
+0de65d5d (Parker         2025-10-27 15:20:49 -0400 204)             <p className="text-secondary-600 dark:text-secondary-400 mb-4">
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400  20)   const { theme, setTheme } = useTheme()
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400   9) import { useTheme } from 'next-themes'
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400  30)   const handleThemeChange = async (newTheme) => {
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400  31)     setTheme(newTheme)
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400 210)             {/* Theme Settings */}  
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400 211)             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400 212)               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Appearance</h2>
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400 213)               <div className="space-y-2">
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400 214)                 <p className="text-gray-600 dark:text-gray-300">Choose your preferred theme.</p>
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400 215)                 <div className="flex gap-4">
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400 216)                   <button onClick={() => handleThemeChange('light')} className={`px-4 py-2 rounded-md ${theme === 'light' ? 'btn-primary' : 'btn-secondary'}`}>Light</button>
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400 217)                   <button onClick={() => handleThemeChange('dark')} className={`px-4 py-2 rounded-md ${theme === 'dark' ? 'btn-primary' : 'btn-secondary'}`}>Dark</button>
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400 218)                 </div>
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400 219)               </div>
+bd28fab8 (Parker 2025-10-24 17:15:36 -0400 220)             </div>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400  3) export default function HomePage() {
+0de65d5d (Parker  2025-10-27 15:20:49 -0400  4)   return (
+0de65d5d (Parker  2025-10-27 15:20:49 -0400  5)     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 text-gray-800">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400  6)       {/* Navigation Bar */}        
+0de65d5d (Parker  2025-10-27 15:20:49 -0400  7)       <nav className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400  8)         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400  9)           <div className="flex items-center justify-between h-16">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 10)             <div className="flex-shrink-0">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 18)               </Link>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 19)             </div>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 20)             <div className="hidden md:block">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 21)               <div className="ml-4 flex items-center md:ml-6">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 22)                 <p className="text-secondary-600">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 23)                   Already have an account?{' '}
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 24)                   <Link href="/login" className="text-primary-600 font-medium hover:underline">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 25)                     Log In
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 26)                   </Link>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 27)                 </p>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 28)               </div>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 29)             </div>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 30)           </div>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 31)         </div>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 32)       </nav>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 35)       <header className="text-center py-16 px-4">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 43)         <h1 className="text-5xl font-extrabold text-gray-800 mb-4">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 45)         </h1>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 49)         <p className="text-xl text-secondary-700 max-w-3xl mx-auto">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 50)           Upload your resume, set your preferences, and let Pathfinder discover jobs tailored just for you.
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 51)         </p>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 52)       </header>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 54)       {/* Call-to-action Banner */}
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 55)       <main className="text-center py-16 px-4">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 56)         <h2 className="text-3xl font-bold text-gray-800 mb-4">Find Your Perfect Job Today</h2>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 57)         <p className="text-secondary-600 mb-8 max-w-2xl mx-auto">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 58)           Stop searching, start matching. Our intelligent platform analyzes your skills and experience to connect you with opportunities that truly fit.
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 59)         </p>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 60)         <Link href="/login?form=signup" className="btn-primary inline-block px-10 py-4 text-lg font-semibold">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 61)           Get Started
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 62)         </Link>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 63)       </main>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 65)       <footer className="bg-transparent text-center py-8 px-4">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 66)         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8 text-secondary-600">
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 67)           <Link href="/about-us" className="hover:text-primary-600 hover:underline">About Us</Link>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 68)           <Link href="/about-ai" className="hover:text-primary-600 hover:underline">About the AI</Link>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 69)           <span>Pathfinder 2025</span>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 71)       </footer>
+0de65d5d (Parker  2025-10-27 15:20:49 -0400  9)   body {
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 10)     @apply bg-gray-50 text-gray-900;
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 11)   }
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 12)   .dark body {
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 13)     @apply bg-gray-900 text-gray-100;
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 14)   }
+0de65d5d (Parker  2025-10-27 15:20:49 -0400 20)     @apply dark:bg-primary-500 dark:hover:bg-primary-600;

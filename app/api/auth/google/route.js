@@ -64,7 +64,13 @@ export async function POST(request) {
       }
     });
   } catch (error) {
-    console.error('Google login error:', error?.toString(), error);
+    console.error('Google login error:', {
+      error: error?.toString(),
+      stack: error?.stack,
+      name: error?.name,
+      message: error?.message,
+      code: error?.code
+    });
     // return more detailed message in dev only
     return NextResponse.json({ error: 'Internal server error', detail: error?.message || String(error) }, { status: 500 });
   }

@@ -218,16 +218,7 @@ export default function Settings() {
             </div>
 
             {/* Theme Settings */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Appearance</h2>
-              <div className="space-y-2">
-                <p className="text-gray-600 dark:text-gray-300">Choose your preferred theme.</p>
-                <div className="flex gap-4">
-                  <button onClick={() => handleThemeChange('light')} className={`px-4 py-2 rounded-md ${theme === 'light' ? 'btn-primary' : 'btn-secondary'}`}>Light</button>
-                  <button onClick={() => handleThemeChange('dark')} className={`px-4 py-2 rounded-md ${theme === 'dark' ? 'btn-primary' : 'btn-secondary'}`}>Dark</button>
-                </div>
-              </div>
-            </div>
+
 
             {/* Delete Account Section */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
