@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
-const ResumeUpload = ({ onUploadSuccess }) => {
+const ResumeUpload = ({ onUploadSuccess, onProcessingComplete, onShowModal }) => {
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -65,12 +65,12 @@ const ResumeUpload = ({ onUploadSuccess }) => {
         body: formData
       });
 
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
       const result = await response.json();
-
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Upload failed');
+      }
+      
       // Simulate progress for better UX
       const progressInterval = setInterval(() => {
         setUploadProgress((prev) => {
@@ -85,14 +85,20 @@ const ResumeUpload = ({ onUploadSuccess }) => {
       // Complete the upload and refresh user data
       setTimeout(async () => {
         setUploadProgress(100);
-        setUploadedFile({
+        const fileInfo = {
           name: file.name,
           path: result.filePath,
           uploadedAt: new Date().toISOString(),
           fileType: file.type
-        });
+        };
+        setUploadedFile(fileInfo);
         setUploading(false);
-
+        
+        // Show the modal immediately after upload
+        if (onShowModal) {
+          onShowModal(fileInfo);
+        }
+        
         try {
           if (typeof refreshUser === 'function') await refreshUser();
         } catch (err) {
@@ -103,6 +109,56 @@ const ResumeUpload = ({ onUploadSuccess }) => {
         if (onUploadSuccess) {
           onUploadSuccess(result);
         }
+
+        // Start polling for resume processing status
+        let attempts = 0;
+        const maxAttempts = 30; // 30 seconds timeout
+        const pollInterval = setInterval(async () => {
+          attempts++;
+          try {
+            const statusResponse = await fetch('/api/user/resume-parsing-status', {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              }
+            });
+            
+            if (!statusResponse.ok) {
+              console.error('Resume status API error:', statusResponse.status, statusResponse.statusText);
+              if (attempts >= maxAttempts) {
+                clearInterval(pollInterval);
+                if (onProcessingComplete) {
+                  onProcessingComplete({ 
+                    parsing: { completed: false, failed: true }, 
+                    error: 'Failed to check processing status' 
+                  });
+                }
+              }
+              return;
+            }
+            
+            const statusData = await statusResponse.json();
+            console.log(`Resume processing poll attempt ${attempts}:`, statusData);
+            
+            // Check if processing is complete or failed
+            if (statusData.parsing?.completed || statusData.parsing?.failed || attempts >= maxAttempts) {
+              clearInterval(pollInterval);
+              if (onProcessingComplete) {
+                onProcessingComplete(statusData);
+              }
+            }
+          } catch (error) {
+            console.error('Error checking resume status:', error);
+            if (attempts >= maxAttempts) {
+              clearInterval(pollInterval);
+              if (onProcessingComplete) {
+                onProcessingComplete({ 
+                  parsing: { completed: false, failed: true }, 
+                  error: 'Network error while checking processing status' 
+                });
+              }
+            }
+          }
+        }, 1000); // Check every second
       }, 1500);
 
     } catch (err) {

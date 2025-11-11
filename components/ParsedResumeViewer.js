@@ -6,6 +6,7 @@ const ParsedResumeViewer = () => {
   const [parsingData, setParsingData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showAllSkills, setShowAllSkills] = useState(false);
 
   useEffect(() => {
     fetchParsingStatus();
@@ -95,11 +96,19 @@ const ParsedResumeViewer = () => {
       {/* Extracted Skills */}
       {extractedData?.skills && extractedData.skills.length > 0 && (
         <div className="mb-6">
-          <h4 className="text-sm font-semibold text-gray-700 mb-3">
-            Extracted Skills ({extractedData.skills.length})
-          </h4>
+          <div className="flex justify-between items-center mb-3">
+            <h4 className="text-sm font-semibold text-gray-700">
+              Extracted Skills ({extractedData.skills.length})
+            </h4>
+            <button 
+              onClick={fetchParsingStatus}
+              className="px-3 py-1 bg-gray-900 text-white text-xs rounded hover:bg-gray-800 transition-colors"
+            >
+              Refresh
+            </button>
+          </div>
           <div className="flex flex-wrap gap-2">
-            {extractedData.skills.map((skill, index) => (
+            {(showAllSkills ? extractedData.skills : extractedData.skills.slice(0, 12)).map((skill, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm"
@@ -108,6 +117,14 @@ const ParsedResumeViewer = () => {
               </span>
             ))}
           </div>
+          {extractedData.skills.length > 12 && (
+            <button 
+              onClick={() => setShowAllSkills(!showAllSkills)}
+              className="mt-3 text-xs text-primary-600 hover:text-primary-700 underline"
+            >
+              {showAllSkills ? 'Show Less' : `Show All ${extractedData.skills.length} Skills`}
+            </button>
+          )}
         </div>
       )}
 
@@ -147,13 +164,6 @@ const ParsedResumeViewer = () => {
         </div>
       )}
 
-      {/* Refresh Button */}
-      <button
-        onClick={fetchParsingStatus}
-        className="mt-4 w-full btn-secondary text-sm"
-      >
-        Refresh Skills
-      </button>
     </div>
   );
 };

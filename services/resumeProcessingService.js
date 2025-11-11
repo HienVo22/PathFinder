@@ -62,27 +62,38 @@ export class ResumeProcessingService {
     } catch (error) {
       console.error(`Resume AI processing failed for user ${userId}:`, error);
       
-      // If AI processing fails completely, at least mark it as processed
+      // Check if this is an AI not available error
+      const isAINotAvailable = error.message && error.message.includes('AI_NOT_AVAILABLE');
+      
+      // Mark parsing as failed with appropriate error message
       try {
         await connectDB();
         const user = await User.findById(userId);
         if (user) {
           user.parsedResumeData = {
             extractedSkills: [],
-            experience: 'AI processing failed',
+            experience: '',
             education: '',
             jobTitles: [],
             companies: [],
             yearsOfExperience: 0,
             parsedAt: new Date(),
-            parsingMethod: 'failed'
+            parsingMethod: 'failed',
+            errorMessage: isAINotAvailable 
+              ? 'AI service not available. Please start Ollama to enable skill extraction.'
+              : 'Resume parsing failed. Please try again.'
           };
           await user.save();
         }
         
         return {
           success: false,
-          error: error.message,
+          error: isAINotAvailable 
+            ? 'AI_NOT_AVAILABLE' 
+            : error.message,
+          userFriendlyMessage: isAINotAvailable
+            ? 'AI service is not running. Please start Ollama with "ollama serve" to enable skill extraction.'
+            : 'Resume parsing failed. Please try again.',
           method: 'failed'
         };
       } catch (dbError) {
@@ -131,7 +142,8 @@ export class ResumeProcessingService {
           completed: hasBeenParsed,
           failed: parsingFailed,
           parsedAt: user.parsedResumeData?.parsedAt,
-          method: user.parsedResumeData?.parsingMethod
+          method: user.parsedResumeData?.parsingMethod,
+          errorMessage: user.parsedResumeData?.errorMessage || null
         },
         extractedData: hasBeenParsed ? {
           skills: user.parsedResumeData.extractedSkills || [],

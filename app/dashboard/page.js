@@ -1,20 +1,23 @@
-'use client'
+"use client"
 
 import { useAuth } from '@/contexts/AuthContext'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { toast } from 'react-hot-toast'
 import ResumeUpload from '@/components/ResumeUpload'
 import ResumeStatus from '@/components/ResumeStatus'
 import JobMatching from '@/components/JobMatching'
 import JobPreferences from '@/components/JobPreferences'
-import LinkedInLinkPopup from '@/components/LinkedInLinkPopup'
-import LinkedInMockLink from '@/components/LinkedInMockLink'
+import ProcessingSuccessModal from '@/components/ProcessingSuccessModal'
+import UserDropdown from '@/components/UserDropdown'
 
 export default function Dashboard() {
   const { user, logout, loading } = useAuth()
   const router = useRouter()
   const resumeStatusRef = useRef(null)
   const [activeTab, setActiveTab] = useState('overview')
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [uploadedFileName, setUploadedFileName] = useState('')
 
   // Handle successful resume upload
   const handleUploadSuccess = (result) => {
@@ -23,6 +26,34 @@ export default function Dashboard() {
     if (resumeStatusRef.current) {
       resumeStatusRef.current.refreshStatus();
     }
+    toast.success('Resume uploaded successfully! Processing your document...');
+  }
+
+  // Handle showing the modal after upload
+  const handleShowModal = (fileInfo) => {
+    setUploadedFileName(fileInfo.name);
+    setShowSuccessModal(true);
+  }
+
+  // Handle resume processing completion
+  const handleProcessingComplete = (result) => {
+    console.log('Processing completion result:', result);
+    
+    if (result.parsing?.completed) {
+      toast.success('Resume processing complete! Your skills have been extracted.');
+    } else if (result.parsing?.failed) {
+      toast.error(result.error || 'Resume processing failed. Please try uploading again.');
+    } else if (result.error) {
+      toast.error(result.error);
+    } else {
+      toast.error('Resume processing took longer than expected. Please check back in a few minutes.');
+    }
+  }
+
+  // Handle viewing job matches
+  const handleViewJobs = () => {
+    setShowSuccessModal(false);
+    setActiveTab('jobs');
   }
 
   useEffect(() => {
@@ -48,23 +79,28 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <ProcessingSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        onViewJobs={handleViewJobs}
+        uploadedFileName={uploadedFileName}
+      />
       {/* Header */}
       <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
+            <div className="flex items-center space-x-2">
+              <img 
+                src="/pathfinder-logo.svg" 
+                alt="PathFinder Logo" 
+                className="w-8 h-8"
+              />
               <h1 className="text-2xl font-bold text-primary-600">
-                🧭 Pathfinder
+                Pathfinder
               </h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-secondary-600 dark:text-secondary-400">Welcome, {user.name}!</span>
-              <button
-                onClick={logout}
-                className="btn-secondary"
-              >
-                Logout
-              </button>
+            <div className="flex items-center">
+              <UserDropdown user={user} onLogout={logout} />
             </div>
           </div>
         </div>
@@ -72,50 +108,19 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white dark:bg-gray-900">
-        {/* Navigation Tabs */}
-        <div className="mb-8">
-          <div className="border-b border-gray-200 dark:border-gray-700">
-            <nav className="-mb-px flex space-x-8 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-              <button
-                onClick={() => setActiveTab('overview')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'overview'
-                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
-                }`}
-              >
-                Overview
-              </button>
-              <button
-                onClick={() => setActiveTab('jobs')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'jobs'
-                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
-                }`}
-              >
-                Job Matches
-              </button>
-              <button
-                onClick={() => setActiveTab('preferences')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'preferences'
-                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
-                }`}
-              >
-                Preferences
-              </button>
-            </nav>
-          </div>
-        </div>
+          {/* Navigation Tabs */}
+          <DashboardNav activeTab={activeTab} onChange={setActiveTab} />
 
         {/* Tab Content */}
         {activeTab === 'overview' && (
           <>
             {/* Resume Upload Section */}
             <div className="mb-8">
-              <ResumeUpload onUploadSuccess={handleUploadSuccess} />
+              <ResumeUpload 
+                onUploadSuccess={handleUploadSuccess}
+                onProcessingComplete={handleProcessingComplete}
+                onShowModal={handleShowModal}
+              />
             </div>
 
             {/* Resume Status Section */}
@@ -134,14 +139,13 @@ export default function Dashboard() {
                 <p><span className="font-medium">Resume:</span> {user.resumeOriginalName}</p>
               )}
             </div>
-            <div className="mt-4 space-y-3">
-              <button className="btn-primary w-full">
-                Edit Profile
+            <div className="mt-4">
+              <button 
+                onClick={() => router.push('/profile')}
+                className="btn-primary w-full"
+              >
+                View Profile
               </button>
-              <div className="flex items-center justify-center gap-3">
-                <LinkedInLinkPopup />
-                <LinkedInMockLink />
-              </div>
             </div>
           </div>
 
@@ -170,34 +174,6 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
-
-            {/* Quick Actions */}
-            <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <button 
-                  onClick={() => setActiveTab('jobs')}
-                  className="btn-primary"
-                >
-                  Find Job Matches
-                </button>
-                <button 
-                  onClick={() => setActiveTab('preferences')}
-                  className="btn-secondary"
-                >
-                  Update Preferences
-                </button>
-                <button className="btn-secondary">
-                  View Analytics
-                </button>
-                <button 
-                  onClick={() => router.push('/dashboard/settings')}
-                  className="btn-secondary"
-                >
-                  Settings
-                </button>
-              </div>
-            </div>
           </>
         )}
 

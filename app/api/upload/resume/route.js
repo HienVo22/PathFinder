@@ -6,60 +6,22 @@ import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 import User from '../../../../models/User';
 import connectDB from '../../../../lib/mongodb';
+import { ResumeProcessingService } from '../../../../services/resumeProcessingService';
 import { parsePdfBuffer } from '../../../../lib/pdfParser';
 
-// Configure multer for file upload
+// Configure upload directory
 const uploadDir = path.join(process.cwd(), 'uploads', 'resumes');
 
-// Ensure upload directory exists
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueId = uuidv4();
-    const extension = path.extname(file.originalname);
-    const filename = `${uniqueId}${extension}`;
-    cb(null, filename);
-  }
-});
-
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-  ];
-  
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
+// Ensure upload directory exists with proper permissions
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true, mode: 0o755 });
   } else {
-    cb(new Error('Invalid file type. Only PDF, DOC, and DOCX files are allowed.'), false);
+    // Update permissions if directory exists
+    fs.chmodSync(uploadDir, 0o755);
   }
-};
-
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
-  }
-});
-
-// Helper function to run multer middleware
-function runMiddleware(req, res, fn) {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (result) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-      return resolve(result);
-    });
-  });
+} catch (error) {
+  console.error('Error setting up upload directory:', error);
 }
 
 // Verify JWT token
@@ -121,10 +83,23 @@ export async function POST(request) {
     const filename = `${uniqueId}${extension}`;
     const filePath = path.join(uploadDir, filename);
 
-  // Save file to disk
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-  fs.writeFileSync(filePath, buffer);
+  // Save file to disk with proper error handling
+  let buffer;
+  try {
+    const bytes = await file.arrayBuffer();
+    buffer = Buffer.from(bytes);
+    
+    // Write file with proper permissions
+    await fs.promises.writeFile(filePath, buffer, { mode: 0o644 });
+    
+    // Double-check file was written
+    if (!fs.existsSync(filePath)) {
+      throw new Error('File was not written successfully');
+    }
+  } catch (writeError) {
+    console.error('Error writing file:', writeError);
+    throw new Error('Failed to save file to disk');
+  }
 
     // Update user record with resume path and DB-stored copy
     const user = await User.findById(decoded.userId);
@@ -204,6 +179,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const filename = searchParams.get('file');
+    const download = searchParams.get('download') === 'true';
     
     if (!filename) {
       return NextResponse.json({ error: 'Filename required' }, { status: 400 });
@@ -215,10 +191,11 @@ export async function GET(request) {
     if (userWithFile && userWithFile.resumeData) {
       const fileBuffer = Buffer.from(userWithFile.resumeData);
       const contentType = userWithFile.resumeContentType || 'application/octet-stream';
+      const disposition = download ? 'attachment' : 'inline';
       return new Response(fileBuffer, {
         headers: {
           'Content-Type': contentType,
-          'Content-Disposition': `attachment; filename="${userWithFile.resumeOriginalName || filename}"`,
+          'Content-Disposition': `${disposition}; filename="${userWithFile.resumeOriginalName || filename}"`,
         },
       });
     }
@@ -242,10 +219,11 @@ export async function GET(request) {
       contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     }
 
+    const disposition = download ? 'attachment' : 'inline';
     return new Response(fileBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Disposition': `${disposition}; filename="${filename}"`,
       },
     });
 

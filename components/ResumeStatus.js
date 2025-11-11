@@ -129,7 +129,7 @@ const ResumeStatus = forwardRef((props, ref) => {
                     View Resume
                   </button>
                   <a
-                    href={resumeStatus.resumeInfo.resumeUrl}
+                    href={`/api/upload/resume?file=${encodeURIComponent(resumeStatus.resumeInfo.resumeFilename)}&download=true`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-3 py-1 border rounded text-primary-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-primary-400 dark:border-gray-600"

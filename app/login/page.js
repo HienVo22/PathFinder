@@ -42,6 +42,29 @@ export default function LoginPage() {
     }
   }
 
+  // Render / initialize Google Sign-In when the component mounts
+  // This covers the case where the GSI script is already present (client-side navigation)
+  const renderGoogleButton = () => {
+    try {
+      if (typeof window === 'undefined' || !window.google?.accounts?.id) return
+      window.google.accounts.id.initialize({ client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID, callback: (r) => handleGoogleLogin(r.credential) })
+      const container = document.getElementById('google-login-btn')
+      if (container) {
+        // clear any previous render to avoid duplicates
+        container.innerHTML = ''
+        window.google.accounts.id.renderButton(container, { theme: 'outline', size: 'large', width: '100%', text: 'signin_with', shape: 'rectangular' })
+      }
+    } catch (err) {
+      console.error('Error rendering Google button', err)
+    }
+  }
+
+  useEffect(() => {
+    renderGoogleButton()
+    // intentionally run only on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   useEffect(() => {
     if (!loading && user) router.push('/dashboard')
   }, [user, loading, router])
@@ -73,7 +96,14 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
       <div className="w-full max-w-md mx-auto px-4">
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary-600 mb-4">🧭 Pathfinder</h1>
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/pathfinder-logo.svg" 
+              alt="PathFinder Logo" 
+              className="w-24 h-24"
+            />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-primary-600 mb-4">Pathfinder</h1>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Find Your <span className="text-primary-600"> Dream Job</span><br />with AI</h2>
           <p className="text-lg text-secondary-600 mb-8">Pathfinder uses machine learning to match you with the perfect job opportunities. Upload your resume, set your preferences, and let AI do the work.</p>
         </div>
@@ -83,10 +113,7 @@ export default function LoginPage() {
             <style jsx global>{`#google-login-btn{width:100%!important}#google-login-btn>div{width:100%!important;border-radius:.5rem!important;background-color:rgb(243 244 246)!important;transition:background-color .2s!important}#google-login-btn>div:hover{background-color:rgb(229 231 235)!important}#google-login-btn>div>iframe{width:100%!important}#google-login-btn>div>div{padding:8px!important}`}</style>
             <div id="google-login-btn" className="w-full flex justify-center mb-2"></div>
           </div>
-          <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" onLoad={() => {
-            window.google?.accounts.id.initialize({ client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID, callback: (r) => handleGoogleLogin(r.credential) })
-            window.google?.accounts.id.renderButton(document.getElementById('google-login-btn'), { theme: 'outline', size: 'large', width: '100%', text: 'signin_with', shape: 'rectangular' })
-          }} />
+          <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" onLoad={() => renderGoogleButton()} />
 
           <div className="flex mb-6">
             <button onClick={() => setIsLogin(true)} className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${isLogin ? 'bg-primary-600 text-white' : 'text-secondary-600 hover:text-primary-600'}`}>Login</button>
