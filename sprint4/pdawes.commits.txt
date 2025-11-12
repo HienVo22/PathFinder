@@ -1,0 +1,116 @@
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 55)             <h2 className="text-3xl font-bold !mt-12 dark:text-gray-100">Why Llama?</h2>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 44)             <h2 className="text-3xl font-bold !mt-12 dark:text-gray-100">How It Works</h2>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 39)           <div className="prose prose-xl text-gray-700 dark:text-gray-300 mx-auto space-y-6">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 34)             <p className="mt-4 text-xl text-gray-600 dark:text-gray-300">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 31)             <h1 className="text-5xl font-extrabold text-gray-900 dark:text-gray-100">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 20)             <div className="hidden md:flex items-center gap-4">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 21)               <ThemeToggle showLabel={false} />
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 22)               <Link href="/login" className="text-primary-600 dark:text-primary-400 font-medium hover:underline">Log In</Link>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 17)                 <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">Pathfinder</span>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500  6)     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500  7)       <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 52)                   <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{name}</h3>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 49)                   <div className="w-32 h-32 bg-gradient-to-br from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 rounded-full mx-auto mb-4 flex items-center justify-center">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 41)           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 md:p-12 border border-gray-200 dark:border-gray-700">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 42)             <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 mb-8">Meet the Team</h2>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 43)             <p className="text-center text-gray-600 dark:text-gray-300 mb-10">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 36)             <p className="mt-4 text-xl text-gray-600 dark:text-gray-300">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 33)             <h1 className="text-5xl font-extrabold text-gray-900 dark:text-gray-100">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 22)             <div className="hidden md:flex items-center gap-4">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 23)               <ThemeToggle showLabel={false} />
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 24)               <Link href="/login" className="text-primary-600 dark:text-primary-400 font-medium hover:underline">Log In</Link>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 19)                 <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">Pathfinder</span>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500  8)     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500  9)       <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500  2) import ThemeToggle from '@/components/ThemeToggle';
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 161)               <ResumeStatus 
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 162)                 ref={resumeStatusRef}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 163)                 onResumeRemoved={() => setResumeUploadVersion(v => v + 1)}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 164)               />
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 152)                 key={resumeUploadVersion}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500  23)   // Used to force re-mount the ResumeUpload component when resume is removed
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500  24)   const [resumeUploadVersion, setResumeUploadVersion] = useState(0)
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 225)                 {deleteError && (<p className="text-sm text-red-600">{deleteError}</p>)}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 226)               </div>        
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 227)             )}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 220)                     className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"  
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 221)                   >
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 222)                     Cancel  
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 223)                   </button>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 216)                     Yes, Delete My Account
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 217)                   </button> 
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 218)                   <button   
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 219)                     onClick={() => { setShowDeleteConfirm(false); setDeleteError('') }}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 211)                         setDeleteError('Failed to delete account. Please try again.')
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 212)                       }     
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 213)                     }}      
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 214)                     className="flex-1 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 215)                   >
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 195)                   Are you sure you want to delete your account? This action cannot be undone.
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 196)                   All your data, including your resume and job preferences, will be permanently deleted.        
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 197)                 </p>        
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 198)                 <div className="flex gap-3">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 199)                   <button   
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 200)                     onClick={async () => {
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 201)                       try { 
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 202)                         const response = await fetch('/api/user/delete', {
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 203)                           method: 'DELETE',
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 204)                           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 205)                         })
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 206)                         if (!response.ok) throw new Error('Failed to delete account')
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 207)                         logout()
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 208)                         window.location.href = '/'
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 209)                       } catch (err) {
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 210)                         console.error('Delete account error:', err)
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 182)           {/* Delete Account (Bottom) */}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 183)           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 184)             <h3 className="text-lg font-medium text-red-600 mb-4">Danger Zone</h3>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 185)             {!showDeleteConfirm ? (
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 186)               <button       
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 187)                 onClick={() => setShowDeleteConfirm(true)}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 188)                 className="w-full px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 189)               >
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 190)                 Delete Account
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 191)               </button>     
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 192)             ) : (
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 193)               <div className="space-y-4">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 194)                 <p className="text-sm text-gray-600 dark:text-gray-300">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 171)                 <div className="flex items-center justify-center gap-3">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 172)                   <LinkedInLinkPopup />
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 173)                   <LinkedInMockLink />
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 155)               {success && (<div className="text-green-600 text-sm">{success}</div>)}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 156)
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 157)               <div className="mt-4 space-y-3">
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 158)                 {!isEditing && (
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 159)                   <button   
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 160)                     onClick={() => {
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 161)                       setIsEditing(true)
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 162)                       setNewName(user.name)
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 163)                       setError('')
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 164)                       setSuccess('')
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 165)                     }}      
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 166)                     className="btn-primary w-full"
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 167)                   >
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 168)                     Change Name
+e1d1f0ae (Parker 
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 135)                       <button
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 136)                         onClick={() => {
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 137)                           setIsEditing(false)
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 138)                           setNewName('')
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 139)                           setError('')
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 140)                         }}  
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 141)                         className="btn-secondary"
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 142)                       >     
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 143)                         Cancel
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 144)                       </button>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 124)             className={`mt-4 px-4 py-2 rounded border transition-colors ${confirmRemove ? 'bg-red-600 text-white border-red-700 hover:bg-red-700' : 'btn-secondary'}`}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 125)             title={confirmRemove ? 'Click again to confirm removal' : 'Remove your uploaded resume'}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 126)           >{confirmRemove ? 'Click again to remove' : 'Remove Resume'}</button>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 117)                   >Download</a>
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 101)               <strong>Uploaded:</strong> {resumeStatus.resumeInfo.resumeUploadedAt ? new Date(resumeStatus.resumeInfo.resumeUploadedAt).toLocaleString('en-US', {
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 102)                 year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500 103)               }) : 'Unknown'}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500  58)       if (typeof refreshUser === 'function') await refreshUser();
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500  59)       if (typeof onResumeRemoved === 'function') {
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500  60)         try { onResumeRemoved(); } catch (_) {}
+e1d1f0ae (Parker         2025-11-11 23:35:32 -0500  61)       }
