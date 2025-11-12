@@ -5,28 +5,26 @@ import { useAuth } from '../contexts/AuthContext';
 import ResumeViewer from './ResumeViewer';
 
 const ResumeStatus = forwardRef((props, ref) => {
+  const { onResumeRemoved } = props || {};
+  const { user, refreshUser } = useAuth();
   const [resumeStatus, setResumeStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { user } = useAuth();
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
 
   const fetchResumeStatus = async () => {
-    if (!user) return;
-
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
-
     try {
       const response = await fetch('/api/user/resume-status', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch resume status');
-      }
-
+      if (!response.ok) throw new Error('Failed to fetch resume status');
       const data = await response.json();
       setResumeStatus(data);
     } catch (err) {
@@ -37,40 +35,38 @@ const ResumeStatus = forwardRef((props, ref) => {
     }
   };
 
-  // Expose refresh function to parent component
   useImperativeHandle(ref, () => ({
     refreshStatus: fetchResumeStatus
   }));
 
-  useEffect(() => {
-    fetchResumeStatus();
-  }, [user]);
+  useEffect(() => { fetchResumeStatus(); }, [user]);
 
   const handleRemoveResume = async () => {
     if (!user) return;
-
+    if (!confirmRemove) {
+      setConfirmRemove(true);
+      setTimeout(() => setConfirmRemove(false), 5000);
+      return;
+    }
     try {
       const response = await fetch('/api/user/resume-status', {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete resume');
-      }
-
-      // Refresh the status after deletion
+      if (!response.ok) throw new Error('Failed to delete resume');
       await fetchResumeStatus();
+      if (typeof refreshUser === 'function') await refreshUser();
+      if (typeof onResumeRemoved === 'function') {
+        try { onResumeRemoved(); } catch (_) {}
+      }
       alert('Resume deleted successfully');
     } catch (err) {
       setError('Could not delete resume');
       console.error('Resume delete error:', err);
+    } finally {
+      setConfirmRemove(false);
     }
   };
-
-  const [viewerOpen, setViewerOpen] = useState(false);
 
   if (loading) {
     return (
@@ -93,31 +89,18 @@ const ResumeStatus = forwardRef((props, ref) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
       <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">Resume Status</h3>
-      
       {resumeStatus?.hasResume ? (
         <div className="space-y-3">
           <div className="flex items-center text-green-600 dark:text-green-400">
             <span className="text-xl mr-2">✅</span>
             <span className="font-medium">Resume uploaded</span>
           </div>
-          
           <div className="bg-gray-50 dark:bg-gray-900 rounded p-4 space-y-2">
+            <div><strong>File:</strong> {resumeStatus.resumeInfo.resumeOriginalName}</div>
             <div>
-              <strong>File:</strong> {resumeStatus.resumeInfo.resumeOriginalName}
-            </div>
-            <div>
-              <strong>Uploaded:</strong> {
-                resumeStatus.resumeInfo.resumeUploadedAt 
-                  ? new Date(resumeStatus.resumeInfo.resumeUploadedAt).toLocaleString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit'
-                    })
-                  : 'Unknown'
-              }
+              <strong>Uploaded:</strong> {resumeStatus.resumeInfo.resumeUploadedAt ? new Date(resumeStatus.resumeInfo.resumeUploadedAt).toLocaleString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+              }) : 'Unknown'}
             </div>
             <div className="flex gap-3 mt-2">
               {resumeStatus.resumeInfo.resumeFilename && (
@@ -125,28 +108,22 @@ const ResumeStatus = forwardRef((props, ref) => {
                   <button
                     onClick={() => setViewerOpen(true)}
                     className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600"
-                  >
-                    View Resume
-                  </button>
+                  >View Resume</button>
                   <a
                     href={`/api/upload/resume?file=${encodeURIComponent(resumeStatus.resumeInfo.resumeFilename)}&download=true`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-3 py-1 border rounded text-primary-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-primary-400 dark:border-gray-600"
-                  >
-                    Download
-                  </a>
+                  >Download</a>
                 </>
               )}
             </div>
           </div>
-
-          <button 
+          <button
             onClick={handleRemoveResume}
-            className="btn-secondary mt-4"
-          >
-            Remove Resume
-          </button>
+            className={`mt-4 px-4 py-2 rounded border transition-colors ${confirmRemove ? 'bg-red-600 text-white border-red-700 hover:bg-red-700' : 'btn-secondary'}`}
+            title={confirmRemove ? 'Click again to confirm removal' : 'Remove your uploaded resume'}
+          >{confirmRemove ? 'Click again to remove' : 'Remove Resume'}</button>
         </div>
       ) : (
         <div className="space-y-3">
@@ -157,14 +134,12 @@ const ResumeStatus = forwardRef((props, ref) => {
           <p className="text-gray-600 dark:text-gray-300">Upload your resume to get started with job matching!</p>
         </div>
       )}
-
       {viewerOpen && (
         <ResumeViewer
           resumeFilename={resumeStatus?.resumeInfo?.resumeFilename}
           onClose={() => setViewerOpen(false)}
         />
       )}
-
     </div>
   );
 });

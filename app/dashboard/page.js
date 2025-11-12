@@ -20,6 +20,8 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview')
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [uploadedFileName, setUploadedFileName] = useState('')
+  // Used to force re-mount the ResumeUpload component when resume is removed
+  const [resumeUploadVersion, setResumeUploadVersion] = useState(0)
 
   // Handle successful resume upload
   const handleUploadSuccess = (result) => {
@@ -147,6 +149,7 @@ export default function Dashboard() {
                 </div>
               </div>
               <ResumeUpload 
+                key={resumeUploadVersion}
                 onUploadSuccess={handleUploadSuccess}
                 onProcessingComplete={handleProcessingComplete}
                 onShowModal={handleShowModal}
@@ -155,7 +158,10 @@ export default function Dashboard() {
 
             {/* Resume Status Section */}
             <div>
-              <ResumeStatus ref={resumeStatusRef} />
+              <ResumeStatus
+                ref={resumeStatusRef}
+                onResumeRemoved={() => setResumeUploadVersion(v => v + 1)}
+              />
             </div>
 
             {/* Quick Stats */}
