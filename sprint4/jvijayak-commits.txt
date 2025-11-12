@@ -1,0 +1,247 @@
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500   7) import { useAuth } from '@/contexts/AuthContext'
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  14)   const [is2FA, setIs2FA] = useState(false)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  15)   const [twoFACode, setTwoFACode] = useState('')
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  17)   const { user, register, loading } = useAuth()
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  22)     setIsLogin(form !== 'signup')
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  23)   }, [form])
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  25)   // Google login handler
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  32)         body: JSON.stringify({ credential }),
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  49)   // Render Google button
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  53)       window.google.accounts.id.initialize({
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  54)         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  55)         callback: (r) => handleGoogleLogin(r.credential),
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  56)       })
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  60)         window.google.accounts.id.renderButton(container, {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  61)           theme: 'outline',
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  62)           size: 'large',
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  63)           width: '100%',
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  64)           text: 'signin_with',
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  65)           shape: 'rectangular',
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  66)         })
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  82)   // Handle email/password + 2FA login
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  85)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  86)     if (is2FA) {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  87)       // Step 2: verify code
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  88)       try {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  89)         const verifyRes = await fetch('/api/auth/verify-2fa-code', {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  90)           method: 'POST',
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  91)           headers: { 'Content-Type': 'application/json' },
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  92)           body: JSON.stringify({ email: formData.email, code: twoFACode }),
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  93)         })
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  94)         if (verifyRes.ok) {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  95)           const data = await verifyRes.json()
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  96)           localStorage.setItem('token', data.token)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  97)           router.push('/dashboard')
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  98)         } else {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500  99)           const err = await verifyRes.json()
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 100)           alert(err.error || 'Invalid or expired 2FA code.')
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 101)         }
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 102)       } catch (error) {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 103)         console.error('2FA verify error:', error)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 104)         alert('Error verifying 2FA code. Please try again.')
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 105)       }
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 106)       return
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 107)     }
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 108)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 110)       // Step 1: validate credentials
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 111)       try {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 112)         const res = await fetch('/api/auth/login', {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 113)           method: 'POST',
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 114)           headers: { 'Content-Type': 'application/json' },
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 115)           body: JSON.stringify({ email: formData.email, password: formData.password }),    
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 116)         })
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 117)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 118)         if (res.ok) {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 119)           // Send 2FA code after credentials verified
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 120)           const sendRes = await fetch('/api/auth/send-2fa-code', {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 121)             method: 'POST',
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 122)             headers: { 'Content-Type': 'application/json' },
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 123)             body: JSON.stringify({ email: formData.email }),
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 124)           })
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 125)           if (sendRes.ok) {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 126)             setIs2FA(true)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 127)           } else {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 128)             alert('Failed to send 2FA code.')
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 129)           }
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 130)         } else {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 131)           const error = await res.json()
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 132)           alert(error.error || 'Invalid credentials')
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 133)         }
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 134)       } catch (err) {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 135)         console.error('Login error:', err)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 136)         alert('Login failed. Please try again.')
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 137)       }
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 139)       // Sign up flow (unchanged)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 167)             <img src="/pathfinder-logo.svg" alt="PathFinder Logo" className="w-24 h-24" /> 
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 170)           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 171)             Find Your <span className="text-primary-600">Dream Job</span>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 172)             <br />
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 173)             with AI
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 174)           </h2>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 175)           <p className="text-lg text-secondary-600 mb-8">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 176)             Pathfinder uses machine learning to match you with the perfect job 
+opportunities. Upload your
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 177)             resume, set your preferences, and let AI do the work.
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 178)           </p>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 183)             <style jsx global>{`
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 184)               #google-login-btn {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 185)                 width: 100% !important;
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 186)               }
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 187)               #google-login-btn > div {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 188)                 width: 100% !important;
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 189)                 border-radius: 0.5rem !important;
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 190)                 background-color: rgb(243 244 246) !important;
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 191)                 transition: background-color 0.2s !important;
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 192)               }
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 193)               #google-login-btn > div:hover {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 194)                 background-color: rgb(229 231 235) !important;
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 195)               }
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 196)               #google-login-btn > div > iframe {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 197)                 width: 100% !important;
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 198)               }
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 199)               #google-login-btn > div > div {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 200)                 padding: 8px !important;
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 201)               }
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 202)             `}</style>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 205)           <Script
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 206)             src="https://accounts.google.com/gsi/client"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 207)             strategy="afterInteractive"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 208)             onLoad={() => renderGoogleButton()}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 209)           />
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 212)             <button
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 213)               onClick={() => {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 214)                 setIsLogin(true)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 215)                 setIs2FA(false)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 216)               }}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 217)               className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${     
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 218)                 isLogin ? 'bg-primary-600 text-white' : 'text-secondary-600
+hover:text-primary-600'
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 219)               }`}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 220)             >
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 221)               Login
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 222)             </button>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 223)             <button
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 224)               onClick={() => {
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 225)                 setIsLogin(false)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 226)                 setIs2FA(false)
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 227)               }}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 228)               className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${     
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 229)                 !isLogin ? 'bg-primary-600 text-white' : 'text-secondary-600
+hover:text-primary-600'
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 230)               }`}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 231)             >
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 232)               Sign Up
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 233)             </button>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 237)             !is2FA ? (
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 238)               <form onSubmit={handleSubmit} className="space-y-4">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 239)                 <div>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 240)                   <label htmlFor="email" className="block text-sm font-medium 
+text-gray-700 mb-1">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 241)                     Email
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 242)                   </label>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 243)                   <input
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 244)                     type="email"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 245)                     id="email"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 246)                     name="email"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 247)                     value={formData.email}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 248)                     onChange={handleChange}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 249)                     className="input-field"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 250)                     placeholder="Enter your email"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 251)                     required
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 252)                   />
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 253)                 </div>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 254)                 <div>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 255)                   <label htmlFor="password" className="block text-sm font-medium
+text-gray-700 mb-1">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 256)                     Password
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 257)                   </label>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 258)                   <input
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 259)                     type="password"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 260)                     id="password"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 261)                     name="password"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 262)                     value={formData.password}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 263)                     onChange={handleChange}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 264)                     className="input-field"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 265)                     placeholder="Enter your password"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 266)                     required
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 267)                   />
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 268)                 </div>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 269)                 <button type="submit" className="btn-primary w-full">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 270)                   Login
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 271)                 </button>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 272)                 <p className="text-sm text-center text-secondary-600">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 273)                   Demo: demo@pathfinder.com / password
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 274)                 </p>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 275)               </form>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 276)             ) : (
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 277)               <form onSubmit={handleSubmit} className="space-y-4">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 278)                 <div>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 279)                   <label htmlFor="twoFACode" className="block text-sm font-medium
+text-gray-700 mb-1">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 280)                     Enter 2FA Code
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 281)                   </label>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 282)                   <input
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 283)                     type="text"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 284)                     id="twoFACode"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 285)                     name="twoFACode"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 286)                     value={twoFACode}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 287)                     onChange={(e) => setTwoFACode(e.target.value)}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 288)                     className="input-field"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 289)                     placeholder="6-digit code"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 290)                     required
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 291)                   />
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 292)                 </div>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 293)                 <button type="submit" className="btn-primary w-full">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 294)                   Verify Code
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 295)                 </button>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 296)                 <p className="text-sm text-center text-secondary-600">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 297)                   A 6-digit code has been sent to your email.
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 298)                 </p>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 299)               </form>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 300)             )
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 304)                 <label htmlFor="name" className="block text-sm font-medium text-gray-700   
+mb-1">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 305)                   Full Name
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 306)                 </label>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 307)                 <input
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 308)                   type="text"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 309)                   id="name"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 310)                   name="name"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 311)                   value={formData.name}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 312)                   onChange={handleChange}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 313)                   className="input-field"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 314)                   placeholder="Enter your full name"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 315)                   required
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 316)                 />
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 319)                 <label htmlFor="email" className="block text-sm font-medium text-gray-700  
+mb-1">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 320)                   Email
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 321)                 </label>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 322)                 <input
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 323)                   type="email"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 324)                   id="email"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 325)                   name="email"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 326)                   value={formData.email}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 327)                   onChange={handleChange}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 328)                   className="input-field"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 329)                   placeholder="Enter your email"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 330)                   required
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 331)                 />
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 334)                 <label htmlFor="password" className="block text-sm font-medium
+text-gray-700 mb-1">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 335)                   Password
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 336)                 </label>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 337)                 <input
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 338)                   type="password"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 339)                   id="password"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 340)                   name="password"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 341)                   value={formData.password}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 342)                   onChange={handleChange}
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 343)                   className="input-field"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 344)                   placeholder="Create a password"
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 345)                   required
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 346)                 />
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 348)               <button type="submit" className="btn-primary w-full">
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 349)                 Create Account
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 350)               </button>
+52469b74 (mcflubin       2025-11-11 21:47:39 -0500 354)
