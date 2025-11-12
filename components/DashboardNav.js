@@ -79,7 +79,16 @@ export default function DashboardNav({ activeTab = "overview", onChange } ) {
 							title="Settings"
 							className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
 						>
-															<SettingsIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+												{/* Inline settings cog icon to avoid MUI dependency */}
+												<svg
+												  xmlns="http://www.w3.org/2000/svg"
+												  viewBox="0 0 20 20"
+												  fill="currentColor"
+												  className="h-5 w-5 text-gray-600 dark:text-gray-300"
+												  aria-hidden="true"
+												>
+												  <path d="M11.983 1.574a1 1 0 00-1.966 0l-.116.697a7.967 7.967 0 00-1.356.564l-.63-.364a1 1 0 00-1.366.366l-.983 1.703a1 1 0 00.366 1.366l.63.364a8.07 8.07 0 000 1.128l-.63.364a1 1 0 00-.366 1.366l.983 1.703a1 1 0 001.366.366l.63-.364c.43.25.882.45 1.356.564l.116.697a1 1 0 001.966 0l.116-.697a7.967 7.967 0 001.356-.564l.63.364a1 1 0 001.366-.366l.983-1.703a1 1 0 00-.366-1.366l-.63-.364a8.07 8.07 0 000-1.128l.63-.364a1 1 0 00.366-1.366l-.983-1.703a1 1 0 00-1.366-.366l-.63.364a7.967 7.967 0 00-1.356-.564l-.116-.697zM10 12.25a2.25 2.25 0 110-4.5 2.25 2.25 0 010 4.5z" />
+												</svg>
 						</button>
 					</div>
 				</nav>

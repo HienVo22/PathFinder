@@ -1,9 +1,10 @@
 import Link from 'next/link';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function AboutAI() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+      <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex-shrink-0">
@@ -13,13 +14,12 @@ export default function AboutAI() {
                   alt="PathFinder Logo" 
                   className="w-8 h-8"
                 />
-                <span className="text-2xl font-bold text-primary-600">Pathfinder</span>
+                <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">Pathfinder</span>
               </Link>
             </div>
-            <div className="hidden md:block">
-              <Link href="/login" className="text-primary-600 font-medium hover:underline">
-                Log In
-              </Link>
+            <div className="hidden md:flex items-center gap-4">
+              <ThemeToggle showLabel={false} />
+              <Link href="/login" className="text-primary-600 dark:text-primary-400 font-medium hover:underline">Log In</Link>
             </div>
           </div>
         </div>
@@ -28,20 +28,20 @@ export default function AboutAI() {
       <div className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <header className="text-center mb-16">
-            <h1 className="text-5xl font-extrabold text-gray-900">
+            <h1 className="text-5xl font-extrabold text-gray-900 dark:text-gray-100">
               About Our AI
             </h1>
-            <p className="mt-4 text-xl text-gray-600">
+            <p className="mt-4 text-xl text-gray-600 dark:text-gray-300">
               Harnessing the Power of AI for Intelligent Job Matching
             </p>
           </header>
 
-          <div className="prose prose-xl text-gray-700 mx-auto space-y-6">
+          <div className="prose prose-xl text-gray-700 dark:text-gray-300 mx-auto space-y-6">
             <p className="text-lg">
               At Pathfinder, we are committed to providing the most accurate and personalized job recommendations possible. To achieve this, we leverage the advanced capabilities of Llama, a state-of-the-art large language model (LLM).
             </p>
             
-            <h2 className="text-3xl font-bold !mt-12">How It Works</h2>
+            <h2 className="text-3xl font-bold !mt-12 dark:text-gray-100">How It Works</h2>
             <p>
               When you upload your resume and specify your job preferences, our system doesn't just look for simple keyword matches. Instead, it uses Llama to perform a deep, semantic analysis of your skills, experience, and career goals.
             </p>
@@ -52,7 +52,7 @@ export default function AboutAI() {
               <li><strong>Intelligent Matching:</strong> By comparing the rich understanding of your profile with its analysis of available jobs, Llama identifies opportunities that are a genuine fit for your career trajectory, not just a keyword match.</li>
             </ul>
 
-            <h2 className="text-3xl font-bold !mt-12">Why Llama?</h2>
+            <h2 className="text-3xl font-bold !mt-12 dark:text-gray-100">Why Llama?</h2>
             <p>
               We chose Llama for its exceptional natural language understanding and generation capabilities. This allows us to create a more human-like matching process that considers the subtleties of language and intent, resulting in higher quality recommendations for our users.
             </p>
