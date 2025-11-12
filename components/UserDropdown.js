@@ -71,7 +71,7 @@ export default function UserDropdown({ user, onLogout }) {
         </svg>
       ),
       onClick: () => {
-        router.push('/dashboard/settings');
+        router.push('/settings');
         setIsOpen(false);
       }
     }

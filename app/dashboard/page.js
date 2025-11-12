@@ -18,6 +18,22 @@ export default function Dashboard() {
   const router = useRouter()
   const resumeStatusRef = useRef(null)
   const [activeTab, setActiveTab] = useState('overview')
+  const searchParams = useSearchParams()
+
+  // If a `tab` query param is present (for example when navigating from /settings),
+  // use it to set the active dashboard tab. Valid tabs: overview, jobs, preferences.
+  useEffect(() => {
+    try {
+      const tab = searchParams?.get?.('tab')
+      const valid = ['overview', 'jobs', 'preferences']
+      if (tab && valid.includes(tab)) {
+        setActiveTab(tab)
+      }
+    } catch (err) {
+      // ignore malformed search params
+      console.error('Error reading search params for dashboard tab:', err)
+    }
+  }, [searchParams])
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [uploadedFileName, setUploadedFileName] = useState('')
 
@@ -80,7 +96,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="bg-gray-100 dark:bg-gray-900">
       <ProcessingSuccessModal
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
@@ -118,7 +134,7 @@ export default function Dashboard() {
                 Welcome back, {user.name?.split(' ')[0]}
               </h2>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Let's find your dream job today
+                Let&apos;s find your dream job today
               </p>
             </div>
             <div className="hidden md:block">
@@ -240,17 +256,6 @@ export default function Dashboard() {
         {/* Preferences Tab */}
         {activeTab === 'preferences' && (
           <div className="space-y-4">
-            {/* Back Button */}
-            <button
-              onClick={() => setActiveTab('overview')}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-medium transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back to Dashboard
-            </button>
-
             {/* Preferences Content */}
             <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 p-6">
               <div className="flex items-center gap-3 mb-6">

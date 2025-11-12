@@ -1,16 +1,35 @@
 "use client"
 
 import React from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import SettingsIcon from '@mui/icons-material/Settings'
 
 export default function DashboardNav({ activeTab = "overview", onChange } ) {
 	const router = useRouter()
 
+	const pathname = usePathname()
+
 	const handleClick = (tab) => {
-		if (onChange) return onChange(tab)
-		// Default behavior: navigate to dashboard and set tab via query
-		router.push(`/dashboard?tab=${tab}`)
+		// First, call any onChange handler to update UI state immediately
+		if (onChange) {
+			try {
+				onChange(tab)
+			} catch (err) {
+				console.error('DashboardNav onChange error:', err)
+			}
+		}
+
+		// Always update the URL so the dashboard route reflects the selected tab.
+		// This ensures navigation from other pages (like /settings) works and that
+		// the tab stays in sync with the URL.
+		// If we're already on /dashboard this will just update the query param.
+		try {
+			if (pathname !== `/dashboard` || true) {
+				router.push(`/dashboard?tab=${tab}`)
+			}
+		} catch (err) {
+			console.error('DashboardNav router.push error:', err)
+		}
 	}
 
 	return (
@@ -55,7 +74,7 @@ export default function DashboardNav({ activeTab = "overview", onChange } ) {
 					{/* Settings gear icon */}
 					<div>
 						<button
-							onClick={() => router.push('/dashboard/settings')}
+							onClick={() => router.push('/settings')}
 							aria-label="Settings"
 							title="Settings"
 							className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
