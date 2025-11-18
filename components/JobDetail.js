@@ -6,7 +6,16 @@ import { useState } from 'react';
  * JobDetail Component - Displays full job details on the right side
  * LinkedIn-style detailed job view with skills insight
  */
-export default function JobDetail({ job, onSkillsInsightClick }) {
+export default function JobDetail({ 
+  job, 
+  onSkillsInsightClick,
+  onApplyClick,
+  onSaveClick,
+  isSaved = false,
+  isApplied = false,
+  isSaving = false,
+  isMarkingApplied = false
+}) {
   const [showFullDescription, setShowFullDescription] = useState(false);
   
   if (!job) {
@@ -97,26 +106,31 @@ export default function JobDetail({ job, onSkillsInsightClick }) {
         </div>
         
         {/* Action Buttons */}
-        <div className="flex gap-3 mt-4">
-          <a
-            href={job.applyLink || job.jobLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-center"
-          >
-            Apply
-          </a>
+        <div className="flex gap-3 mt-4 flex-wrap">
           <button
-            onClick={() => {
-              // Save job functionality - placeholder for now
-              alert('Job saved! (Feature coming soon)');
-            }}
-            className="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center gap-2"
+            onClick={() => onApplyClick?.(job)}
+            disabled={!job.applyLink && !job.jobLink || isApplied || isMarkingApplied}
+            className={`px-6 py-2 rounded-lg font-semibold transition-colors text-center ${
+              isApplied
+                ? 'bg-green-600 text-white cursor-default'
+                : 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed'
+            }`}
+          >
+            {isApplied ? 'Applied' : isMarkingApplied ? 'Marking...' : 'Apply'}
+          </button>
+          <button
+            onClick={() => onSaveClick?.(job)}
+            disabled={isSaved || isApplied || isSaving}
+            className={`px-6 py-2 rounded-lg font-semibold flex items-center gap-2 transition-colors ${
+              isSaved || isApplied
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 cursor-default'
+                : 'bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed'
+            }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
             </svg>
-            Save
+            {isApplied ? 'Applied' : isSaved ? 'Saved' : isSaving ? 'Saving...' : 'Save'}
           </button>
           <button
             onClick={() => onSkillsInsightClick(job)}

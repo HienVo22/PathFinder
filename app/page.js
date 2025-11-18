@@ -24,9 +24,11 @@ export default function HomePage() {
           <div className="flex items-center justify-between h-14">
             <div className="flex-shrink-0">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-600 flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">P</span>
-                </div>
+                <img
+                  src="/pathfinder-logo.svg"
+                  alt="PathFinder logo"
+                  className="w-8 h-8"
+                />
                 <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">PathFinder</span>
               </Link>
             </div>
@@ -49,9 +51,11 @@ export default function HomePage() {
       <header className="bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 py-20 px-4">
         <div className="max-w-5xl mx-auto text-center">
           <div className="flex justify-center mb-8">
-            <div className="w-32 h-32 bg-blue-600 flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-6xl">P</span>
-            </div>
+            <img
+              src="/pathfinder-logo.svg"
+              alt="PathFinder logo"
+              className="w-32 h-32 drop-shadow-lg"
+            />
           </div>
           <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-3">
             PathFinder

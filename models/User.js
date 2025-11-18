@@ -1,6 +1,33 @@
 import mongoose from 'mongoose';
 import path from 'path';
 
+const trackedJobSchema = new mongoose.Schema({
+  jobId: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  title: { type: String, trim: true },
+  company: { type: String, trim: true },
+  location: { type: String, trim: true },
+  locationType: { type: String, trim: true },
+  salary: { type: String, trim: true },
+  type: { type: String, trim: true },
+  jobLink: { type: String, trim: true },
+  applyLink: { type: String, trim: true },
+  companyLogo: { type: String, trim: true },
+  postedDisplay: { type: String, trim: true },
+  matchPercentage: { type: Number, default: null },
+  status: {
+    type: String,
+    enum: ['saved', 'applied'],
+    default: 'saved'
+  },
+  savedAt: { type: Date, default: Date.now },
+  appliedAt: { type: Date, default: null },
+  updatedAt: { type: Date, default: Date.now }
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
   theme: {
     type: String,
@@ -122,6 +149,10 @@ const userSchema = new mongoose.Schema({
       min: Number,
       max: Number
     }
+  },
+  trackedJobs: {
+    type: [trackedJobSchema],
+    default: []
   }
 }, {
   timestamps: true

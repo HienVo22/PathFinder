@@ -2,12 +2,13 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import ResumeUpload from '@/components/ResumeUpload'
 import ResumeStatus from '@/components/ResumeStatus'
 import JobMatching from '@/components/JobMatching'
 import JobPreferences from '@/components/JobPreferences'
+import TrackedApplications from '@/components/TrackedApplications'
 import ProcessingSuccessModal from '@/components/ProcessingSuccessModal'
 import UserDropdown from '@/components/UserDropdown'
 import DashboardNav from '@/components/DashboardNav'
@@ -25,7 +26,7 @@ export default function Dashboard() {
   useEffect(() => {
     try {
       const tab = searchParams?.get?.('tab')
-      const valid = ['overview', 'jobs', 'preferences']
+      const valid = ['overview', 'jobs', 'preferences', 'applications']
       if (tab && valid.includes(tab)) {
         setActiveTab(tab)
       }
@@ -38,6 +39,9 @@ export default function Dashboard() {
   const [uploadedFileName, setUploadedFileName] = useState('')
   // Used to force re-mount the ResumeUpload component when resume is removed
   const [resumeUploadVersion, setResumeUploadVersion] = useState(0)
+  const [trackedJobs, setTrackedJobs] = useState([])
+  const [trackedJobsLoading, setTrackedJobsLoading] = useState(false)
+  const [trackedJobsError, setTrackedJobsError] = useState(null)
 
   // Handle successful resume upload
   const handleUploadSuccess = (result) => {
@@ -70,6 +74,66 @@ export default function Dashboard() {
     }
   }
 
+  const fetchTrackedJobs = useCallback(async () => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+    if (!token) {
+      setTrackedJobs([])
+      setTrackedJobsLoading(false)
+      return
+    }
+
+    setTrackedJobsLoading(true)
+    setTrackedJobsError(null)
+    try {
+      const res = await fetch('/api/user/jobs/tracked', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to load tracked jobs')
+      }
+      setTrackedJobs(data.jobs || [])
+    } catch (err) {
+      console.error('Failed to fetch tracked jobs', err)
+      setTrackedJobsError(err.message || 'Unable to load tracked jobs right now.')
+    } finally {
+      setTrackedJobsLoading(false)
+    }
+  }, [])
+
+  const handleTrackedJobUpdate = useCallback(async (job, status) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+    if (!token) {
+      toast.error('Please sign in again to track job applications.')
+      return Promise.reject(new Error('Missing auth token'))
+    }
+
+    try {
+      const res = await fetch('/api/user/jobs/tracked', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ job, status })
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to update job status')
+      }
+      setTrackedJobs(data.jobs || [])
+      setTrackedJobsError(null)
+      toast.success(status === 'applied' ? 'Marked as applied' : 'Saved for later')
+      return data.jobs || []
+    } catch (err) {
+      console.error('Failed to update tracked job', err)
+      toast.error(err.message || 'Unable to update job right now.')
+      throw err
+    }
+  }, [])
+
   // Handle viewing job matches
   const handleViewJobs = () => {
     setShowSuccessModal(false);
@@ -81,6 +145,14 @@ export default function Dashboard() {
       router.push('/')
     }
   }, [user, loading, router])
+
+  useEffect(() => {
+    if (!loading && user) {
+      fetchTrackedJobs()
+    } else if (!user) {
+      setTrackedJobs([])
+    }
+  }, [loading, user, fetchTrackedJobs])
 
   if (loading) {
     return (
@@ -111,9 +183,11 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">P</span>
-              </div>
+              <img
+                src="/pathfinder-logo.svg"
+                alt="PathFinder logo"
+                className="w-8 h-8"
+              />
               <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 PathFinder
               </h1>
@@ -244,7 +318,10 @@ export default function Dashboard() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-5 leading-relaxed">
                   Track your job applications and their status in one convenient place.
                 </p>
-                <button className="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-semibold py-2.5 px-4 transition-colors">
+                <button 
+                  onClick={() => setActiveTab('applications')}
+                  className="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-semibold py-2.5 px-4 transition-colors"
+                >
                   View Applications
                 </button>
               </div>
@@ -255,7 +332,12 @@ export default function Dashboard() {
         {/* Job Matching Tab */}
         {activeTab === 'jobs' && (
           <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 p-6">
-            <JobMatching />
+            <JobMatching 
+              trackedJobs={trackedJobs}
+              trackedJobsLoading={trackedJobsLoading}
+              onSaveJob={(job) => handleTrackedJobUpdate(job, 'saved')}
+              onMarkApplied={(job) => handleTrackedJobUpdate(job, 'applied')}
+            />
           </div>
         )}
 
@@ -273,6 +355,16 @@ export default function Dashboard() {
               <JobPreferences />
             </div>
           </div>
+        )}
+
+        {activeTab === 'applications' && (
+          <TrackedApplications
+            jobs={trackedJobs}
+            loading={trackedJobsLoading}
+            error={trackedJobsError}
+            onRefresh={fetchTrackedJobs}
+            onMarkApplied={(job) => handleTrackedJobUpdate(job, 'applied')}
+          />
         )}
       </main>
     </div>
