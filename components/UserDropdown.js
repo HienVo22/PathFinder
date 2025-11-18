@@ -130,3 +130,4 @@ export default function UserDropdown({ user, onLogout }) {
     </div>
   );
 }
+
