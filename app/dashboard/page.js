@@ -125,7 +125,14 @@ export default function Dashboard() {
       }
       setTrackedJobs(data.jobs || [])
       setTrackedJobsError(null)
-      toast.success(status === 'applied' ? 'Marked as applied' : 'Saved for later')
+      const successMessages = {
+        saved: 'Saved for later',
+        applied: 'Marked as applied',
+        interviewed: 'Updated to interviewed',
+        rejected: 'Updated to rejected',
+        offered: 'Updated to offered'
+      }
+      toast.success(successMessages[status] || 'Job updated')
       return data.jobs || []
     } catch (err) {
       console.error('Failed to update tracked job', err)
@@ -133,6 +140,30 @@ export default function Dashboard() {
       throw err
     }
   }, [])
+
+  const handleManualApplicationAdd = useCallback(async (manualJob) => {
+    const payload = {
+      jobId: manualJob.jobId || `manual-${Date.now()}`,
+      title: manualJob.title,
+      company: manualJob.company,
+      location: manualJob.location,
+      locationType: manualJob.locationType || '',
+      salary: manualJob.salary || '',
+      type: manualJob.type || '',
+      applyLink: manualJob.applyLink || '',
+      jobLink: manualJob.jobLink || '',
+      postedDisplay: manualJob.postedDisplay || '',
+      matchPercentage: null,
+      source: 'manual',
+      appliedAt: manualJob.appliedAt
+    }
+    return handleTrackedJobUpdate(payload, manualJob.status || 'applied')
+  }, [handleTrackedJobUpdate])
+
+  const handleTrackedJobStatusChange = useCallback(async (job, nextStatus) => {
+    if (!job?.jobId || job.status === nextStatus) return
+    return handleTrackedJobUpdate(job, nextStatus)
+  }, [handleTrackedJobUpdate])
 
   // Handle viewing job matches
   const handleViewJobs = () => {
@@ -364,6 +395,8 @@ export default function Dashboard() {
             error={trackedJobsError}
             onRefresh={fetchTrackedJobs}
             onMarkApplied={(job) => handleTrackedJobUpdate(job, 'applied')}
+            onAddManualJob={handleManualApplicationAdd}
+            onUpdateJobStatus={handleTrackedJobStatusChange}
           />
         )}
       </main>

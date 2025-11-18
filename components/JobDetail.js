@@ -58,22 +58,11 @@ export default function JobDetail({
               {job.title}
             </h1>
             <div className="flex items-center gap-3 mb-3">
-              {job.companyLogo ? (
-                <img
-                  src={job.companyLogo}
-                  alt={`${job.company} logo`}
-                  className="w-10 h-10 rounded object-contain bg-white border border-gray-200 dark:border-gray-600"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
-              ) : (
-                <div className="w-10 h-10 rounded bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                  <span className="text-gray-600 dark:text-gray-300 font-semibold">
-                    {job.company.charAt(0)}
-                  </span>
-                </div>
-              )}
+              <div className="w-12 h-12 rounded bg-gray-200 dark:bg-gray-600 flex items-center justify-center border border-gray-200 dark:border-gray-600">
+                <span className="text-gray-700 dark:text-gray-100 font-semibold text-lg">
+                  {job.company?.charAt(0) || 'J'}
+                </span>
+              </div>
               <div>
                 <p className="font-semibold text-gray-900 dark:text-gray-100">{job.company}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">{job.location}</p>

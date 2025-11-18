@@ -20,12 +20,18 @@ const trackedJobSchema = new mongoose.Schema({
   matchPercentage: { type: Number, default: null },
   status: {
     type: String,
-    enum: ['saved', 'applied'],
+    enum: ['saved', 'applied', 'interviewed', 'rejected', 'offered'],
     default: 'saved'
   },
   savedAt: { type: Date, default: Date.now },
   appliedAt: { type: Date, default: null },
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
+  source: {
+    type: String,
+    enum: ['auto', 'manual'],
+    default: 'auto'
+  },
+  notes: { type: String, trim: true }
 }, { _id: false });
 
 const userSchema = new mongoose.Schema({

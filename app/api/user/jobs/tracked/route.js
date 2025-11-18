@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import connectDB from '../../../../../lib/mongodb';
 import User from '../../../../../models/User';
 
-const VALID_STATUSES = ['saved', 'applied'];
+const VALID_STATUSES = ['saved', 'applied', 'interviewed', 'rejected', 'offered'];
 
 function verifyToken(token) {
   try {
@@ -20,6 +20,10 @@ function normalizeJobPayload(job = {}) {
   }
 
   const safeString = (value) => (typeof value === 'string' ? value : value?.toString?.() || '');
+  const appliedAtDate = job.appliedAt ? new Date(job.appliedAt) : null;
+  const normalizedAppliedAt = appliedAtDate instanceof Date && !isNaN(appliedAtDate.valueOf())
+    ? appliedAtDate
+    : null;
 
   return {
     jobId,
@@ -35,7 +39,10 @@ function normalizeJobPayload(job = {}) {
     postedDisplay: safeString(job.postedDisplay),
     matchPercentage: typeof job.matchPercentage === 'number'
       ? job.matchPercentage
-      : job.matchAnalysis?.matchPercentage ?? null
+      : job.matchAnalysis?.matchPercentage ?? null,
+    appliedAt: normalizedAppliedAt,
+    notes: safeString(job.notes),
+    source: safeString(job.source) === 'manual' ? 'manual' : 'auto'
   };
 }
 
@@ -108,20 +115,27 @@ export async function POST(request) {
       Object.assign(existing, normalizedJob);
       existing.status = status;
       existing.updatedAt = now;
+      existing.source = normalizedJob.source || existing.source || 'auto';
+      if (normalizedJob.notes) {
+        existing.notes = normalizedJob.notes;
+      }
 
       if (!existing.savedAt) {
         existing.savedAt = now;
       }
 
-      if (status === 'applied') {
-        existing.appliedAt = now;
+      if (status !== 'saved') {
+        existing.appliedAt = normalizedJob.appliedAt || existing.appliedAt || now;
+      } else if (!normalizedJob.appliedAt) {
+        existing.appliedAt = null;
       }
     } else {
       user.trackedJobs.unshift({
         ...normalizedJob,
         status,
+        source: normalizedJob.source || 'auto',
         savedAt: now,
-        appliedAt: status === 'applied' ? now : null,
+        appliedAt: status === 'saved' ? null : (normalizedJob.appliedAt || now),
         updatedAt: now
       });
     }

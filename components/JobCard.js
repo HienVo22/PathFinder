@@ -29,23 +29,12 @@ export default function JobCard({ job, isSelected, onClick, isSaved, isApplied, 
       {/* Header with Company Logo and Match % */}
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-start gap-3 flex-1 min-w-0">
-          {/* Company Logo */}
-          {job.companyLogo ? (
-            <img
-              src={job.companyLogo}
-              alt={`${job.company} logo`}
-              className="w-12 h-12 rounded object-contain flex-shrink-0 bg-white border border-gray-200 dark:border-gray-600"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
-          ) : (
-            <div className="w-12 h-12 rounded bg-gray-200 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
-              <span className="text-gray-600 dark:text-gray-300 font-semibold text-lg">
-                {job.company.charAt(0)}
-              </span>
-            </div>
-          )}
+          {/* Company Initial Badge */}
+          <div className="w-12 h-12 rounded bg-gray-200 dark:bg-gray-600 flex items-center justify-center flex-shrink-0 border border-gray-200 dark:border-gray-600">
+            <span className="text-gray-700 dark:text-gray-100 font-semibold text-lg">
+              {job.company?.charAt(0) || 'J'}
+            </span>
+          </div>
           
           {/* Job Title and Company */}
           <div className="flex-1 min-w-0">
