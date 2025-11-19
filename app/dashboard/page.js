@@ -233,25 +233,6 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Welcome Banner */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
-                Welcome back, {user.name?.split(' ')[0]}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Let&apos;s find your dream job today
-              </p>
-            </div>
-            <div className="hidden md:block">
-              <div className="w-20 h-20 bg-blue-600 flex items-center justify-center">
-                <span className="text-4xl">🎯</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Navigation Tabs */}
         <DashboardNav activeTab={activeTab} onChange={setActiveTab} />
 
@@ -259,11 +240,8 @@ export default function Dashboard() {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Resume Upload Section */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-purple-600 flex items-center justify-center">
-                  <span className="text-xl">📄</span>
-                </div>
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Upload Your Resume</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Get personalized job matches based on your skills</p>
@@ -288,13 +266,8 @@ export default function Dashboard() {
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Profile Card */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 p-5 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-green-600 flex items-center justify-center">
-                    <span className="text-xl">👤</span>
-                  </div>
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Your Profile</h2>
-                </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-5 transition-shadow">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Your Profile</h2>
                 <div className="space-y-2 mb-5 text-sm">
                   <div className="flex items-start gap-2">
                     <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[50px]">Name:</span>
@@ -313,45 +286,35 @@ export default function Dashboard() {
                 </div>
                 <button 
                   onClick={() => router.push('/profile')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-4 transition-colors"
+                  className="btn-primary w-full"
                 >
                   View Full Profile
                 </button>
               </div>
 
               {/* Job Recommendations */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 p-5 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-blue-600 flex items-center justify-center">
-                    <span className="text-xl">💼</span>
-                  </div>
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Job Matches</h2>
-                </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-5 transition-shadow">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Job Matches</h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-5 leading-relaxed">
                   Discover jobs that match your skills and experience using our smart matching algorithm.
                 </p>
                 <button 
                   onClick={() => setActiveTab('jobs')}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 transition-colors"
+                  className="btn-primary w-full"
                 >
                   Find Jobs
                 </button>
               </div>
 
               {/* Applications */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 p-5 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-orange-600 flex items-center justify-center">
-                    <span className="text-xl">📊</span>
-                  </div>
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Applications</h2>
-                </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-5 transition-shadow">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Applications</h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-5 leading-relaxed">
                   Track your job applications and their status in one convenient place.
                 </p>
                 <button 
                   onClick={() => setActiveTab('applications')}
-                  className="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-semibold py-2.5 px-4 transition-colors"
+                  className="btn-primary w-full"
                 >
                   View Applications
                 </button>
@@ -362,7 +325,7 @@ export default function Dashboard() {
 
         {/* Job Matching Tab */}
         {activeTab === 'jobs' && (
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <JobMatching 
               trackedJobs={trackedJobs}
               trackedJobsLoading={trackedJobsLoading}
@@ -374,17 +337,15 @@ export default function Dashboard() {
 
         {/* Preferences Tab */}
         {activeTab === 'preferences' && (
-          <div className="space-y-4">
-            {/* Preferences Content */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-purple-600 flex items-center justify-center">
-                  <span className="text-xl">⚙️</span>
-                </div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Job Preferences</h2>
-              </div>
-              <JobPreferences />
-            </div>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-5 transition-shadow">
+                  <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Job Preferences</h2>
+           <p className="text-sm text-gray-600 dark:text-gray-400 mb-5 leading-relaxed">
+                  Set your preferences to get more relevant job recommendations.
+           </p>
+
+      </div>
+            <JobPreferences />
           </div>
         )}
 

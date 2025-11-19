@@ -52,8 +52,12 @@ export default function LinkedInMockLink({ onLinked }) {
   }
 
   return (
-    <button onClick={handleMockLink} className="px-3 py-1 border rounded text-sm" disabled={loading}>
-      {loading ? 'Linking...' : 'Mock Link LinkedIn'}
+    <button
+      onClick={handleMockLink}
+      className="btn-primary sm:w-1/2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+      disabled={loading}
+    >
+      {loading ? 'Linking...' : 'Mock LinkedIn'}
     </button>
   )
 }

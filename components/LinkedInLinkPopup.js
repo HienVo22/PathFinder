@@ -59,7 +59,11 @@ export default function LinkedInLinkPopup({ onLinked }) {
   }, [onLinked])
 
   return (
-    <button onClick={openPopup} className="px-3 py-1 bg-blue-600 text-white rounded">
+    <button
+      onClick={openPopup}
+      disabled={linking}
+      className="btn-primary sm:w-1/2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+    >
       {linking ? 'Linking...' : 'Link LinkedIn'}
     </button>
   )
