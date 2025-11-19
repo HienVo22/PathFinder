@@ -27,7 +27,7 @@ const FILTER_OPTIONS = [
 
 const SavedJobList = ({ title, jobs, emptyMessage, onMarkApplied }) => {
   return (
-    <div className="bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700 rounded-xl p-5 h-full">
+    <div className="bg-gray-50 dark:bg-gray-900/60 rounded-lg shadow p-5 h-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
         <span className="text-sm text-gray-500 dark:text-gray-400">{jobs.length} job{jobs.length === 1 ? '' : 's'}</span>
@@ -39,7 +39,7 @@ const SavedJobList = ({ title, jobs, emptyMessage, onMarkApplied }) => {
       ) : (
         <div className="space-y-4">
           {jobs.map((job) => (
-            <div key={job.jobId} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+            <div key={job.jobId} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{job.company}</p>
@@ -92,7 +92,7 @@ const TrackedJobCard = ({ job, onUpdateJobStatus }) => {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{job.company || 'Company not specified'}</p>
@@ -175,7 +175,7 @@ export default function TrackedApplications({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 space-y-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Tracked Applications</h2>
@@ -229,7 +229,7 @@ export default function TrackedApplications({
             onMarkApplied={onMarkApplied}
           />
 
-          <div className="bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
+          <div className="bg-gray-50 dark:bg-gray-900/60 rounded-lg shadow p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Tracked Applications</h3>
@@ -246,8 +246,8 @@ export default function TrackedApplications({
               </button>
             </div>
 
-            {manualOpen && (
-              <form onSubmit={handleManualSubmit} className="mb-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-3 shadow-sm">
+              {manualOpen && (
+              <form onSubmit={handleManualSubmit} className="mb-5 bg-white dark:bg-gray-800 rounded-lg p-4 space-y-3 shadow">
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Role *</label>
                   <input

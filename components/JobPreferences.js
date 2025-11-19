@@ -113,16 +113,11 @@ const JobPreferences = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow">
+    <div className="max-w-4xl mx-auto bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Job Preferences</h1>
-        <p className="text-gray-600 dark:text-gray-300">
-          Set your preferences to get more relevant job recommendations
-        </p>
-      </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+
+      <div>
         {/* Location Types */}
         <div className="mb-8">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Work Location Type</h3>

@@ -3,6 +3,15 @@
 # PathFinder - Start All Services
 # Run this script to start MongoDB, Ollama, and Next.js
 
+# Add MongoDB to PATH based on environment
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+    # Git Bash on Windows
+    export PATH="/c/Program Files/MongoDB/Server/8.2/bin:$PATH"
+elif grep -qi microsoft /proc/version 2>/dev/null; then
+    # WSL (Windows Subsystem for Linux) - use Windows MongoDB via interop
+    export PATH="/mnt/c/Program Files/MongoDB/Server/8.2/bin:$PATH"
+fi
+
 echo "🚀 Starting PathFinder..."
 echo ""
 
