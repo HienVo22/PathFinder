@@ -84,6 +84,12 @@ const SavedJobList = ({ title, jobs, emptyMessage, onMarkApplied }) => {
 
 const TrackedJobCard = ({ job, onUpdateJobStatus }) => {
   const statusStyle = STATUS_OPTIONS.find(opt => opt.value === job.status)?.badge || STATUS_OPTIONS[0].badge
+  const handleStatusChange = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    const nextStatus = event.target.value
+    onUpdateJobStatus?.(job, nextStatus)
+  }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
@@ -95,7 +101,7 @@ const TrackedJobCard = ({ job, onUpdateJobStatus }) => {
         </div>
         <select
           value={job.status}
-          onChange={(e) => onUpdateJobStatus?.(job, e.target.value)}
+          onChange={handleStatusChange}
           className={`text-xs font-semibold rounded-full px-3 py-1 cursor-pointer border border-transparent focus:outline-none ${statusStyle}`}
         >
           {STATUS_OPTIONS.map(option => (

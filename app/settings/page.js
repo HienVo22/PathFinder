@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import ResumeStatus from '@/components/ResumeStatus'
-import LinkedInLinkPopup from '@/components/LinkedInLinkPopup'
-import LinkedInMockLink from '@/components/LinkedInMockLink'
 import { useTheme } from 'next-themes'
 import DashboardNav from '@/components/DashboardNav'
 import ThemeToggle from '@/components/ThemeToggle'
@@ -124,11 +122,13 @@ export default function Settings() {
       {/* Header - match dashboard header */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-14">
+            <div className="flex justify-between items-center h-14">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">P</span>
-              </div>
+              <img
+                src="/pathfinder-logo.svg"
+                alt="PathFinder logo"
+                className="w-8 h-8"
+              />
               <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 PathFinder
               </h1>
@@ -209,10 +209,6 @@ export default function Settings() {
                       Change Name
                     </button>
                   )}
-                  <div className="flex items-center justify-center gap-3">
-                    <LinkedInLinkPopup />
-                    <LinkedInMockLink />
-                  </div>
                 </div>
               </div>
             </div>
