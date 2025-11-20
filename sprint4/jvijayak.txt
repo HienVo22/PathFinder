@@ -1,0 +1,14 @@
+## What I planned to do:
+Integrating  two factor authentication into the login page so when a user logs in they will have to input a code from their email to verify its them.
+
+## What I did not do
+I think I worked on everything
+
+## Problems I encountered
+Just working out how I wanted to make the page and the actual implementation
+
+## Issues I worked on
+Integrating two factor authentication with the login page
+
+## What I accomplished
+I made the login page do two factor authentication

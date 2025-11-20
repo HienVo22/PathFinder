@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Script from 'next/script'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
@@ -93,27 +94,25 @@ export default function LoginPage() {
     )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
-      <div className="w-full max-w-md mx-auto px-4">
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-6">
-            <img 
-              src="/pathfinder-logo.svg" 
-              alt="PathFinder Logo" 
-              className="w-24 h-24"
-            />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-primary-600 mb-4">Pathfinder</h1>
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Find Your <span className="text-primary-600"> Dream Job</span><br />with AI</h2>
-          <p className="text-lg text-secondary-600 mb-8">Pathfinder uses machine learning to match you with the perfect job opportunities. Upload your resume, set your preferences, and let AI do the work.</p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 px-4">
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle showLabel={true} />
+      </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <div className="mb-4 flex flex-col items-center">
-            <style jsx global>{`#google-login-btn{width:100%!important}#google-login-btn>div{width:100%!important;border-radius:.5rem!important;background-color:rgb(243 244 246)!important;transition:background-color .2s!important}#google-login-btn>div:hover{background-color:rgb(229 231 235)!important}#google-login-btn>div>iframe{width:100%!important}#google-login-btn>div>div{padding:8px!important}`}</style>
-            <div id="google-login-btn" className="w-full flex justify-center mb-2"></div>
+      <div className="w-full max-w-md mx-auto px-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+          <div className="text-center mb-6">
+            <div className="flex justify-center mb-4">
+              <img 
+                src="/pathfinder-logo.svg" 
+                alt="PathFinder Logo" 
+                className="w-16 h-16"
+              />
+            </div>
+            <h1 className="text-3xl font-bold text-primary-600 mb-2">Pathfinder</h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Find your dream job with AI</p>
           </div>
-          <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" onLoad={() => renderGoogleButton()} />
 
           <div className="flex mb-6">
             <button onClick={() => setIsLogin(true)} className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${isLogin ? 'bg-primary-600 text-white' : 'text-secondary-600 hover:text-primary-600'}`}>Login</button>
@@ -123,12 +122,12 @@ export default function LoginPage() {
           {isLogin ? (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className="input-field" placeholder="Enter your email" required />
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600" placeholder="Enter your email" required />
               </div>
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className="input-field" placeholder="Enter your password" required />
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600" placeholder="Enter your password" required />
               </div>
               <button type="submit" className="btn-primary w-full">Login</button>
               <p className="text-sm text-center text-secondary-600">Demo: demo@pathfinder.com / password</p>
@@ -136,20 +135,26 @@ export default function LoginPage() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} className="input-field" placeholder="Enter your full name" required />
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} className="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600" placeholder="Enter your full name" required />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className="input-field" placeholder="Enter your email" required />
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600" placeholder="Enter your email" required />
               </div>
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className="input-field" placeholder="Create a password" required />
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600" placeholder="Create a password" required />
               </div>
               <button type="submit" className="btn-primary w-full">Create Account</button>
             </form>
           )}
+
+          <div className="mt-5 flex flex-col items-center">
+            <style jsx global>{`#google-login-btn{width:100%!important}#google-login-btn>div{width:100%!important;border-radius: 8px!important;background-color:rgb(243 244 246)!important;transition:background-color .2s!important}#google-login-btn>div:hover{background-color:rgb(229 231 235)!important}#google-login-btn>div>iframe{width:100%!important}#google-login-btn>div>div{padding:0px!important}`}</style>
+            <div id="google-login-btn" className="w-full flex justify-center"></div>
+          </div>
+          <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" onLoad={() => renderGoogleButton()} />
         </div>
         <div className="text-center pb-12">
           <Link href="/" className="text-primary-600 font-medium hover:underline">

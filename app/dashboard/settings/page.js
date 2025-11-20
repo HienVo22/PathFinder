@@ -6,11 +6,10 @@ import { useRouter } from 'next/navigation'
 import ResumeStatus from '@/components/ResumeStatus'
 import LinkedInLinkPopup from '@/components/LinkedInLinkPopup'
 import LinkedInMockLink from '@/components/LinkedInMockLink'
-import { useTheme } from 'next-themes'
 import DashboardNav from '@/components/DashboardNav'
 
 export default function Settings() {
-  const { user, loading, logout, refreshUser } = useAuth()
+  const { user, loading, logout } = useAuth()
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [newName, setNewName] = useState('')
@@ -18,39 +17,9 @@ export default function Settings() {
   const [success, setSuccess] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteError, setDeleteError] = useState('')
-  const { theme, setTheme } = useTheme()
   const handleNavChange = (tab) => {
     // navigate back to dashboard and set the requested tab
     router.push(`/dashboard?tab=${tab}`)
-  }
-
-  // On mount or when user preference changes, set theme once from user preference
-  useEffect(() => {
-    if (user && user.theme) {
-      setTheme(user.theme)
-    }
-  }, [user?.theme, setTheme])
-
-  // Persist theme preference to database
-  const handleThemeChange = async (newTheme) => {
-    setTheme(newTheme)
-    try {
-      const response = await fetch('/api/user/update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ theme: newTheme })
-      })
-      if (response.ok) {
-        // Keep user.theme in sync to avoid any effects reverting the UI later
-        await refreshUser()
-      }
-    } catch (err) {
-      // Optionally handle error
-      console.error('Failed to save theme preference:', err)
-    }
   }
 
   if (loading) {
@@ -145,153 +114,117 @@ export default function Settings() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Include the dashboard navigation so users can jump back to tabs */}
         <DashboardNav activeTab={null} onChange={handleNavChange} />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Left Column */}
-          <div className="md:col-span-1 space-y-8">
-            {/* Profile Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Your Profile</h2>
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  {isEditing ? (
-                    <div className="space-y-2">
-                      <input
-                        type="text"
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                        placeholder="Enter new name"
-                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      />
-                      <div className="flex gap-2">
-                        <button
-                          onClick={handleNameUpdate}
-                          className="btn-primary"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => {
-                            setIsEditing(false)
-                            setNewName('')
-                            setError('')
-                          }}
-                          className="btn-secondary"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="dark:text-gray-300"><span className="font-medium">Name:</span> {user.name}</p>
-                  )}
-                  <p className="dark:text-gray-300"><span className="font-medium">Email:</span> {user.email}</p>
-                  <p className="dark:text-gray-300"><span className="font-medium">Account Created:</span> {formatDate(user.createdAt)}</p>
-                </div>
-                
-                {error && (
-                  <div className="text-red-600 text-sm">{error}</div>
-                )}
-                {success && (
-                  <div className="text-green-600 text-sm">{success}</div>
-                )}
-                
-                <div className="mt-4 space-y-3">
-                  {!isEditing && (
-                    <button
-                      onClick={() => {
-                        setIsEditing(true)
-                        setNewName(user.name)
-                        setError('')
-                        setSuccess('')
-                      }}
-                      className="btn-primary w-full"
-                    >
-                      Change Name
-                    </button>
-                  )}
-                  <div className="flex items-center justify-center gap-3">
-                    <LinkedInLinkPopup />
-                    <LinkedInMockLink />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Theme Settings */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Appearance</h2>
+        {/* Single column layout: Profile → Resume Status → Delete Account */}
+        <div className="space-y-8">
+          {/* Profile Card (Top) */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Your Profile</h2>
+            <div className="space-y-3">
               <div className="space-y-2">
-                <p className="text-gray-600 dark:text-gray-300">Choose your preferred theme.</p>
-                <div className="flex gap-4">
-                  <button onClick={() => handleThemeChange('light')} className={`px-4 py-2 rounded-md ${theme === 'light' ? 'btn-primary' : 'btn-secondary'}`}>Light</button>
-                  <button onClick={() => handleThemeChange('dark')} className={`px-4 py-2 rounded-md ${theme === 'dark' ? 'btn-primary' : 'btn-secondary'}`}>Dark</button>
+                {isEditing ? (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      placeholder="Enter new name"
+                      className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    />
+                    <div className="flex gap-2">
+                      <button onClick={handleNameUpdate} className="btn-primary">Save</button>
+                      <button
+                        onClick={() => {
+                          setIsEditing(false)
+                          setNewName('')
+                          setError('')
+                        }}
+                        className="btn-secondary"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="dark:text-gray-300"><span className="font-medium">Name:</span> {user.name}</p>
+                )}
+                <p className="dark:text-gray-300"><span className="font-medium">Email:</span> {user.email}</p>
+                <p className="dark:text-gray-300"><span className="font-medium">Account Created:</span> {formatDate(user.createdAt)}</p>
+              </div>
+
+              {error && (<div className="text-red-600 text-sm">{error}</div>)}
+              {success && (<div className="text-green-600 text-sm">{success}</div>)}
+
+              <div className="mt-4 space-y-3">
+                {!isEditing && (
+                  <button
+                    onClick={() => {
+                      setIsEditing(true)
+                      setNewName(user.name)
+                      setError('')
+                      setSuccess('')
+                    }}
+                    className="btn-primary w-full"
+                  >
+                    Change Name
+                  </button>
+                )}
+                <div className="flex items-center justify-center gap-3">
+                  <LinkedInLinkPopup />
+                  <LinkedInMockLink />
                 </div>
               </div>
-            </div>
-
-            {/* Delete Account Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h3 className="text-lg font-medium text-red-600 mb-4">Danger Zone</h3>
-              {!showDeleteConfirm ? (
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="w-full px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
-                >
-                  Delete Account
-                </button>
-              ) : (
-                <div className="space-y-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    Are you sure you want to delete your account? This action cannot be undone.
-                    All your data, including your resume and job preferences, will be permanently deleted.
-                  </p>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={async () => {
-                        try {
-                          const response = await fetch('/api/user/delete', {
-                            method: 'DELETE',
-                            headers: {
-                              'Authorization': `Bearer ${localStorage.getItem('token')}`
-                            }
-                          })
-
-                          if (!response.ok) {
-                            throw new Error('Failed to delete account')
-                          }
-
-                          logout()
-                          window.location.href = '/'
-                        } catch (err) {
-                          console.error('Delete account error:', err)
-                          setDeleteError('Failed to delete account. Please try again.')
-                        }
-                      }}
-                      className="flex-1 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
-                    >
-                      Yes, Delete My Account
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowDeleteConfirm(false)
-                        setDeleteError('')
-                      }}
-                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                  {deleteError && (
-                    <p className="text-sm text-red-600">{deleteError}</p>
-                  )}
-                </div>
-              )}
             </div>
           </div>
 
-          {/* Right Column */}
-          <div className="md:col-span-2 space-y-8">
-            <ResumeStatus />
+          {/* Resume Status (Middle) */}
+          <ResumeStatus />
+
+          {/* Delete Account (Bottom) */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 className="text-lg font-medium text-red-600 mb-4">Danger Zone</h3>
+            {!showDeleteConfirm ? (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="w-full px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+              >
+                Delete Account
+              </button>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Are you sure you want to delete your account? This action cannot be undone.
+                  All your data, including your resume and job preferences, will be permanently deleted.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/user/delete', {
+                          method: 'DELETE',
+                          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                        })
+                        if (!response.ok) throw new Error('Failed to delete account')
+                        logout()
+                        window.location.href = '/'
+                      } catch (err) {
+                        console.error('Delete account error:', err)
+                        setDeleteError('Failed to delete account. Please try again.')
+                      }
+                    }}
+                    className="flex-1 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+                  >
+                    Yes, Delete My Account
+                  </button>
+                  <button
+                    onClick={() => { setShowDeleteConfirm(false); setDeleteError('') }}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+                {deleteError && (<p className="text-sm text-red-600">{deleteError}</p>)}
+              </div>
+            )}
           </div>
         </div>
       </main>

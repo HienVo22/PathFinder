@@ -43,9 +43,7 @@ export default function UserDropdown({ user, onLogout }) {
         </svg>
       ),
       onClick: () => {
-        // Navigate to jobs tab in dashboard
-        router.push('/dashboard');
-        // Note: We'll need to add a way to set the active tab to 'jobs'
+        router.push('/dashboard?tab=jobs');
         setIsOpen(false);
       }
     },
@@ -57,8 +55,7 @@ export default function UserDropdown({ user, onLogout }) {
         </svg>
       ),
       onClick: () => {
-        // Placeholder for applied jobs page
-        alert('Applied Jobs feature coming soon!');
+        router.push('/dashboard?tab=applications');
         setIsOpen(false);
       }
     },
@@ -71,7 +68,7 @@ export default function UserDropdown({ user, onLogout }) {
         </svg>
       ),
       onClick: () => {
-        router.push('/dashboard/settings');
+        router.push('/settings');
         setIsOpen(false);
       }
     }
@@ -130,3 +127,4 @@ export default function UserDropdown({ user, onLogout }) {
     </div>
   );
 }
+

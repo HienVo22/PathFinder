@@ -6,7 +6,17 @@ import { useState } from 'react';
  * JobDetail Component - Displays full job details on the right side
  * LinkedIn-style detailed job view with skills insight
  */
-export default function JobDetail({ job, onSkillsInsightClick }) {
+export default function JobDetail({ 
+  job, 
+  onSkillsInsightClick,
+  onApplyClick,
+  onSaveClick,
+  onRemoveTracking,
+  isSaved = false,
+  isApplied = false,
+  isSaving = false,
+  isMarkingApplied = false
+}) {
   const [showFullDescription, setShowFullDescription] = useState(false);
   
   if (!job) {
@@ -49,22 +59,11 @@ export default function JobDetail({ job, onSkillsInsightClick }) {
               {job.title}
             </h1>
             <div className="flex items-center gap-3 mb-3">
-              {job.companyLogo ? (
-                <img
-                  src={job.companyLogo}
-                  alt={`${job.company} logo`}
-                  className="w-10 h-10 rounded object-contain bg-white border border-gray-200 dark:border-gray-600"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
-              ) : (
-                <div className="w-10 h-10 rounded bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                  <span className="text-gray-600 dark:text-gray-300 font-semibold">
-                    {job.company.charAt(0)}
-                  </span>
-                </div>
-              )}
+              <div className="w-12 h-12 rounded bg-gray-200 dark:bg-gray-600 flex items-center justify-center border border-gray-200 dark:border-gray-600">
+                <span className="text-gray-700 dark:text-gray-100 font-semibold text-lg">
+                  {job.company?.charAt(0) || 'J'}
+                </span>
+              </div>
               <div>
                 <p className="font-semibold text-gray-900 dark:text-gray-100">{job.company}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">{job.location}</p>
@@ -97,27 +96,48 @@ export default function JobDetail({ job, onSkillsInsightClick }) {
         </div>
         
         {/* Action Buttons */}
-        <div className="flex gap-3 mt-4">
-          <a
-            href={job.applyLink || job.jobLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-center"
-          >
-            Apply
-          </a>
+        <div className="flex gap-3 mt-4 flex-wrap">
           <button
-            onClick={() => {
-              // Save job functionality - placeholder for now
-              alert('Job saved! (Feature coming soon)');
-            }}
-            className="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center gap-2"
+            onClick={() => onApplyClick?.(job)}
+            disabled={!job.applyLink && !job.jobLink || isApplied || isMarkingApplied}
+            className={`px-6 py-2 rounded-lg font-semibold transition-colors text-center ${
+              isApplied
+                ? 'bg-green-600 text-white cursor-default'
+                : 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed'
+            }`}
+          >
+            {isApplied ? 'Applied' : isMarkingApplied ? 'Marking...' : 'Apply'}
+          </button>
+          <button
+            onClick={() => onSaveClick?.(job)}
+            disabled={isSaved || isApplied || isSaving}
+            className={`px-6 py-2 rounded-lg font-semibold flex items-center gap-2 transition-colors ${
+              isSaved || isApplied
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 cursor-default'
+                : 'bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed'
+            }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
             </svg>
-            Save
+            {isApplied ? 'Applied' : isSaved ? 'Saved' : isSaving ? 'Saving...' : 'Save'}
           </button>
+          {(isSaved || isApplied) && (
+            <button
+              onClick={() => {
+                if (confirm(`Remove "${job.title}" from tracking? This will reset it back to "Apply" status.`)) {
+                  onRemoveTracking?.();
+                }
+              }}
+              className="px-6 py-2 border border-red-300 dark:border-red-600 rounded-lg font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-red-600 dark:text-red-400 flex items-center gap-2"
+              title="Remove from tracking"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Remove from Tracking
+            </button>
+          )}
           <button
             onClick={() => onSkillsInsightClick(job)}
             className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"

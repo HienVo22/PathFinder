@@ -205,8 +205,10 @@ export class JobMatcher {
    * @param {number} topN - Number of top jobs to analyze (default: 10)
    * @returns {Promise<Object>} Skill gap analysis
    */
-  static async getSkillGapAnalysis(userSkills, topN = 10) {
-    const allJobs = await this.getJobMatches(userSkills);
+  static async getSkillGapAnalysis(userSkills, topN = 10, precomputedMatches = null) {
+    const allJobs = Array.isArray(precomputedMatches) && precomputedMatches.length
+      ? precomputedMatches
+      : await this.getJobMatches(userSkills);
     const topJobs = allJobs.slice(0, topN);
     
     // Count frequency of missing skills across top jobs
