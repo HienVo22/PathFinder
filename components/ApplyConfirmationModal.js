@@ -39,3 +39,5 @@ export default function ApplyConfirmationModal({ job, isOpen, onConfirm, onCance
   );
 }
 
+
+

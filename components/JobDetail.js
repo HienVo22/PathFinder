@@ -11,6 +11,7 @@ export default function JobDetail({
   onSkillsInsightClick,
   onApplyClick,
   onSaveClick,
+  onRemoveTracking,
   isSaved = false,
   isApplied = false,
   isSaving = false,
@@ -121,6 +122,22 @@ export default function JobDetail({
             </svg>
             {isApplied ? 'Applied' : isSaved ? 'Saved' : isSaving ? 'Saving...' : 'Save'}
           </button>
+          {(isSaved || isApplied) && (
+            <button
+              onClick={() => {
+                if (confirm(`Remove "${job.title}" from tracking? This will reset it back to "Apply" status.`)) {
+                  onRemoveTracking?.();
+                }
+              }}
+              className="px-6 py-2 border border-red-300 dark:border-red-600 rounded-lg font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-red-600 dark:text-red-400 flex items-center gap-2"
+              title="Remove from tracking"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Remove from Tracking
+            </button>
+          )}
           <button
             onClick={() => onSkillsInsightClick(job)}
             className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"

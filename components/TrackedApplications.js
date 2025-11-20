@@ -25,7 +25,13 @@ const FILTER_OPTIONS = [
   ...STATUS_OPTIONS
 ]
 
-const SavedJobList = ({ title, jobs, emptyMessage, onMarkApplied }) => {
+const SavedJobList = ({ title, jobs, emptyMessage, onMarkApplied, onDeleteJob }) => {
+  const handleDelete = (job) => {
+    if (confirm(`Are you sure you want to remove "${job.title}" from your saved jobs?`)) {
+      onDeleteJob?.(job)
+    }
+  }
+
   return (
     <div className="bg-gray-50 dark:bg-gray-900/60 rounded-lg shadow p-5 h-full">
       <div className="flex items-center justify-between mb-4">
@@ -41,14 +47,25 @@ const SavedJobList = ({ title, jobs, emptyMessage, onMarkApplied }) => {
           {jobs.map((job) => (
             <div key={job.jobId} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
               <div className="flex items-start justify-between gap-3">
-                <div>
+                <div className="flex-1">
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{job.company}</p>
                   <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{job.title}</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{job.location || 'Location not specified'}</p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${job.status === 'applied' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'}`}>
-                  {job.status === 'applied' ? 'Applied' : 'Saved'}
-                </span>
+                <div className="flex items-start gap-2">
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${job.status === 'applied' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'}`}>
+                    {job.status === 'applied' ? 'Applied' : 'Saved'}
+                  </span>
+                  <button
+                    onClick={() => handleDelete(job)}
+                    className="p-1.5 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400 transition-colors"
+                    title="Delete saved job"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
               </div>
               <div className="mt-3 text-xs text-gray-500 dark:text-gray-400 flex flex-col gap-1">
                 <span>Saved on {formatDate(job.savedAt)}</span>
@@ -82,7 +99,7 @@ const SavedJobList = ({ title, jobs, emptyMessage, onMarkApplied }) => {
   )
 }
 
-const TrackedJobCard = ({ job, onUpdateJobStatus }) => {
+const TrackedJobCard = ({ job, onUpdateJobStatus, onDeleteJob }) => {
   const statusStyle = STATUS_OPTIONS.find(opt => opt.value === job.status)?.badge || STATUS_OPTIONS[0].badge
   const handleStatusChange = (event) => {
     event.preventDefault()
@@ -91,25 +108,44 @@ const TrackedJobCard = ({ job, onUpdateJobStatus }) => {
     onUpdateJobStatus?.(job, nextStatus)
   }
 
+  const handleDelete = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    if (confirm(`Are you sure you want to remove "${job.title}" from your tracked applications?`)) {
+      onDeleteJob?.(job)
+    }
+  }
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className="flex-1">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{job.company || 'Company not specified'}</p>
           <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{job.title || 'Role not specified'}</h4>
           <p className="text-sm text-gray-600 dark:text-gray-400">{job.location || 'Location not specified'}</p>
         </div>
-        <select
-          value={job.status}
-          onChange={handleStatusChange}
-          className={`text-xs font-semibold rounded-full px-3 py-1 cursor-pointer border border-transparent focus:outline-none ${statusStyle}`}
-        >
-          {STATUS_OPTIONS.map(option => (
-            <option key={option.value} value={option.value} className="text-gray-900">
-              {option.label}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-start gap-2">
+          <select
+            value={job.status}
+            onChange={handleStatusChange}
+            className={`text-xs font-semibold rounded-full px-3 py-1 cursor-pointer border border-transparent focus:outline-none ${statusStyle}`}
+          >
+            {STATUS_OPTIONS.map(option => (
+              <option key={option.value} value={option.value} className="text-gray-900">
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={handleDelete}
+            className="p-1.5 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400 transition-colors"
+            title="Delete application"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
       </div>
       <div className="mt-3 text-xs text-gray-500 dark:text-gray-400 flex flex-col gap-1">
         {job.appliedAt && <span>Applied on {formatDate(job.appliedAt)}</span>}
@@ -138,7 +174,8 @@ export default function TrackedApplications({
   onRefresh,
   onMarkApplied,
   onAddManualJob,
-  onUpdateJobStatus
+  onUpdateJobStatus,
+  onDeleteJob
 }) {
   const [filter, setFilter] = useState('all')
   const [manualOpen, setManualOpen] = useState(false)
@@ -227,6 +264,7 @@ export default function TrackedApplications({
             jobs={savedJobs}
             emptyMessage="No saved jobs yet. Use the Save button on any job to bookmark it."
             onMarkApplied={onMarkApplied}
+            onDeleteJob={onDeleteJob}
           />
 
           <div className="bg-gray-50 dark:bg-gray-900/60 rounded-lg shadow p-5">
@@ -313,7 +351,7 @@ export default function TrackedApplications({
             ) : (
               <div className="space-y-4">
                 {filteredTrackedJobs.map(job => (
-                  <TrackedJobCard key={job.jobId} job={job} onUpdateJobStatus={onUpdateJobStatus} />
+                  <TrackedJobCard key={job.jobId} job={job} onUpdateJobStatus={onUpdateJobStatus} onDeleteJob={onDeleteJob} />
                 ))}
               </div>
             )}

@@ -4,7 +4,7 @@
  * JobCard Component - Displays a job listing in the left sidebar
  * LinkedIn-style compact job card with match percentage
  */
-export default function JobCard({ job, isSelected, onClick, isSaved, isApplied, isSaving, onSave }) {
+export default function JobCard({ job, isSelected, onClick, isSaved, isApplied, isSaving, onSave, onRemoveTracking }) {
   const matchPercentage = job.matchAnalysis?.matchPercentage || 0;
   
   // Determine match badge color based on percentage
@@ -109,25 +109,43 @@ export default function JobCard({ job, isSelected, onClick, isSaved, isApplied, 
 
       <div className="mt-3 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
         <span>{job.publisher || 'PathFinder AI'}</span>
-        <button
-          onClick={(event) => {
-            event.stopPropagation();
-            if (!isSaved && !isApplied && !isSaving) {
-              onSave?.();
-            }
-          }}
-          disabled={isSaved || isApplied || isSaving}
-          className={`
-            px-3 py-1 rounded-full font-semibold transition-colors
-            ${isApplied
-              ? 'bg-green-600 text-white cursor-default'
-              : isSaved
-                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 cursor-default'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'}
-          `}
-        >
-          {isApplied ? 'Applied' : isSaved ? 'Saved' : isSaving ? 'Saving...' : 'Save'}
-        </button>
+        <div className="flex items-center gap-2">
+          {(isSaved || isApplied) && (
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                if (confirm(`Remove "${job.title}" from tracking? This will reset it back to "Apply" status.`)) {
+                  onRemoveTracking?.();
+                }
+              }}
+              className="p-1 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400 transition-colors"
+              title="Remove from tracking"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+              if (!isSaved && !isApplied && !isSaving) {
+                onSave?.();
+              }
+            }}
+            disabled={isSaved || isApplied || isSaving}
+            className={`
+              px-3 py-1 rounded-full font-semibold transition-colors
+              ${isApplied
+                ? 'bg-green-600 text-white cursor-default'
+                : isSaved
+                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 cursor-default'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'}
+            `}
+          >
+            {isApplied ? 'Applied' : isSaved ? 'Saved' : isSaving ? 'Saving...' : 'Save'}
+          </button>
+        </div>
       </div>
     </div>
   );

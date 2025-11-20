@@ -165,6 +165,44 @@ export default function Dashboard() {
     return handleTrackedJobUpdate(job, nextStatus)
   }, [handleTrackedJobUpdate])
 
+  const handleDeleteTrackedJob = useCallback(async (job) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+    if (!token) {
+      toast.error('Please sign in again to delete job applications.')
+      return Promise.reject(new Error('Missing auth token'))
+    }
+
+    // Extract jobId from either job.id or job.jobId (API jobs use "id", tracked jobs use "jobId")
+    const jobId = job?.jobId || job?.id
+    if (!jobId) {
+      toast.error('Invalid job identifier')
+      return Promise.reject(new Error('Missing jobId'))
+    }
+
+    try {
+      const res = await fetch('/api/user/jobs/tracked', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ jobId: String(jobId) })
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to delete job')
+      }
+      setTrackedJobs(data.jobs || [])
+      setTrackedJobsError(null)
+      toast.success('Job removed from tracking')
+      return data.jobs || []
+    } catch (err) {
+      console.error('Failed to delete tracked job', err)
+      toast.error(err.message || 'Unable to delete job right now.')
+      throw err
+    }
+  }, [])
+
   // Handle viewing job matches
   const handleViewJobs = () => {
     setShowSuccessModal(false);
@@ -331,6 +369,7 @@ export default function Dashboard() {
               trackedJobsLoading={trackedJobsLoading}
               onSaveJob={(job) => handleTrackedJobUpdate(job, 'saved')}
               onMarkApplied={(job) => handleTrackedJobUpdate(job, 'applied')}
+              onRemoveTracking={handleDeleteTrackedJob}
             />
           </div>
         )}
@@ -358,6 +397,7 @@ export default function Dashboard() {
             onMarkApplied={(job) => handleTrackedJobUpdate(job, 'applied')}
             onAddManualJob={handleManualApplicationAdd}
             onUpdateJobStatus={handleTrackedJobStatusChange}
+            onDeleteJob={handleDeleteTrackedJob}
           />
         )}
       </main>

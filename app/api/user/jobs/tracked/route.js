@@ -148,3 +148,49 @@ export async function POST(request) {
   }
 }
 
+export async function DELETE(request) {
+  try {
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { jobId } = body || {};
+
+    if (!jobId) {
+      return NextResponse.json({ error: 'Missing jobId' }, { status: 400 });
+    }
+
+    await connectDB();
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    if (!Array.isArray(user.trackedJobs)) {
+      user.trackedJobs = [];
+    }
+
+    // Remove the job from tracked jobs
+    const initialLength = user.trackedJobs.length;
+    user.trackedJobs = user.trackedJobs.filter(entry => entry.jobId !== String(jobId));
+
+    if (user.trackedJobs.length === initialLength) {
+      return NextResponse.json({ error: 'Job not found in tracked list' }, { status: 404 });
+    }
+
+    await user.save();
+    return NextResponse.json({ message: 'Job removed from tracking', jobs: user.trackedJobs });
+  } catch (error) {
+    console.error('DELETE /api/user/jobs/tracked error:', error);
+    return NextResponse.json({ error: 'Failed to delete tracked job' }, { status: 500 });
+  }
+}
+

@@ -19,7 +19,8 @@ const JobMatching = ({
   trackedJobs = [], 
   trackedJobsLoading = false,
   onSaveJob,
-  onMarkApplied
+  onMarkApplied,
+  onRemoveTracking
 }) => {
   const [userSkills, setUserSkills] = useState([]);
   const [jobMatches, setJobMatches] = useState([]);
@@ -264,6 +265,17 @@ const JobMatching = ({
     }
   };
 
+  const handleRemoveTracking = async (job) => {
+    if (!job || !onRemoveTracking) return;
+    const key = getJobKey(job);
+    if (!key) return;
+    try {
+      await onRemoveTracking(job);
+    } catch (err) {
+      console.error('Failed to remove job from tracking', err);
+    }
+  };
+
   const handleApplyClick = (job) => {
     if (!job) return;
     const link = job.applyLink || job.jobLink;
@@ -425,6 +437,7 @@ const JobMatching = ({
                   isApplied={isJobApplied(job)}
                   isSaving={savingJobId === getJobKey(job)}
                   onSave={() => handleSaveJob(job)}
+                  onRemoveTracking={() => handleRemoveTracking(job)}
                   onClick={() => setSelectedJob(job)}
                 />
               ))
@@ -437,6 +450,7 @@ const JobMatching = ({
               onSkillsInsightClick={(job) => setSkillsModalJob(job)}
               onSaveClick={() => handleSaveJob(selectedJob)}
               onApplyClick={handleApplyClick}
+              onRemoveTracking={() => handleRemoveTracking(selectedJob)}
               isSaved={isJobSaved(selectedJob)}
               isApplied={isJobApplied(selectedJob)}
               isSaving={savingJobId === getJobKey(selectedJob)}
