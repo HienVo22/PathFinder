@@ -1,3 +1,155 @@
+# Pathfinder
+
+Pathfinder is a full-stack job discovery and resume-based matching project built with Next.js (App Router) and MongoDB. It supports authentication, resume upload, resume parsing, skill extraction, and job search.
+
+## Key features
+
+- Email/password authentication using JWT
+- Optional Google sign-in
+- Optional LinkedIn OAuth flow (start and callback routes)
+- Resume upload (PDF, DOC, DOCX) with validation and storage
+  - Saves a copy on disk under `uploads/resumes/`
+  - Also stores the resume binary in MongoDB for retrieval
+- Background resume processing (resume parsing + AI skill extraction)
+- Job search via RapidAPI (JSearch endpoint)
+  - Includes development fallback behavior when rate-limited
+- User endpoints for skills, preferences, tracked jobs, and profile updates
+
+## Tech stack
+
+- Frontend: Next.js 14, React 18, Tailwind CSS, MUI (Material UI), Emotion
+- Backend: Next.js Route Handlers (API routes), JWT, bcryptjs
+- Database: MongoDB with Mongoose
+- File upload: Multer + local filesystem
+- Optional integrations:
+  - Google Sign-In: `google-auth-library`
+  - LinkedIn OAuth
+  - AI skill extraction: Google Gemini API
+  - Local AI runtime: Ollama (if installed)
+
+## Requirements
+
+- Node.js 18+ (recommended: latest LTS)
+- npm
+- A MongoDB instance (Atlas or local) reachable via a connection string
+
+## Setup and run
+
+### 1) Install dependencies
+
+```bash
+git clone https://github.com/HienVo22/PathFinder.git
+cd PathFinder
+npm install
+```
+
+### 2) Create `.env.local`
+
+Create a file named `.env.local` in the project root.
+
+Required:
+
+- `MONGODB_URI`: MongoDB connection string (Atlas or local)
+- `JWT_SECRET`: secret used to sign and verify JWTs
+
+Optional (only needed if you use these features):
+
+- `MONGODB_DB_NAME`: override database name (otherwise it defaults based on `NODE_ENV`)
+- `RAPIDAPI_KEY`: required to enable job search
+- `RAPIDAPI_HOST`: defaults to `jsearch.p.rapidapi.com`
+- `GEMINI_API_KEY`: required for AI-based skill extraction
+- `NEXT_PUBLIC_GOOGLE_CLIENT_ID`: Google client ID used by the browser login page
+- `GOOGLE_CLIENT_ID`: Google client ID used by the server to verify ID tokens (often the same value)
+- `LINKEDIN_CLIENT_ID`: LinkedIn app client ID
+- `LINKEDIN_CLIENT_SECRET`: LinkedIn app client secret
+- `LINKEDIN_REDIRECT_URI`: callback URL for standard redirects
+- `LINKEDIN_POPUP_REDIRECT_URI`: callback URL for popup-based linking
+
+Example (do not copy secrets into git):
+
+```bash
+MONGODB_URI="mongodb+srv://USER:PASSWORD@cluster.mongodb.net/?retryWrites=true&w=majority"
+JWT_SECRET="replace-with-a-long-random-string"
+
+# Optional
+RAPIDAPI_KEY="your-rapidapi-key"
+RAPIDAPI_HOST="jsearch.p.rapidapi.com"
+GEMINI_API_KEY="your-gemini-api-key"
+NEXT_PUBLIC_GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_ID="your-google-client-id"
+LINKEDIN_CLIENT_ID="your-linkedin-client-id"
+LINKEDIN_CLIENT_SECRET="your-linkedin-client-secret"
+LINKEDIN_REDIRECT_URI="http://localhost:3000/api/auth/linkedin/callback"
+LINKEDIN_POPUP_REDIRECT_URI="http://localhost:3000/api/auth/linkedin/popup-callback"
+```
+
+### 3) Start the app (development)
+
+```bash
+npm run dev
+```
+
+Then open `http://localhost:3000`.
+
+### Convenience scripts (optional)
+
+These scripts are for starting and stopping the app and optional local services.
+
+macOS / Linux:
+
+```bash
+./start-all.sh
+./stop-all.sh
+```
+
+Windows (PowerShell):
+
+```powershell
+.\start-all.ps1
+.\stop-all.ps1
+```
+
+Notes:
+
+- `start-all.sh` does not start MongoDB for you. Make sure `MONGODB_URI` points to a running MongoDB instance.
+- Ollama is optional. If it is not installed, the app can still run, but any features that depend on it may not work.
+
+## Scripts
+
+- `npm run dev`: start the dev server
+- `npm run build`: build for production
+- `npm run start`: start the production server
+- `npm run lint`: run ESLint
+
+## Project structure (high level)
+
+```
+app/           Next.js routes, pages, and API route handlers
+components/    Shared UI components
+contexts/      React contexts (auth, etc.)
+lib/           MongoDB connection and PDF parsing utilities
+models/        Mongoose models
+services/      Background processing services
+utils/         Shared helpers
+public/        Static assets
+uploads/       Local upload storage (created at runtime)
+```
+
+## Troubleshooting
+
+- Job search returns "API credentials not configured"
+  - Add `RAPIDAPI_KEY` to `.env.local`.
+- Google sign-in fails
+  - Ensure `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (client-side) and `GOOGLE_CLIENT_ID` (server-side) are set correctly.
+- Resume upload fails
+  - Check that the app can write to `uploads/resumes/`.
+  - Confirm the file is PDF/DOC/DOCX and under 10 MB.
+- MongoDB connection error at startup
+  - Verify `MONGODB_URI` and make sure your database allows connections from your IP.
+
+## License
+
+MIT
 # Pathfinder - Job Recommendation Platform
 
 A full-stack web application that uses AI to match users with their perfect job opportunities.
