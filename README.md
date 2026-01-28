@@ -38,18 +38,6 @@ Required:
 - `MONGODB_URI`
 - `JWT_SECRET`
 
-Optional (only needed if you use those features):
-
-- `MONGODB_DB_NAME`
-- `RAPIDAPI_KEY`
-- `RAPIDAPI_HOST` (defaults to `jsearch.p.rapidapi.com`)
-- `GEMINI_API_KEY`
-- `NEXT_PUBLIC_GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_ID`
-- `LINKEDIN_CLIENT_ID`
-- `LINKEDIN_CLIENT_SECRET`
-- `LINKEDIN_REDIRECT_URI`
-- `LINKEDIN_POPUP_REDIRECT_URI`
 
 Example:
 
