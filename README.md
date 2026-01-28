@@ -4,7 +4,6 @@
 
 - User authentication (email/password) using JWT
 - Optional Google sign-in
-- Optional LinkedIn OAuth flow
 - Resume upload (PDF, DOC, DOCX) with type/size validation
 - Resume storage and retrieval
   - Stored on disk under `uploads/resumes/`
