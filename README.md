@@ -45,16 +45,6 @@ Example:
 MONGODB_URI="mongodb+srv://USER:PASSWORD@cluster.mongodb.net/?retryWrites=true&w=majority"
 JWT_SECRET="replace-with-a-long-random-string"
 
-# Optional
-RAPIDAPI_KEY="your-rapidapi-key"
-RAPIDAPI_HOST="jsearch.p.rapidapi.com"
-GEMINI_API_KEY="your-gemini-api-key"
-NEXT_PUBLIC_GOOGLE_CLIENT_ID="your-google-client-id"
-GOOGLE_CLIENT_ID="your-google-client-id"
-LINKEDIN_CLIENT_ID="your-linkedin-client-id"
-LINKEDIN_CLIENT_SECRET="your-linkedin-client-secret"
-LINKEDIN_REDIRECT_URI="http://localhost:3000/api/auth/linkedin/callback"
-LINKEDIN_POPUP_REDIRECT_URI="http://localhost:3000/api/auth/linkedin/popup-callback"
 ```
 
 ### 3) Run (development)
@@ -63,7 +53,6 @@ LINKEDIN_POPUP_REDIRECT_URI="http://localhost:3000/api/auth/linkedin/popup-callb
 npm run dev
 ```
 
-Open `http://localhost:3000`.
 
 ### Optional convenience scripts
 
